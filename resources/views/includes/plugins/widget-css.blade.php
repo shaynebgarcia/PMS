@@ -1,0 +1,1 @@
+<link rel="stylesheet" type="text/css" href="{{ asset('laravel-admindek/assets/css/widget.css') }}">
