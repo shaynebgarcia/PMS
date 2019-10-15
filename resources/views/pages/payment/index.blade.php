@@ -15,7 +15,7 @@
         <div class="card-header">
             <h5>Payments</h5>
             <div class="card-header-right">
-            <a href="{{ route('payment.create') }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Add Property">
+            <a href="{{ route('payment.create') }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Add Payment">
                 <button class="btn waves-effect waves-light btn-success btn-icon" style="height: 30px;width: 30px; padding: 0;line-height: 0;padding-left: 2px;">
                     <i class="fa fa-plus fa-sm" style="color: white;"></i>
                 </button>
@@ -33,51 +33,53 @@
                                 <th>Payment Type</th>
                                 {{-- <th>Tenant</th>
                                 <th>Unit</th> --}}
-                                <th>Amount</th>
+                                <th>Amount Due</th>
+                                <th>Amount Paid</th>
                                 <th>File</th>
                                 <th>Date Created</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                        @foreach($payments as $payment)
-                            <tr>
-                                <td style="font-size: 13px; font-weight: bold">
-                                    <a href="{{ route('payment.show', $payment->slug) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="View Details">
-                                            {{ $payment->slug }}
+                            @foreach($payments as $payment)
+                                @php
+                                    $diff_percent = ($payment->amount_paid / $payment->amount_due) * 100;
+                                    if ($payment->amount_due <= $payment->amount_paid) {
+                                        $color = 'text-c-green';
+                                        $text = '+'.$diff_percent.'%';
+                                    } else {
+                                        $color = 'text-c-red';
+                                        $text = '-'.$diff_percent.'%';
+                                    }
+                                @endphp
+                                <tr>
+                                    <td style="font-size: 13px; font-weight: bold">
+                                        <a href="{{ route('payment.show', $payment->slug) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="View Details">
+                                                {{ $payment->slug }}
+                                            </a>
+                                        </td>
+                                    <td class="f-12">{{ $payment->reference_no }}</td>
+                                    <td class="f-12">{{ $payment->payment_type->name }}</td>
+                                    {{-- <td class="f-12">{{ $payment->tenant->user->fullnamew }}</td>
+                                    <td class="f-12">{{ $payment->unit_total }}</td> --}}
+                                    <td class="f-12">{{ $payment->amount_due_currency_sign }}</td>
+                                    <td class="f-12">
+                                        {{ $payment->amount_paid_currency_sign }}
+                                        <span class="{{ $color }} f-w-700 m-l-10" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="%">{{ $text }}</span>
+                                    </td>
+                                    <td class="f-12"><img src="{{ Storage::url($payment->file) }}" height="30px" width="30px" /></td>
+                                    <td class="f-12">{{ $payment->created_at }}</td>
+                                    <td class="f-12">
+                                        <a href="{{ route('payment.edit', $payment->slug) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Edit">
+                                            <i class="icon feather icon-edit f-w-600 f-16 m-r-15 text-c-green"></i>
+                                        </a>
+                                        <a href="{{ route('payment.destroy', $payment->slug) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Delete">
+                                            <i class="feather icon-trash-2 f-w-600 f-16 text-c-red"></i>
                                         </a>
                                     </td>
-                                <td style="font-size: 13px;">{{ $payment->reference_no }}</td>
-                                <td style="font-size: 13px;">{{ $payment->payment_type->name }}</td>
-                                {{-- <td style="font-size: 13px;">{{ $payment->tenant->user->fullnamew }}</td>
-                                <td style="font-size: 13px;">{{ $payment->unit_total }}</td> --}}
-                                <td style="font-size: 13px;">{{ $payment->amount_peso }}</td>
-                                <td style="font-size: 13px;"><img src="{{ Storage::url($payment->file) }}" height="30px" width="30px" /></td>
-                                <td style="font-size: 13px;">{{ $payment->created_at }}</td>
-                                <td style="font-size: 13px;">
-                                    <a href="{{ route('payment.edit', $payment->slug) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Edit">
-                                        <i class="icon feather icon-edit f-w-600 f-16 m-r-15 text-c-green"></i>
-                                    </a>
-                                    <a href="{{ route('payment.destroy', $payment->slug) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Delete">
-                                        <i class="feather icon-trash-2 f-w-600 f-16 text-c-red"></i>
-                                    </a>
-                                </td>
-                            </tr>
-                        @endforeach
+                                </tr>
+                            @endforeach
                         </tbody>
-                        <tfoot>
-                            <tr>
-                                <th>ID</th>
-                                <th>REF NO</th>
-                                <th>Payment Type</th>
-                                {{-- <th>Tenant</th>
-                                <th>Unit</th> --}}
-                                <th>Amount</th>
-                                <th>File</th>
-                                <th>Date Created</th>
-                                <th>Action</th>
-                            </tr>
-                        </tfoot>
                     </table>
                 </div>
             @else

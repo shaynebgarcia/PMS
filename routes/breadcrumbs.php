@@ -1,109 +1,93 @@
 <?php
 
-// Home
-Breadcrumbs::for('home', function ($trail) {
-    $trail->push('Home', route('home'));
+// Dashboard
+Breadcrumbs::for('dashboard', function ($trail) {
+    $trail->push('Dashboard', route('dashboard'));
 });
 
-Breadcrumbs::for('user', function ($trail) {
-    $trail->parent('home');
-    $trail->push('Users', route('user.index'));
-});
-
-Breadcrumbs::for('tenant', function ($trail) {
-    $trail->parent('home');
-    $trail->push('Tenants', route('tenant.index'));
-});
-
-Breadcrumbs::for('property', function ($trail) {
-    $trail->parent('home');
-    $trail->push('Properties', route('property.index'));
-});
-
-Breadcrumbs::for('unit', function ($trail) {
-    $trail->parent('home');
-    $trail->push('Units', route('unit.index'));
-});
-
-
+// PAYMENT
 Breadcrumbs::for('payment', function ($trail) {
-    $trail->parent('home');
+    $trail->parent('dashboard');
     $trail->push('Payments', route('payment.index'));
 });
+    Breadcrumbs::for('payment-create', function ($trail) {
+        $trail->parent('payment');
+        $trail->push('Create Payment', route('payment.create'));
+    });
 
-Breadcrumbs::for('payment-create', function ($trail) {
-    $trail->parent('payment');
-    $trail->push('Create Payment', route('payment.create'));
+// USER
+Breadcrumbs::for('user', function ($trail) {
+    $trail->parent('dashboard');
+    $trail->push('Users', route('user.index'));
 });
-
-Breadcrumbs::for('user-show', function ($trail, $user) {
-    $trail->parent('user');
-    $trail->push($user->fullname, route('user.show', $user->id));
-});
-
+    Breadcrumbs::for('user-create', function ($trail) {
+        $trail->parent('user');
+        $trail->push('Create User', route('user.create'));
+    });
+    Breadcrumbs::for('user-show', function ($trail, $user) {
+        $trail->parent('user');
+        $trail->push($user->fullname, route('user.show', $user->id));
+    });
+    Breadcrumbs::for('user-edit', function ($trail, $user) {
+        $trail->parent('user');
+        $trail->push($user->fullname, route('user.edit', $user->id));
+    });
+// LEASE
 Breadcrumbs::for('lease', function ($trail) {
-    $trail->parent('home');
+    $trail->parent('dashboard');
     $trail->push('Leasing Agreements', route('lease.index'));
 });
-    Breadcrumbs::for('lease-show', function ($trail, $lease) {
+    Breadcrumbs::for('lease-create', function ($trail) {
         $trail->parent('lease');
-        $trail->push($lease->id, route('lease.show', $lease->id));
+        $trail->push('Create Leasing Agreement', route('lease.create'));
     });
-        Breadcrumbs::for('lease-bill', function ($trail, $lease) {
+    Breadcrumbs::for('lease-show', function ($trail, $property, $lease) {
+        $trail->parent('lease');
+        $trail->push($lease->id, route('lease.show', [$property->id, $lease->id]));
+    });
+        Breadcrumbs::for('lease-bill', function ($trail, $lease, $my) {
             $trail->parent('lease-show', $lease);
-            $trail->push('Generate Bill', route('billing.display', $lease->id));
+            $trail->push('Generate Bill', route('billing.display', [$lease->id, $my]));
         });
 
-Breadcrumbs::for('tenant-create', function ($trail) {
-    $trail->parent('tenant');
-    $trail->push('Create Tenant', route('tenant.create'));
+// TENANT
+Breadcrumbs::for('tenant', function ($trail) {
+    $trail->parent('dashboard');
+    $trail->push('Tenants', route('tenant.index'));
 });
+    Breadcrumbs::for('tenant-create', function ($trail) {
+        $trail->parent('tenant');
+        $trail->push('Create Tenant', route('tenant.create'));
+    });
 
-Breadcrumbs::for('property-create', function ($trail) {
-    $trail->parent('property');
-    $trail->push('Create Property', route('property.create'));
+// PROPERTY
+Breadcrumbs::for('property', function ($trail) {
+    $trail->parent('dashboard');
+    $trail->push('Properties', route('property.index'));
 });
-
-Breadcrumbs::for('property-show', function ($trail, $property) {
-    $trail->parent('property');
-    $trail->push($property->name, route('property.show', $property->id));
+    Breadcrumbs::for('property-create', function ($trail) {
+        $trail->parent('property');
+        $trail->push('Create Property', route('property.create'));
+    });
+    Breadcrumbs::for('property-show', function ($trail, $property) {
+        $trail->parent('property');
+        $trail->push($property->name, route('property.show', $property->id));
+    });
+    Breadcrumbs::for('property-edit', function ($trail, $property) {
+        $trail->parent('property');
+        $trail->push($property->name, route('property.edit', $property->id));
+    });
+// UNIT
+Breadcrumbs::for('unit', function ($trail) {
+    $trail->parent('dashboard');
+    $trail->push('Units', route('unit.index'));
 });
+    Breadcrumbs::for('unit-create', function ($trail, $property) {
+        $trail->parent('property', $property->id);
+        $trail->push('Create Unit', route('unit.create', $property->id));
+    });
 
-Breadcrumbs::for('unit-create', function ($trail, $property) {
-    $trail->parent('property', $property->id);
-    $trail->push('Create Unit', route('unit.create', $property->id));
-});
-
-Breadcrumbs::for('unit-show', function ($trail, $property, $unit) {
-    $trail->parent('property-show', $unit->property);
-    $trail->push($unit->number, route('unit.show', [$property->id, $unit->id]));
-});
-
-// // Home
-// Breadcrumbs::for('home', function ($trail) {
-//     $trail->push('Home', route('home'));
-// });
-
-// // Home > About
-// Breadcrumbs::for('about', function ($trail) {
-//     $trail->parent('home');
-//     $trail->push('About', route('about'));
-// });
-
-// // Home > Blog
-// Breadcrumbs::for('blog', function ($trail) {
-//     $trail->parent('home');
-//     $trail->push('Blog', route('blog'));
-// });
-
-// // Home > Blog > [Category]
-// Breadcrumbs::for('category', function ($trail, $category) {
-//     $trail->parent('blog');
-//     $trail->push($category->title, route('category', $category->id));
-// });
-
-// // Home > Blog > [Category] > [Post]
-// Breadcrumbs::for('post', function ($trail, $post) {
-//     $trail->parent('category', $post->category);
-//     $trail->push($post->title, route('post', $post->id));
-// });
+    Breadcrumbs::for('unit-show', function ($trail, $property, $unit) {
+        $trail->parent('property-show', $unit->property);
+        $trail->push($unit->number, route('unit.show', [$property->id, $unit->id]));
+    });

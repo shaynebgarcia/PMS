@@ -17,10 +17,12 @@ class CreatePaymentsTable extends Migration
             $table->bigIncrements('id');
             $table->integer('payment_type_id');
 
-            $table->integer('agreement_id')->nullable()->default(null);
+            $table->integer('leasing_agreement_id')->nullable()->default(null);
+            $table->integer('billing_id')->nullable()->default(null);
             $table->integer('tenant_id')->nullable()->default(null);
 
-            $table->double('amount', 8, 2);
+            $table->double('amount_due', 8, 2);
+            $table->double('amount_paid', 8, 2);
             $table->string('reference_no')->nullable()->default(null);
             $table->string('note')->nullable()->default(null);
             

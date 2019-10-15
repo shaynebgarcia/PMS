@@ -5,24 +5,27 @@
 @endsection
 
 @section('breadcrumbs')
-    <?php   $breadcrumb_title = $property->name;
-            $breadcrumb_subtitle = 'lorem ipsum dolor sit amet, consectetur adipisicing elit'; ?>
+    @php
+        $breadcrumb_icon = config('pms.breadcrumbs.property.icon');
+        $breadcrumb_title = $property->name;
+        $breadcrumb_subtitle = config('pms.breadcrumbs.property.property-show.subtitle');
+    @endphp
     {{ Breadcrumbs::render('property-show', $property) }}
 @endsection
 
 @section('content')
     <div class="row">
         <div class="col-lg-6 col-md-12 col-sm-12">
-            <div class="card" style="height: 400px;overflow-y: scroll;overflow-x: hidden;">
+            <div class="card" style="height: 400px;">
                 <div class="card-header">
                     <h4>{{ $property->name }}</h4>
                     <div class="card-header-right">
-                        <a href="{{ route('property.edit', $property->slug) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Edit Property Details">
+                        <a href="{{ route('property.edit', $property->id) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Edit Property Details">
                             <button class="btn waves-effect waves-light btn-primary btn-icon" style="height: 30px;width: 30px; padding: 0;line-height: 0;padding-left: 2px;">
                                 <i class="fa fa-pencil fa-sm" style="color: white;"></i>
                             </button>
                         </a>
-                        <a href="{{ route('property.destroy', $property->slug) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Delete Property">
+                        <a href="{{ route('property.destroy', $property->id) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Delete Property">
                             <button class="btn waves-effect waves-light btn-danger btn-icon" style="height: 30px;width: 30px; padding: 0;line-height: 0;padding-left: 2px;">
                                 <i class="fa fa-trash fa-sm" style="color: white;"></i>
                             </button>
@@ -64,41 +67,50 @@
             </div>
         </div>
         <div class="col-lg-6 col-md-12 col-sm-12">
-            <div class="card table-card" style="height: 400px;overflow-y: scroll;">
+            <div class="card table-card" style="height: 400px;">
                 <div class="card-header">
                     <h5>Unit Types</h5>
                     <div class="card-header-right">
-                        <a href="{{ route('unit-type.create', $property->slug) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Add Unit Type">
+                        <a href="{{ route('unit-type.create', $property->id) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Add Unit Type">
                             <button class="btn waves-effect waves-light btn-success btn-icon" style="height: 30px;width: 30px; padding: 0;line-height: 0;padding-left: 2px;">
                                 <i class="fa fa-plus fa-sm" style="color: white;"></i>
                             </button>
                         </a>
                     </div>
                 </div>
-                <div class="card-block">
+                <div class="card-block" style="overflow-y: scroll;">
                     @if(count($unit_types) > 0)
                         <div class="table-responsive">
                             <table class="table table-hover m-b-0">
                                 <thead>
                                     <tr>
-                                        <th>Type</th>
-                                        <th>Size</th>
-                                        <th>Leasing Price</th>
+                                        <th class="p-2 f-12">Type</th>
+                                        <th class="p-2 f-12">Size</th>
+                                        <th class="p-2 f-12">Leasing Price</th>
+                                        <th class="p-2 f-12">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach($unit_types as $utype)
                                         <tr>
-                                            <td style="font-size: 13px;">{{ $utype->name }}
+                                            <td class="p-2 f-12">{{ $utype->name }}
                                                 <label class="badge badge-success" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Vacant">
-                                                    {{ $utype->unit->where('unit_type_id', $utype->id)->where('status', 'Vacant')->count() }}
+                                                    {{ $utype->unit->where('unit_type_id', $utype->id)->where('leasing_agreement_id', null)->count() }}
                                                 </label>
                                                 <label class="badge badge-default" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Occupied">
-                                                    {{ $utype->unit->where('unit_type_id', $utype->id)->where('status', 'Occupied')->count() }}
+                                                    {{ $utype->unit->where('unit_type_id', $utype->id)->where('leasing_agreement_id', !null)->count() }}
                                                 </label>
                                             </td>
-                                            <td style="font-size: 13px;">{{ $utype->size }}</td>
-                                            <td style="font-size: 13px;">{{ $utype->lease_price_peso }}</td>
+                                            <td class="p-2 f-12">{{ $utype->size }}</td>
+                                            <td class="p-2 f-12">{{ $utype->lease_price_currency_sign }}</td>
+                                            <td class="p-2 f-12">
+                                                <a href="{{ route('unit-type.edit', [$property->id, $utype->id]) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Edit">
+                                                    <i class="icon feather icon-edit f-w-600 f-16 m-r-15 text-c-green"></i>
+                                                </a>
+                                                <a href="{{ route('unit-type.destroy', [$property->id, $utype->id]) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Delete">
+                                                    <i class="feather icon-trash-2 f-w-600 f-16 text-c-red"></i>
+                                                </a>
+                                            </td>
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -118,7 +130,7 @@
                 <div class="card-header">
                     <h5>Units</h5>
                     <div class="card-header-right">
-                        <a href="{{ route('unit.create', $property->slug) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Add Unit">
+                        <a href="{{ route('unit.create', $property->id) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Add Unit">
                             <button class="btn waves-effect waves-light btn-success btn-icon" style="height: 30px;width: 30px; padding: 0;line-height: 0;padding-left: 2px;">
                                 <i class="fa fa-plus fa-sm" style="color: white;"></i>
                             </button>
@@ -138,65 +150,94 @@
                             <table id="order-table" class="table table-bordered">
                                 <thead>
                                     <tr>
-                                        <th>Number</th>
+                                        <th>Number (Floor)</th>
                                         <th>Type</th>
-                                        <th>Floor</th>
-                                        <th>Leasing Price</th>
+                                        <th data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Default leasing price">Default</th>
+                                        <th data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Current leasing price">Current</th>
                                         <th>Status</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                @foreach($property->unit as $unit)
-                                    <tr>
-                                        <td style="font-size: 13px; font-weight: bold">
-                                            <a href="{{ route('unit.show', [$property->slug, $unit->slug]) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="View Details">
-                                                {{ $unit->number }}
-                                            </a>
-                                        </td>
-                                        <td style="font-size: 13px;">{{ $unit->unit_type->name }} ({{ $unit->unit_type->size }})</td>
-                                        <td style="font-size: 13px;">{{ $unit->floor_no }}</td>
-                                        <td style="font-size: 13px;">{{ $unit->unit_type->lease_price_peso }}</td>
-                                        <td style="font-size: 13px;">
-                                            <span class="mytooltip tooltip-effect-1">
-                                                <span class="tooltip-item2">
-                                                    <label class="label label-lg @if($unit->status == 'Occupied') label-default @else label-success @endif" style="color: #333333;font-size: 12px;text-transform: uppercase;font-weight: bold;">
-                                                    {{ $unit->status }}
-                                                    </label>
-                                                </span>
-                                                <span class="tooltip-content4 clearfix">
-                                                    <span class="tooltip-text2">
-                                                        @if($unit->status == 'Occupied')
-                                                            <h6>TENANT: <a href="#" data-toggle="tooltip" data-placement="right" data-trigger="hover" title="" data-original-title="View Tenant" style="color: #4099ff;">{{ $unit->rental->tenant->user->fullname }}</a></h6>
-                                                            <h6>SINCE: <a href="#">{{ date('M d, Y', strtotime($unit->rental->term_start)) }}</a></h6>
-                                                        @else
-                                                            <h6>SINCE: <a href="#">MM/DD/YYYY</a></h6>
-                                                        @endif
+                                    @foreach($property->unit as $unit)
+                                        @php
+                                            $detail = $lease_details->where('leasing_agreement_id', $unit->leasing_agreement_id)->first();
+                                            if ($detail != null) {
+                                                $diff_percent = ($unit->unit_type->lease_price - $detail->agreed_lease_price) / (($unit->unit_type->lease_price + $detail->agreed_lease_price) / 2) * 100;
+                                                if ($detail->agreed_lease_price >= $unit->unit_type->lease_price) {
+                                                    $color = 'text-c-green';
+                                                    $text = '+'.$diff_percent.'%';
+                                                } else {
+                                                    $color = 'text-c-red';
+                                                    $text = '-'.$diff_percent.'%';
+                                                }
+                                            }
+                                        @endphp
+                                        <tr>
+                                            <td class="f-12 f-w-700">
+                                                <a href="{{ route('unit.show', [$property->id, $unit->slug]) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="View Details">
+                                                    {{ $unit->number }} ({{ $unit->floor_no }})
+                                                </a>
+                                            </td>
+                                            <td class="f-12">{{ $unit->unit_type->name }} ({{ $unit->unit_type->size }})</td>
+                                            <td class="f-12">{{ $unit->unit_type->lease_price_currency_sign }}</td>
+                                            <td class="f-12">
+                                                {{ $detail->agreed_lease_price_currency_sign ?? '---' }}
+                                                @if($detail != null)
+                                                    <span class="{{ $color }} f-w-700 m-l-10" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="%">{{ $text }}</span>
+                                                @endif
+                                                
+                                            </td>
+                                            <td class="f-12">
+                                                <span class="mytooltip tooltip-effect-1">
+                                                    <span class="tooltip-item2">
+                                                        <label class="label label-lg @if($unit->leasing_agreement_id == null) label-default @else label-success @endif" style="color: #333333;font-size: 12px;text-transform: uppercase;font-weight: bold;">
+                                                            @if($unit->leasing_agreement_id == null)
+                                                                Vacant
+                                                            @else Occupied
+                                                            @endif
+                                                        </label>
+                                                    </span>
+                                                    <span class="tooltip-content4 clearfix">
+                                                        <span class="tooltip-text2">
+                                                            @if($unit->leasing_agreement_id != null)
+                                                                Tenant:
+                                                                    <a href="{{ route('tenant.show', $unit->leasing_agreement->tenant->id) }}" class="text-primary" data-toggle="tooltip" data-placement="right" data-trigger="hover" title="" data-original-title="View Tenant">
+                                                                        {{ $unit->leasing_agreement->tenant->user->fullname }}
+                                                                    </a>
+                                                                <br>
+                                                                Term:
+                                                                {{ date('M d, Y', strtotime($detail->term_start)) }} - {{ date('M d, Y', strtotime($detail->term_end)) }}
+                                                                <br>
+                                                                <a href="{{ route('lease.show', [$unit->property->id, $unit->leasing_agreement->id]) }}" class="text-primary">
+                                                                    View details <i class="icon feather icon-eye f-w-600 f-18 m-r-15 text-c-blue"></i>
+                                                                </a>
+                                                            @else
+                                                                Vacant Since:
+                                                                <a href="#">
+                                                                    {{ date('M d, Y', strtotime('2010-01-01')) }}
+                                                                </a>
+                                                            @endif
+                                                        </span>
                                                     </span>
                                                 </span>
-                                            </span>
-                                        </td>
-                                        <td style="font-size: 13px;">
-                                            <a href="{{ route('property.edit', $property->slug) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Edit">
-                                                <i class="icon feather icon-edit f-w-600 f-16 m-r-15 text-c-green"></i>
-                                            </a>
-                                            <a href="{{ route('property.destroy', $property->slug) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Delete">
-                                                <i class="feather icon-trash-2 f-w-600 f-16 text-c-red"></i>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                @endforeach
+                                            </td>
+                                            <td class="f-12">
+                                                @if($unit->leasing_agreement_id != null)
+                                                <a href="{{ route('lease.show', [$unit->property->id, $unit->leasing_agreement->id]) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="View Details">
+                                                    <i class="icon feather icon-eye f-w-600 f-18 m-r-15 text-c-blue"></i>
+                                                </a>
+                                                @endif
+                                                <a href="{{ route('property.edit', $property->slug) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Edit">
+                                                    <i class="icon feather icon-edit f-w-600 f-16 m-r-15 text-c-green"></i>
+                                                </a>
+                                                <a href="{{ route('property.destroy', $property->slug) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Delete">
+                                                    <i class="feather icon-trash-2 f-w-600 f-16 text-c-red"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    @endforeach
                                 </tbody>
-                                <tfoot>
-                                    <tr>
-                                        <th>Number</th>
-                                        <th>Type</th>
-                                        <th>Floor</th>
-                                        <th>Leasing Price</th>
-                                        <th>Status</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </tfoot>
                             </table>
                         </div>
                     @else

@@ -2,6 +2,7 @@
 
 @section('css-plugin')
     @include('includes.plugins.select-css')
+    @include('includes.plugins.fileupload-css')
 @endsection
 
 @section('breadcrumbs')
@@ -48,15 +49,29 @@
                                 </div>
                         </div>
                         <div class="form-group row">
-                            <label class="col-lg-2 col-md-2 col-sm-2 col-form-label">Amount</label>
-                                <div class="col-lg-10 col-md-10 col-sm-10">
+                            <label class="col-lg-2 col-md-2 col-sm-2 col-form-label">Amount Due</label>
+                                <div class="col-lg-4 col-md-10 col-sm-10">
                                     <div class="input-group">
                                         <span class="input-group-prepend">
-                                            <label class="input-group-text">{{ config('pms.ph_currency.sign') }}</label>
+                                            <label class="input-group-text">{{ config('pms.currency.sign') }}</label>
                                         </span>
-                                        <input type="number" class="form-control" name="amount" value="">
+                                        <input type="number" class="form-control" name="amount_due" value="">
                                     </div>
-                                    @error('amount')
+                                    @error('amount_due')
+                                        <span class="messages">
+                                            <p class="text-danger error">{{ $message }}</p>
+                                        </span>
+                                    @enderror
+                                </div>
+                            <label class="col-lg-2 col-md-2 col-sm-2 col-form-label">Amount Paid</label>
+                                <div class="col-lg-4 col-md-10 col-sm-10">
+                                    <div class="input-group">
+                                        <span class="input-group-prepend">
+                                            <label class="input-group-text">{{ config('pms.currency.sign') }}</label>
+                                        </span>
+                                        <input type="number" class="form-control" name="amount_paid" value="">
+                                    </div>
+                                    @error('amount_paid')
                                         <span class="messages">
                                             <p class="text-danger error">{{ $message }}</p>
                                         </span>
@@ -104,10 +119,23 @@
                     </form>
                 </div>
             </div>
+            {{-- <div class="card">
+                <div class="card-block">
+                <div action="#" class="dropzone">
+                <div class="fallback">
+                <input name="file" type="file" multiple />
+                </div>
+                </div>
+                <div class="text-center m-t-20">
+                <button class="btn btn-primary">Upload Now</button>
+                </div>
+                </div>
+            </div> --}}
         </div>
     </div>
 @endsection
 
 @section('js-plugin')
     @include('includes.plugins.select-js')
+    @include('includes.plugins.fileupload-js')
 @endsection

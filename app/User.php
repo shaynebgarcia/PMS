@@ -18,7 +18,7 @@ class User extends Authenticatable
     protected $fillable = [
         'lastname', 'firstname', 'middlename',
         'username', 'email', 'password',
-        'role_id', 'slug'
+        'role_id', 'slug', 'access_property_id'
     ];
 
     /**
@@ -46,7 +46,11 @@ class User extends Authenticatable
 
     public function getFullNamewMAttribute()
     {
-        return "{$this->lastname}, {$this->firstname} {$this->middlename}";
+        if ($this->middlename == null) {
+            return "{$this->lastname}, {$this->firstname}";
+        } else {
+            return "{$this->lastname}, {$this->firstname} {$this->middlename }";
+        }
     }
 
     public function getFullNameAttribute()

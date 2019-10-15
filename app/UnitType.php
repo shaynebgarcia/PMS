@@ -18,15 +18,16 @@ class UnitType extends Model
     	return $this->hasMany(Unit::class);
     }
 
-    public function getLeasePricePesoAttribute()
+    public function getLeasePriceCurrencySignAttribute()
     {
-        $num_format = "₱".number_format($this->lease_price, 2);
+        $num_format = config('pms.currency.sign').number_format($this->lease_price, 2);
         return $num_format;
     }
 
-	// public function getLeasePriceAttribute($lease_price)
-	// {
-	//     return $this->attributes['lease_price'] = sprintf('₱%s', number_format($lease_price, 2));
-	// }
+    public function getLeasePriceCurrencyCodeAttribute()
+    {
+        $num_format = number_format($this->lease_price, 2)." ".config('pms.currency.code');
+        return $num_format;
+    }
 }
 

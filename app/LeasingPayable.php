@@ -20,9 +20,15 @@ class LeasingPayable extends Model
     {
         return $this->belongsTo(PaymentType::class, 'payment_type_id');
     }
-    public function getAmountPesoAttribute()
+
+    public function getAmountCurrencySignAttribute()
     {
-        $num_format = "₱".number_format($this->amount, 2);
+        $num_format = config('pms.currency.sign').number_format($this->amount, 2);
+        return $num_format;
+    }
+    public function getAmountCurrencyCodeAttribute()
+    {
+        $num_format = number_format($this->amount, 2)." ".config('pms.currency.code');
         return $num_format;
     }
 }

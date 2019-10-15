@@ -20,7 +20,7 @@ class AdminTableSeeder extends Seeder
     		'email' => 'itsupport@bitversecorp.com',
     		'password' => bcrypt('pass'),
     		'remember_token' => Str::random(60),
-        'slug' => Str::slug('Support Bitverse 1', '-'),
+        'slug' => 'admin',
         'created_at' => Carbon\Carbon::now(),
         'updated_at' => Carbon\Carbon::now(),
     	]);

@@ -4,8 +4,13 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Property;
+use App\PropertyAccess;
 use App\Unit;
 use App\UnitType;
+use App\LeasingAgreement;
+use App\LeasingAgreementDetail;
+
+use Illuminate\Support\Arr;
 use Alert;
 
 class PropertyController extends Controller
@@ -15,10 +20,17 @@ class PropertyController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
     public function index()
     {
+        // $user = auth()->user();
+        // $property_access = PropertyAccess::where('user_id', $user->id)->get()->toArray();
+        // $property_id = Arr::pluck($property_access, 'property_id');
+        // $properties = Property::whereIn('id', $property_id)->get();
         $properties = Property::all();
-        return view('pages.property.index', compact('properties'));
+        $property_access = PropertyAccess::all();
+        $units = Unit::all();
+        return view('pages.property.index', compact('properties', 'property_access', 'units'));
     }
 
     /**
@@ -80,11 +92,15 @@ class PropertyController extends Controller
      * @param  \App\Property  $property
      * @return \Illuminate\Http\Response
      */
-    public function show($slug)
+    public function show($id)
     {
-        $property = Property::where('slug', $slug)->first();
+        $property = Property::findorFail($id);
+        // $property = Property::where('slug', $slug)->first();
+        $units = Unit::where('property_id', $property->id)->get();
+        $leases = LeasingAgreement::all();
+        $lease_details = LeasingAgreementDetail::all();
         $unit_types = UnitType::where('property_id', $property->id)->get();
-        return view('pages.property.show', compact('property', 'unit_types'));
+        return view('pages.property.show', compact('property', 'units', 'leases', 'lease_details', 'unit_types'));
     }
 
     /**
@@ -93,9 +109,10 @@ class PropertyController extends Controller
      * @param  \App\Property  $property
      * @return \Illuminate\Http\Response
      */
-    public function edit($slug)
+    public function edit($id)
     {
-        $property = Property::where('slug', $slug)->first();
+        $property = Property::findorFail($id);
+        // $property = Property::where('slug', $slug)->first();
         return view('pages.property.edit', compact('property'));
     }
 
@@ -106,7 +123,7 @@ class PropertyController extends Controller
      * @param  \App\Property  $property
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $slug)
+    public function update(Request $request, $id)
     {
         $request->validate([
             'name' => 'max:255',
@@ -118,7 +135,8 @@ class PropertyController extends Controller
             'date_start_leasing' => 'date',
         ]);
 
-        $property = Property::where('slug', $slug)->first();
+        $property = Property::findorFail($id);
+        // $property = Property::where('slug', $slug)->first();
         $update = $property->update([
             'name' => $request->name,
             'address' => $request->address,
@@ -146,8 +164,9 @@ class PropertyController extends Controller
      * @param  \App\Property  $property
      * @return \Illuminate\Http\Response
      */
-    public function destroy($slug)
+    public function destroy($id)
     {
-        //
+        $property = Property::findorFail($id);
+        // $property = Property::where('slug', $slug)->first();
     }
 }

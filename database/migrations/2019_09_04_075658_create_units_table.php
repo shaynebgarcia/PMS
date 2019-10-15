@@ -19,7 +19,7 @@ class CreateUnitsTable extends Migration
             $table->integer('unit_type_id');
             $table->string('floor_no');
             $table->string('number');
-            $table->string('status')->default('Vacant');
+            $table->integer('leasing_agreement_id')->nullable()->default(null);
 
             $table->string('slug')->unique();
             $table->timestamps();

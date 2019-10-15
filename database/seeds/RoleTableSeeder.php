@@ -13,6 +13,9 @@ class RoleTableSeeder extends Seeder
     {
 		$roles = [
             [ 'title' => 'Administrator'],
+            [ 'title' => 'Level 3 Employee'],
+            [ 'title' => 'Level 2 Employee'],
+            [ 'title' => 'Level 1 Employee'],
             [ 'title' => 'Employee'],
             [ 'title' => 'Supplier'],
             [ 'title' => 'Pre-Tenant'],

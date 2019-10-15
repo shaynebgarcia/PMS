@@ -1,0 +1,2 @@
+<link href="{{ asset('laravel-admindek/files/assets/pages/jquery.filer/css/jquery.filer.css') }}" type="text/css" rel="stylesheet" />
+<link href="{{ asset('laravel-admindek/files/assets/pages/jquery.filer/css/themes/jquery.filer-dragdropbox-theme.css') }}" type="text/css" rel="stylesheet" />

@@ -1,9 +1,12 @@
 @extends('layouts.admindek')
 
 @section('breadcrumbs')
-    <?php   $breadcrumb_title = 'Update '. $property->name;
-            $breadcrumb_subtitle = 'lorem ipsum dolor sit amet, consectetur adipisicing elit'; ?>
-    {{ Breadcrumbs::render('property-show', $property) }}
+    @php
+        $breadcrumb_icon = config('pms.breadcrumbs.property.icon');
+        $breadcrumb_title = config('pms.breadcrumbs.property.property-edit.title') .$property->name;
+        $breadcrumb_subtitle = config('pms.breadcrumbs.property.property-edit.subtitle');
+    @endphp
+    {{ Breadcrumbs::render('property-edit', $property) }}
 @endsection
 
 @section('content')

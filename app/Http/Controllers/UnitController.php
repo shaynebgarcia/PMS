@@ -29,9 +29,10 @@ class UnitController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create($property_slug)
+    public function create($id)
     {
-        $property = Property::where('slug', $property_slug)->first();
+        $property = Property::findorFail($id);
+        // $property = Property::where('slug', $property_slug)->first();
         $unit_types = UnitType::where('property_id', $property->id)->get();
 
         if (count($unit_types) < 0) {
@@ -58,10 +59,11 @@ class UnitController extends Controller
      * @param  \App\Unit  $unit
      * @return \Illuminate\Http\Response
      */
-    public function show($property_slug, $slug)
+    public function show($id)
     {
-        $property = Property::where('slug', $property_slug)->first();
-        $unit = Unit::where('slug', $slug)->first();
+        $property = Property::findorFail($id);
+        // $property = Property::where('slug', $property_slug)->first();
+        $unit = Unit::where('property_id', $id)->first();
         
         return view('pages.unit.show', compact('property', 'unit'));
     }
@@ -72,7 +74,7 @@ class UnitController extends Controller
      * @param  \App\Unit  $unit
      * @return \Illuminate\Http\Response
      */
-    public function edit($property_slug, $slug)
+    public function edit($id, $slug)
     {
         //
     }
@@ -84,7 +86,7 @@ class UnitController extends Controller
      * @param  \App\Unit  $unit
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $property_slug, $slug)
+    public function update(Request $request, $id, $slug)
     {
         //
     }
@@ -95,7 +97,7 @@ class UnitController extends Controller
      * @param  \App\Unit  $unit
      * @return \Illuminate\Http\Response
      */
-    public function destroy($property_slug, $slug)
+    public function destroy($id, $slug)
     {
         //
     }

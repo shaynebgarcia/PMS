@@ -5,8 +5,11 @@
 @endsection
 
 @section('breadcrumbs')
-    <?php   $breadcrumb_title = 'Users';
-            $breadcrumb_subtitle = 'lorem ipsum dolor sit amet, consectetur adipisicing elit'; ?>
+    @php
+        $breadcrumb_icon = config('pms.breadcrumbs.user.icon');
+        $breadcrumb_title = config('pms.breadcrumbs.user.user-index.title');
+        $breadcrumb_subtitle = config('pms.breadcrumbs.user.user-index.subtitle');
+    @endphp
     {{ Breadcrumbs::render('user') }}
 @endsection
 
@@ -32,7 +35,7 @@
                                 <th>Role</th>
                                 <th>Username</th>
                                 <th>Email</th>
-                                <th>Contact</th>
+                                <th>Assigned Property</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -40,7 +43,7 @@
                             @foreach($users as $user)
                                 <tr>
                                     <td style="font-size: 13px; font-weight: bold">
-                                        <a href="{{ route('user.show', $user->slug) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="View Details">
+                                        <a href="{{ route('user.show', $user->id) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="View Details">
                                             {{ $user->fullnamewm }}
                                         </a>
                                     </td>
@@ -54,13 +57,20 @@
                                         {{ $user->email }}
                                     </td>
                                     <td style="font-size: 13px;">
-                                        {{ $user->contact }}
+                                        @if(count($access->where('user_id', $user->id)) > 0)
+                                            @foreach($access->where('user_id', $user->id) as $has_access)
+                                                {{ $has_access->property->name }} </br>
+                                            @endforeach
+                                        @else
+                                            No Assigned
+                                        @endif
+
                                     </td>
                                     <td style="font-size: 13px;">
-                                        <a href="#!" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Edit">
+                                        <a href="{{ route('user.edit', $user->id) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Edit">
                                             <i class="icon feather icon-edit f-w-600 f-16 m-r-15 text-c-green"></i>
                                         </a>
-                                        <a href="#!" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Delete">
+                                        <a href="{{ route('user.destroy', $user->id) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Delete">
                                             <i class="feather icon-trash-2 f-w-600 f-16 text-c-red"></i>
                                         </a>
                                     </td>

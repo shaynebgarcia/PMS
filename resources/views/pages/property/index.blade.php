@@ -5,8 +5,11 @@
 @endsection
 
 @section('breadcrumbs')
-    <?php   $breadcrumb_title = 'Properties';
-            $breadcrumb_subtitle = 'lorem ipsum dolor sit amet, consectetur adipisicing elit'; ?>
+    @php
+        $breadcrumb_icon = config('pms.breadcrumbs.property.icon');
+        $breadcrumb_title = config('pms.breadcrumbs.property.property-index.title');
+        $breadcrumb_subtitle = config('pms.breadcrumbs.property.property-index.subtitle');
+    @endphp
     {{ Breadcrumbs::render('property') }}
 @endsection
 
@@ -23,6 +26,9 @@
             </div>
         </div>
         <div class="card-block">
+            @php
+                // echo print_r($values);
+            @endphp
             @if(count($properties) > 0)
                 <div>
                     <table id="order-table" class="table table-bordered table-responsive">
@@ -31,44 +37,50 @@
                                 <th>Name</th>
                                 <th>Address</th>
                                 <th>Contact</th>
-                                <th>Floor</th>
-                                <th>Unit</th>
+                                <th>Floors</th>
+                                <th>Units</th>
+                                <th>Vacant/Occupied</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                        @foreach($properties as $property)
-                            <tr>
-                                <td style="font-size: 13px; font-weight: bold">
-                                    <a href="{{ route('property.show', $property->slug) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="View Details">
+                            @foreach($properties as $property)
+                                <tr>
+                                    <td style="font-size: 13px; font-weight: bold">
+                                        @php
+                                            if (($property_access->where('property_id', $property->id)->where('user_id', auth()->user()->id)->count()) > 0) {
+                                                $color = 'btn-success';
+                                                $icon = 'fa-check';
+                                                $title = 'You can manage this property';
+                                            } else {
+                                                $color = 'btn-danger';
+                                                $icon = 'fa-ban';
+                                                $title = 'You do not have access to manage this property';
+                                            }
+                                        @endphp
+                                        <button class="btn waves-effect waves-light {{ $color }} btn-icon" style="height: 25px;width: 25px; padding: 0;line-height: 0;padding-left: 4px;" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="{{ $title }}">
+                                            <i class="fa {{ $icon }} fa-sm" style="color: white;"></i>
+                                        </button>
+                                        <a href="{{ route('property.show', $property->id) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="View Details">
                                             {{ $property->name }}
                                         </a>
                                     </td>
-                                <td style="font-size: 13px;">{{ $property->address }}</td>
-                                <td style="font-size: 13px;">{{ $property->contact }}</td>
-                                <td style="font-size: 13px;">{{ $property->floor_total }}</td>
-                                <td style="font-size: 13px;">{{ $property->unit_total }}</td>
-                                <td style="font-size: 13px;">
-                                    <a href="{{ route('property.edit', $property->slug) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Edit">
-                                        <i class="icon feather icon-edit f-w-600 f-16 m-r-15 text-c-green"></i>
-                                    </a>
-                                    <a href="{{ route('property.destroy', $property->slug) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Delete">
-                                        <i class="feather icon-trash-2 f-w-600 f-16 text-c-red"></i>
-                                    </a>
-                                </td>
-                            </tr>
-                        @endforeach
+                                    <td style="font-size: 13px;">{{ $property->address }}</td>
+                                    <td style="font-size: 13px;">{{ $property->contact }}</td>
+                                    <td style="font-size: 13px;">{{ $property->floor_total }}</td>
+                                    <td style="font-size: 13px;">{{ $property->unit_total }}</td>
+                                    <td style="font-size: 13px;">{{ $property->unit->where('status', 'Vacant')->count() }}/{{ $property->unit->where('status', 'Occupied')->count() }}</td>
+                                    <td style="font-size: 13px;">
+                                        <a href="{{ route('property.edit', $property->slug) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Edit">
+                                            <i class="icon feather icon-edit f-w-600 f-16 m-r-15 text-c-green"></i>
+                                        </a>
+                                        <a href="{{ route('property.destroy', $property->id) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Delete">
+                                            <i class="feather icon-trash-2 f-w-600 f-16 text-c-red"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            @endforeach
                         </tbody>
-                        <tfoot>
-                            <tr>
-                                <th>Name</th>
-                                <th>Address</th>
-                                <th>Contact</th>
-                                <th>Floor</th>
-                                <th>Unit</th>
-                                <th>Action</th>
-                            </tr>
-                        </tfoot>
                     </table>
                 </div>
             @else

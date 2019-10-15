@@ -9,7 +9,7 @@ class Unit extends Model
     protected $fillable = [
         'property_id', 'unit_type_id',
         'number', 'floor_no',
-        'status'
+        'leasing_agreement_id'
     ];
 
     // Relationships
@@ -23,9 +23,9 @@ class Unit extends Model
     	return $this->belongsTo(UnitType::class, 'unit_type_id');
     }
 
-    public function agreement()
+    public function leasing_agreement()
     {
-    	return $this->belongsTo(LeasingAgreement::class);
+    	return $this->belongsTo(LeasingAgreement::class, 'leasing_agreement_id');
     }
 
 	public function getFloorNoAttribute($floor_no)

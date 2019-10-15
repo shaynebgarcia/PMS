@@ -1,8 +1,11 @@
 @extends('layouts.admindek')
 
 @section('breadcrumbs')
-    <?php   $breadcrumb_title = $user->fullnamewm;
-            $breadcrumb_subtitle = ucfirst($user->role->title); ?>
+    @php
+        $breadcrumb_icon = config('pms.breadcrumbs.user.icon');
+        $breadcrumb_title = $user->fullnamewm; 
+		$breadcrumb_subtitle = config('pms.breadcrumbs.user.user-show.subtitle');
+    @endphp
     {{ Breadcrumbs::render('user-show', $user) }}
 @endsection
 

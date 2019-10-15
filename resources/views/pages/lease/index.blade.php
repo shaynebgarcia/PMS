@@ -5,103 +5,139 @@
 @endsection
 
 @section('breadcrumbs')
-    <?php   $breadcrumb_title = 'Leasing Agreements';
-            $breadcrumb_subtitle = 'lorem ipsum dolor sit amet, consectetur adipisicing elit'; ?>
+    @php
+        $breadcrumb_icon = config('pms.breadcrumbs.lease.icon');
+        $breadcrumb_title = config('pms.breadcrumbs.lease.lease-index.title');
+        $breadcrumb_subtitle = config('pms.breadcrumbs.lease.lease-index.subtitle');
+    @endphp
     {{ Breadcrumbs::render('lease') }}
 @endsection
 
 @section('content')
     <div class="card">
         <div class="card-header">
-            <h5>Leasing Agreements</h5>
+            <div class="card-header-left">
+                <h5>Leasing Agreements</h5>
+            </div>
             <div class="card-header-right">
-            <a href="{{ route('lease.create') }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Add Property">
-                <button class="btn waves-effect waves-light btn-success btn-icon" style="height: 30px;width: 30px; padding: 0;line-height: 0;padding-left: 2px;">
-                    <i class="fa fa-plus fa-sm" style="color: white;"></i>
-                </button>
-            </a>
+                <a href="" title="">
+                    <button class="btn btn-sm btn-inverse waves-effect waves-light m-b-10">Create New Agreement</button>
+                </a>
             </div>
         </div>
         <div class="card-block">
+            
             @if(count($leases) > 0)
                 <div>
-                    <table id="order-table" class="table table-bordered table-responsive">
+                    <table id="order-table" class="table {{-- table-bordered --}} table-responsive">
                         <thead>
                             <tr>
-                                {{-- <th>Agreement ID</th> --}}
-                                <th>Property</th>
-                                <th>Unit</th>
-                                <th>Tenant</th>
-                                <th>Rent</th>
-                                <th>Move-in Date</th>
-                                <th>Reservation Fee</th>
-                                <th>Full Payment</th>
-                                <th>Utility Deposit</th>
-                                <th>Date of Contract</th>
-                                <th>Status</th>
-                                <th>Action</th>
+                                <th class="f-14"></th>
+                                <th class="f-14">Property</th>
+                                <th class="f-14">Unit</th>
+                                <th class="f-14">Tenant</th>
+                                <th class="f-14" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Most recent date of contract">Date of Contract</th>
+                                <th class="f-14">First Date</th>
+                                <th class="f-14">Rent</th>
+                                <th class="f-14">Payments</th>
+                                <th class="f-14">Subscriptions</th>
+                                {{-- <th class="f-14">Reservation Fee</th>
+                                <th class="f-14">Full Payment</th>
+                                <th class="f-14">Utility Deposit</th> --}}
+                                <th class="f-14">Status</th>
+                                <th class="f-14">Action</th>
                             </tr>
                         </thead>
                         <tbody>
                         @foreach($leases as $lease)
                             <tr>
-                                {{-- <td style="font-size: 13px; font-weight: bold">
-                                    <a href="{{ route('lease.show', $lease->id) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="View Details">
-                                            {{ $lease->id }}
+                                <td class="f-12">
+                                    @php
+                                        if (($property_access->where('property_id', $lease->unit->property->id)->where('user_id', auth()->user()->id)->count()) > 0) {
+                                            $color = 'text-c-blue';
+                                            $icon = 'icon-eye';
+                                            $title = 'View details';
+                                        } else {
+                                            $color = 'text-c-yellow';
+                                            $icon = 'icon-eye-off';
+                                            $title = 'You do not have permission to manage/view this agreement';
+                                        }
+                                    @endphp
+                                    <a href="{{ route('lease.show', [$lease->unit->property->id, $lease->id]) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="{{ $title }}">
+                                        <i class="icon feather {{ $icon }} f-w-600 f-18 m-r-15 {{ $color }}"></i>
                                     </a>
-                                </td> --}}
-                                <td style="font-size: 13px; font-weight: bold">
-                                    <a href="{{ route('property.show', $lease->unit->property->slug) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="View Details">
+                                </td>
+                                <td class="f-12 f-w-700">
+                                    <a href="{{ route('property.show', $lease->unit->property->id) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="View Property Details">
                                             {{ $lease->unit->property->name }}
                                     </a>
                                 </td>
-                                <td style="font-size: 13px; font-weight: bold">
-                                    <a href="{{ route('unit.show', [$lease->unit->property->slug, $lease->unit->slug]) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="View Details">
+                                <td class="f-12 f-w-700">
+                                    <a href="{{ route('unit.show', [$lease->unit->property->slug, $lease->unit->slug]) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="View Unit Details">
                                             {{ $lease->unit->number }}
                                     </a>
                                 </td>
-                                <td style="font-size: 13px;">
-                                    <a href="{{ route('tenant.show', $lease->tenant->id) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="View Details">
+                                <td class="f-12 f-w-700">
+                                    <a href="{{ route('tenant.show', $lease->tenant->id) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="View Tenant Details">
                                             {{ $lease->tenant->user->fullnamewm }}
                                     </a>
                                 </td>
-                                <td style="font-size: 13px;">{{ $lease->agreed_lease_price_peso }}</td>
-                                <td style="font-size: 13px;">{{ date('M d, Y', strtotime($lease->move_in)) }}</td>
-                                <td style="font-size: 13px;">{{ $lease->agreed_lease_price_peso }}</td>
-                                <td style="font-size: 13px;">{{ $lease->agreed_lease_price_peso }}</td>
-                                <td style="font-size: 13px;">{{ $lease->agreed_lease_price_peso }}</td>
-                                <td style="font-size: 13px;">{{ date('M d, Y', strtotime($lease->date_of_contract)) }}</td>
-                                <td style="font-size: 13px;"><label class="label @if($lease->status == 'Active') label-success @elseif($lease->status == 'Pre-terminated') label-warning @else label-danger @endif">{{ $lease->status }}</label></td>
-                                <td style="font-size: 13px;">
-                                    <a href="{{ route('lease.show', $lease->id) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="View Details">
-                                        <i class="icon feather icon-eye f-w-600 f-16 m-r-15 text-c-blue"></i>
-                                    </a>
-                                    <button type="button" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Edit" id="edit-item" data-item-id="{{ $lease->id}}">
+                                @php
+                                    $detail = $details->where('leasing_agreement_id', $lease->id);
+                                @endphp
+                                <td class="f-12">
+                                    {{ date('M d, Y', strtotime($detail->last()->term_start)) }}
+                                    <label class="badge badge-primary m-l-5" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Times of renewal">
+                                        {{ count($detail) }}
+                                    </label>
+                                </td>
+                                <td class="f-12">
+                                    {{ date('M d, Y', strtotime($detail->last()->first_day)) }}
+                                </td>
+                                <td class="f-12">
+                                    {{ $detail->last()->agreed_lease_price_currency_sign }}
+                                </td>
+                                <td class="f-12">
+                                    
+                                </td>
+                                <td class="f-12">
+                                    
+                                </td>
+                                <td class="f-12">
+                                    @php
+                                        if ($detail->last()->status == 'Active') {
+                                            $color = 'bg-success';
+                                        } elseif($detail->last()->status == 'Pre-Terminated') {
+                                            $color = 'bg-warning';
+                                        } elseif($detail->last()->status == 'Terminated') {
+                                            $color = 'bg-danger';
+                                        }
+                                    @endphp
+                                    <label class="badge badge-lg {{ $color }}">{{ $detail->last()->status }}</label>
+                                </td>
+                                <td class="f-12">
+                                    <div class="btn-group">
+                                        <i class="icofont icofont-navigation-menu waves-effect waves-light" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"></i>
+                                        <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(4px, 17px, 0px); top: 0px; left: 0px; will-change: transform;">
+                                            <a class="dropdown-item waves-effect waves-light" href="#">Edit</a>
+                                            <div class="dropdown-divider"></div>
+                                            <a class="dropdown-item waves-effect waves-light" href="#">Delete</a>
+                                            <div class="dropdown-divider"></div>
+                                            <a class="dropdown-item waves-effect waves-light" href="#">Renew Agreement</a>
+                                            <div class="dropdown-divider"></div>
+                                            <a class="dropdown-item waves-effect waves-light" href="#">Separated link</a>
+                                        </div>
+                                    </div>
+                                    <a href="#" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Edit" id="edit-item" data-item-id="{{ $lease->id}}">
                                         <i class="icon feather icon-edit f-w-600 f-16 m-r-15 text-c-green"></i>
-                                    </button>
-                                    <a href="{{ route('lease.destroy', $lease->id) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Delete">
+                                    </a>
+                                    <a href="{{ route('lease.destroy', [$lease->unit->property->id, $lease->id]) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Delete">
                                         <i class="feather icon-trash-2 f-w-600 f-16 text-c-red"></i>
                                     </a>
                                 </td>
                             </tr>
                         @endforeach
                         </tbody>
-                        <tfoot>
-                            <tr>
-                                {{-- <th>Agreement ID</th> --}}
-                                <th>Property</th>
-                                <th>Unit</th>
-                                <th>Tenant</th>
-                                <th>Rent</th>
-                                <th>Move-in Date</th>
-                                <th>Reservation Fee</th>
-                                <th>Full Payment</th>
-                                <th>Utility Deposit</th>
-                                <th>Date of Contract</th>
-                                <th>Status</th>
-                                <th>Action</th>
-                            </tr>
-                        </tfoot>
                     </table>
                 </div>
             @else
@@ -112,80 +148,7 @@
     </div>
 @endsection
 
-@section('modals')
-    <script>
-        $(document).ready(function() {
-          /**
-           * for showing edit item popup
-           */
-
-          $(document).on('click', "#edit-item", function() {
-            $(this).addClass('edit-item-trigger-clicked'); //useful for identifying which trigger was clicked and consequently grab data from the correct row and not the wrong one.
-
-            var options = {
-              'backdrop': 'static'
-            };
-            $('#edit-modal').modal(options)
-          })
-
-          // on modal show
-          $('#edit-modal').on('show.bs.modal', function() {
-            var el = $(".edit-item-trigger-clicked"); // See how its usefull right here? 
-            var row = el.closest(".data-row");
-
-            // get the data
-            var id = el.data('item-id');
-            var name = row.children(".name").text();
-            var description = row.children(".description").text();
-
-            // fill the data in the input fields
-            $("#modal-input-id").val(id);
-            $("#modal-input-name").val(name);
-            $("#modal-input-description").val(description);
-
-          })
-
-          // on modal hide
-          $('#edit-modal').on('hide.bs.modal', function() {
-            $('.edit-item-trigger-clicked').removeClass('edit-item-trigger-clicked')
-            $("#edit-form").trigger("reset");
-          })
-        })
-    </script>
-@endsection
-
 @section('js-plugin')
     @include('includes.plugins.datatable-js')
 @endsection
 
-<div class="modal fade" id="edit-modal" tabindex="-1" role="dialog" aria-labelledby="edit-modal-label" aria-hidden="true">
-  <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="edit-modal-label">Edit Data</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body" id="attachment-body-content">
-        <form id="edit-form" class="form-horizontal" method="POST" action="">
-              <div class="form-group">
-                <label class="col-form-label" for="modal-input-id">Id (just for reference not meant to be shown to the general public) </label>
-                <input type="text" name="modal-input-id" class="form-control" id="modal-input-id" required>
-              </div>
-              <div class="form-group">
-                <label class="col-form-label" for="modal-input-name">Name</label>
-                <input type="text" name="modal-input-name" class="form-control" id="modal-input-name" required autofocus>
-              </div>
-              <div class="form-group">
-                <label class="col-form-label" for="modal-input-description">Email</label>
-                <input type="text" name="modal-input-description" class="form-control" id="modal-input-description" required>
-              </div>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary waves-effect waves-light" data-dismiss="modal">Done</button>
-        <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
-</div>

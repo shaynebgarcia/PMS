@@ -13,6 +13,9 @@ use App\Tenant;
 use App\Property;
 use App\File;
 
+use Carbon\Carbon;
+use Alert;
+
 class PaymentController extends Controller
 {
     /**
@@ -51,7 +54,8 @@ class PaymentController extends Controller
         $request->validate([
             'tenant' => 'required',
             'payment_type' => 'required',
-            'amount' => 'required',
+            'amount_due' => 'required',
+            'amount_paid' => 'required',
             'reference_no' => 'nullable',
             'note' => 'nullable',
             'payment_file' => 'nullable',
@@ -62,7 +66,8 @@ class PaymentController extends Controller
                 // 'agreement_id' => $request->agreement_id,
                 'tenant_id' => $request->tenant,
                 'payment_type_id' => $request->payment_type,
-                'amount' => $request->amount,
+                'amount_due' => $request->amount_due,
+                'amount_paid' => $request->amount_paid,
                 'reference_no' => $request->reference_no,
                 'note' => $request->note,
                 'processed_by_user' => auth()->user()->id,
@@ -77,6 +82,14 @@ class PaymentController extends Controller
                                             ]);
                 $payment_stored->update([   'file_id' => $file_stored->id
                                         ]);
+            }
+
+            if (!$payment_stored) {
+                Alert::error('Encountered an error', 'Oops')->persistent('Close');
+                return redirect()->route('payment.create');
+            } else {
+                Alert::success('Payment creation complete', 'Success')->persistent('Close');
+                return redirect()->route('payment.index');
             }
     }
 

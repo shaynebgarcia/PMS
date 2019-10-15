@@ -1,9 +1,9 @@
 @extends('layouts.admindek')
 
 @section('breadcrumbs')
-    <?php   $breadcrumb_title = 'Home';
+    <?php   $breadcrumb_title = 'Dashboard';
             $breadcrumb_subtitle = 'lorem ipsum dolor sit amet, consectetur adipisicing elit'; ?>
-    {{ Breadcrumbs::render('home') }}
+    {{ Breadcrumbs::render('dashboard') }}
 @endsection
 
 @section('content')

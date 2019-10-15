@@ -17,6 +17,7 @@
   </head>
 
   <body class="hold-transition">
+
     {{-- Pre-loader --}}
     <div class="loader-bg">
       <div class="loader-bar"></div>
@@ -52,6 +53,8 @@
     </div>
     {{-- JS Scripts --}}
     @include('layouts.js')
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+      @include('sweet::alert')
       {{-- JS Plugin Scripts --}}
       @yield('modals')
       @yield('js-plugin')

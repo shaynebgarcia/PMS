@@ -16,7 +16,7 @@ class PropertyUnitTableSeeder extends Seeder
     public function run()
     {
       $faker = Faker::create();
-      for ($i = 1; $i < 11; $i++) {
+      for ($i = 1; $i < 5; $i++) {
         DB::table('properties')->insert([
             'name' => $faker->company,
             'address' => $faker->address,
@@ -48,19 +48,19 @@ class PropertyUnitTableSeeder extends Seeder
 
 
       $types = [
-        [ 'property_id' => 11,
+        [ 'property_id' => 5,
           'name' => 'Studio',
           'size' => '18sqm',
           'lease_price' =>  9580.00],
-        [ 'property_id' => 11,
+        [ 'property_id' => 5,
           'name' => 'Loft',
           'size' => '25sqm',
           'lease_price' => 11120.00],
-        [ 'property_id' => 11,
+        [ 'property_id' => 5,
           'name' => '2-BR',
           'size' => '30sqm',
           'lease_price' => 13780.00],
-        [ 'property_id' => 11,
+        [ 'property_id' => 5,
           'name' => 'Penthouse',
           'size' => '35sqm',
           'lease_price' => 15890.00],
@@ -76,7 +76,7 @@ class PropertyUnitTableSeeder extends Seeder
         $fa = $floor_array[array_rand($floor_array, 1)];
 
         DB::table('units')->insert([
-            'property_id' => 11,
+            'property_id' => 5,
             'unit_type_id' => rand(1, 4),
             'floor_no' => $floor_rand = rand(1, 6),
             'number' => $fa.'-0'.$floor_rand.'-'.$i,
