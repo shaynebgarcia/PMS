@@ -53,19 +53,11 @@
                             @endphp
                             <tr>
                                 <td class="f-12">
-                                    @php
-                                        if (($property_access->where('property_id', $lease->unit->property->id)->where('user_id', auth()->user()->id)->count()) > 0) {
-                                            $color = 'text-c-blue';
-                                            $icon = 'icon-eye';
-                                            $title = 'View History';
-                                        } else {
-                                            $color = 'text-c-yellow';
-                                            $icon = 'icon-eye-off';
-                                            $title = 'You do not have permission to manage/view this agreement';
-                                        }
-                                    @endphp
-                                    <a href="{{ route('lease.show', [$lease->unit->property->id, $lease->id]) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="{{ $title }}">
-                                        <i class="icon feather {{ $icon }} f-w-600 f-18 m-r-15 {{ $color }}"></i>
+                                    <a href="{{ route('lease.show', [$lease->unit->property->id, $lease->id]) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="View History">
+                                        <i class="icon feather icon-eye f-w-600 f-18 m-r-15 text-c-blue"></i>
+                                    </a>
+                                    <a href="{{ route('export.contract', [$lease->unit->property->id, $lease->id, $detail->last()->id]) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="View PDF">
+                                        <i class="icon feather icon-file f-w-600 f-18 m-r-15 text-c-blue"></i>
                                     </a>
                                     {{-- <a href="{{ route('billing.group.lease', [$lease->unit->property->id, $lease->id, $detail->last()->id]) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="{{ $title }}">
                                         <i class="icon feather {{ $icon }} f-w-600 f-18 m-r-15 {{ $color }}"></i>
@@ -179,7 +171,7 @@
                             <i class="icon-history pull-right"></i> <b>Contract</b>
                         </li>
                         <li class="waves-effect waves-light">
-                            <a href="">Generate Contract <span class="text-muted text-regular pull-right">Jan 2019</span></a><br>
+                            <a href="">Generate Contract (PDF)<span class="text-muted text-regular pull-right">Jan 2019</span></a><br>
                         </li>
                         <li class="waves-effect waves-light">
                             <a href="">Renew Contract <span class="text-muted text-regular pull-right">Jan 2019</span></a><br>

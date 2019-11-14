@@ -56,8 +56,8 @@
 	                        @foreach($lease_detail as $ld)
 	                            <tr>
                                 <td class="f-12">
-                                    <a href="#" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="View">
-                                        <i class="icon feather icon-eye f-w-600 f-18 m-r-15 text-c-blue"></i>
+                                    <a href="#" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="View PDF">
+                                        <i class="icon feather icon-file f-w-600 f-18 m-r-15 text-c-blue"></i>
                                     </a>
                                 </td>
                                 <td class="f-12">

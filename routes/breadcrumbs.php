@@ -121,7 +121,7 @@ Breadcrumbs::for('lease', function ($trail, $property) {
             $trail->push('Billing', route('billing.group.lease', [$property->id, $link->id, $lease->id]));
         });
         Breadcrumbs::for('lease-bill-display', function ($trail, $property, $link, $lease, $my) {
-            $trail->parent('lease-detail-show', $property, $lease);
+            $trail->parent('lease-detail-show', $property, $link, $lease);
             $trail->push('Generate Bill', route('billing.display', [$property->id, $link->id, $lease->id, $my]));
         });
         Breadcrumbs::for('lease-oincome', function ($trail, $property, $link, $lease) {

@@ -20,6 +20,11 @@ use App\User;
 
 use Carbon\Carbon;
 use Alert;
+use DateTime;
+use DateInterval;
+use DatePeriod;
+use DB;
+use PDF;
 
 class LeasingAgreementController extends Controller
 {
@@ -233,5 +238,13 @@ class LeasingAgreementController extends Controller
     public function destroy(LeasingAgreement $leasingAgreement)
     {
         //
+    }
+    public function exportPDF_contract($property_id, $link, $lease_id)
+    {
+        $lease = LeasingAgreementDetail::findorFail($lease_id);
+        $date_generated = date('F d, Y H:i A');
+        $PDF = PDF::loadView('reports.pdf_contract', ['lease'=>$lease, 'date_generated'=>$date_generated])->setPaper('portrait');
+        /*->setOptions(['defaultFont'=>'Helvetica']);*/
+        return $PDF->stream();
     }
 }

@@ -61,6 +61,8 @@ Route::middleware(['auth'])->group(function () {
 			Route::delete('/property/{property}/lease/{link}/{lease}', 'LeasingAgreementController@destroy')->name('lease.destroy');
 			Route::get('/property/{property}/lease/{link}/{lease}/renew', 'LeasingAgreementController@renewform')->name('lease.renewform');
 			Route::post('/property/{property}/lease/{link}/{lease}/renew', 'LeasingAgreementController@renew')->name('lease.renew');
+			Route::get('/property/{property}/lease/{link}/{lease}/export', 'LeasingAgreementController@exportPDF_contract')->name('export.contract');
+
 				// Leasing Bill Routes
 				Route::get('/property/{property}/billing', 'BillingController@index')->name('billing.index');
 				Route::get('/property/{property}/billing/{date}', 'BillingController@date')->name('billing.group.date');
