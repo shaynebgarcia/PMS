@@ -7,6 +7,7 @@ use App\Property;
 use App\PropertyAccess;
 use App\Unit;
 use App\UnitType;
+use App\Utility;
 use App\LeasingAgreement;
 use App\LeasingAgreementDetail;
 
@@ -23,10 +24,6 @@ class PropertyController extends Controller
 
     public function index()
     {
-        // $user = auth()->user();
-        // $property_access = PropertyAccess::where('user_id', $user->id)->get()->toArray();
-        // $property_id = Arr::pluck($property_access, 'property_id');
-        // $properties = Property::whereIn('id', $property_id)->get();
         $properties = Property::all();
         $property_access = PropertyAccess::all();
         $units = Unit::all();
@@ -100,7 +97,9 @@ class PropertyController extends Controller
         $leases = LeasingAgreement::all();
         $lease_details = LeasingAgreementDetail::all();
         $unit_types = UnitType::where('property_id', $property->id)->get();
-        return view('pages.property.show', compact('property', 'units', 'leases', 'lease_details', 'unit_types'));
+        $utility_electricity = Utility::where('type', 'Electricity')->get();
+        $utility_water = Utility::where('type', 'Water')->get();
+        return view('pages.property.show', compact('property', 'units', 'leases', 'lease_details', 'unit_types','utility_electricity', 'utility_water'));
     }
 
     /**

@@ -4,17 +4,19 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Traits\LogsActivity;
+use App\Traits\BillingTrait;
 
 class LeasingAgreement extends Model
 {
     use LogsActivity;
 
+    protected static $logAttributes = true;
+
     protected $fillable = [
-        'unit_id', 'tenant_id',
+        'property_id', 'unit_id', 'tenant_id',
+        'link_id',
         'agreement_status_id',
     ];
-
-    protected static $logAttributes = true;
 
     public function unit()
     {
@@ -30,10 +32,6 @@ class LeasingAgreement extends Model
     }
     public function details()
     {
-        return $this->belongsTo(LeasingAgreementDetail::class);
-    }
-    public function payments()
-    {
-        return $this->hasMany(Payment::class);
+        return $this->hasMany(LeasingAgreementDetail::class);
     }
 }

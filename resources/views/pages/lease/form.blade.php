@@ -7,15 +7,18 @@
 @endsection
 
 @section('breadcrumbs')
-    <?php   $breadcrumb_title = 'Leasing Form';
-            $breadcrumb_subtitle = 'lorem ipsum dolor sit amet, consectetur adipisicing elit'; ?>
-    {{ Breadcrumbs::render('lease-create') }}
+    @php
+        $breadcrumb_icon = config('pms.breadcrumbs.lease.icon');
+        $breadcrumb_title = config('pms.breadcrumbs.lease.lease-create.title');
+        $breadcrumb_subtitle = config('pms.breadcrumbs.lease.lease-create.subtitle');
+    @endphp
+    {{ Breadcrumbs::render('lease-create', $property) }}
 @endsection
 
 @section('content')
     <div class="row">
         <div class="col-lg-12 col-md-12 col-sm-12">
-        	<form id="lease-store" method="POST" action="{{ route('lease.store') }}">
+        	<form id="lease-store" method="POST" action="{{ route('lease.store', $property->id) }}">
 	        @CSRF
 	            <div class="card">
 	                <div class="card-header">
@@ -74,9 +77,21 @@
 
 	            <div class="card">
 	            	<div class="card-header">
-	                    <h5>Leasing Agreements</h5>
+	                    <h5>Agreement Details</h5>
 	                </div>
 	                <div class="card-block">
+	                	{{-- INPUT Agreement Unique Number --}}
+	                    <div class="form-group row">
+	                        <label class="col-lg-2 col-md-2 col-sm-2 col-form-label">Agreement NO</label>
+	                            <div class="col-lg-10 col-md-10 col-sm-10">
+	                            	<input type="text" class="form-control" name="agreement_no" value="">
+                                    @error('agreement_no')
+                                        <span class="messages">
+                                            <p class="text-danger error">{{ $message }}</p>
+                                        </span>
+                                    @enderror
+	                            </div>
+	                    </div>
 	                    {{-- INPUT Lease Price --}}
 	                    <div class="form-group row">
 	                        <label class="col-lg-2 col-md-2 col-sm-2 col-form-label">Rent (Monthly)</label>
@@ -192,9 +207,9 @@
 	                            <div class="col-lg-9 col-md-9 col-sm-9">
 	                                <select class="select2" name="reservation" style="width: 100%">
 	                                    <option value="#" disabled selected>Select Payment</option>
-	                                    @foreach($payments->where('payment_type_id', 1) as $payment)
+	                                    @foreach($payments->where('payment_type_id', 2) as $payment)
                                             <option value="{{ $payment->id }}">
-                                                {{ $payment->payment_type->name }} - {{ $payment->reference_no }} | {{ $payment->tenant->user->fullnamewm }} ({{ $payment->amount_currency_sign }})
+                                                {{ $payment->payment_type->name }} - {{ $payment->reference_no }} ({{ $payment->date_paid }}) | {{ $payment->tenant->user->fullnamewm }} ({{ $payment->amount_paid_currency_sign }})
                                             </option>
 	                                    @endforeach
 	                                </select>
@@ -207,11 +222,76 @@
 	                                </a>
 	                            </div>
 	                    </div>
+	                    <div class="form-group row">
+	                        <label class="col-lg-2 col-md-2 col-sm-2 col-form-label">Full Payment</label>
+	                            <div class="col-lg-9 col-md-9 col-sm-9">
+	                                <select class="select2" name="reservation" style="width: 100%">
+	                                    <option value="#" disabled selected>Select Payment</option>
+	                                    @foreach($payments->where('payment_type_id', 4) as $payment)
+                                            <option value="{{ $payment->id }}">
+                                                {{ $payment->payment_type->name }} - {{ $payment->reference_no }} ({{ $payment->date_paid }}) | {{ $payment->tenant->user->fullnamewm }} ({{ $payment->amount_paid_currency_sign }})
+                                            </option>
+	                                    @endforeach
+	                                </select>
+	                            </div>
+	                    </div>
 	                </div>
 	            </div>
+
+	            {{-- SELECT TABLE Deposits --}}
+	            {{-- <div class="card">
+	            	<div class="card-header">
+	                    <h5>Deposits</h5>
+	                </div>
+	                <div class="card-block">
+	                	<table class="table table-sm" id="deposittable">
+                             <thead>
+                                 <tr>
+                                    <th width="40%">Deposit Type</th>
+                                    <th width="20%">Amount</th>
+                                    <th width="10%">
+                                    	<a href="#" id="addrow_deposit">
+                                    		<button class="btn waves-effect waves-light btn-success btn-icon" style="height: 40px;width: 40px; padding: 0;line-height: 0;padding-left: 6px;">
+	                                        <i class="fa fa-plus"></i>
+	                                    	</button>
+                                    	</a>
+                                    </th>
+                                 </tr>
+                             </thead>
+                             <tbody>
+                               <tr>
+                                <td>
+                                  <select name="subscriptions[]" class="js-example-basic-single" style="width:100%;">
+                                    <option disabled selected value>Select Service(s)</option>
+                                      @foreach ($services->where('is_subscription', true) as $subscription)
+                                        <option value="{{ $subscription->id }}">{{ $subscription->name }} ({{ $subscription->monthly_price_length }})</option>
+                                      @endforeach
+                                  </select>
+                                </td>
+                                <td>
+                                	<div class="input-group">
+	                                    <span class="input-group-prepend">
+	                                        <label class="input-group-text">{{ config('pms.currency.sign') }}</label>
+	                                    </span>
+	                                    <input type="number" min="1" step="any" name="amounts[]" class="form-control" data-a-sign="{{ config('pms.currency.sign') }}">
+	                                </div>
+                                </td>
+                                <td>
+                                	<a href="#" id="btnDel">
+                                		<button class="btn waves-effect waves-light btn-danger btn-icon" style="height: 40px;width: 40px; padding: 0;line-height: 0;padding-left: 6px;">
+	                                        <i class="fa fa-minus"></i>
+	                                    </button>
+                                    </a>
+                                </td>
+                               </tr>
+                             </tbody>
+                          </table>
+	                </div>
+	            </div> --}}
+
                 <div class="form-group row">
                     <div class="col-lg-12 col-md-12 col-sm-12 text-right">
-                        <button type="submit" class="btn waves-effect waves-light btn-info btn-block btn-round">Submit</button>
+                        <button type="submit" class="btn waves-effect waves-light btn-primary btn-block btn-round">Submit</button>
                     </div>
                 </div>
             </form>
@@ -224,5 +304,6 @@
     @include('includes.plugins.formmasking-js')
     @include('includes.plugins.formpicker-js')
     @include('includes.custom-scripts.multi-subscriptions')
+    @include('includes.custom-scripts.multi-deposits')
 @endsection
 

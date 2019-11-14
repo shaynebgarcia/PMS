@@ -164,7 +164,7 @@
         </div>
         <div class="form-group row">
             <div class="col-lg-12 col-md-12 col-sm-12 text-right">
-                <button type="submit" class="btn waves-effect waves-light btn-info btn-block btn-round">Submit</button>
+                <button type="submit" class="btn waves-effect waves-light btn-primary btn-block btn-round">Submit</button>
             </div>
         </div>
     </form>

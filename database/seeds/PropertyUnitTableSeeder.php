@@ -4,6 +4,7 @@ use Illuminate\Database\Seeder;
 use App\Property as Property;
 use App\Unit as Unit;
 use App\UnitType as UnitType;
+use App\PropertyAccess as PropertyAccess;
 use Faker\Factory as Faker;
 
 class PropertyUnitTableSeeder extends Seeder
@@ -84,6 +85,14 @@ class PropertyUnitTableSeeder extends Seeder
             'slug' => Str::slug($fa.'-0'.$floor_rand.'-'.$i, '-'),
             'created_at' => $faker->dateTime($max = 'now'),
             'updated_at' => $faker->dateTime($max = 'now'),
+        ]);
+      }
+
+      $properties = Property::all();
+      foreach ($properties as $property) {
+        PropertyAccess::create([
+          'user_id' => 1,
+          'property_id' => $property->id,
         ]);
       }
 

@@ -1,8 +1,9 @@
 				<nav class="navbar header-navbar pcoded-header">
 					<div class="navbar-wrapper">
 						<div class="navbar-logo">
-							<a href="index.html">
-								<img class="img-fluid" src="{{ asset('admindek/files/assets/images/logo.png') }}" alt="Theme-Logo" />
+							<a href="{{ route('dashboard') }}">
+								<span style="font-size: x-large;letter-spacing: 17px;">PMS</span>
+								{{-- <img class="img-fluid" src="{{ asset('admindek/files/assets/images/logo.png') }}" alt="Theme-Logo" /> --}}
 							</a>
 							<a class="mobile-menu" id="mobile-collapse" href="#!">
 								<i class="feather icon-menu icon-toggle-right"></i>
@@ -13,7 +14,7 @@
 						</div>
 						<div class="navbar-container container-fluid">
 							<ul class="nav-left">
-								<li class="header-search">
+								{{-- <li class="header-search">
 									<div class="main-search morphsearch-search">
 										<div class="input-group">
 										<span class="input-group-prepend search-close">
@@ -25,10 +26,13 @@
 										</span>
 										</div>
 									</div>
+								</li> --}}
+								<li class="co-text" style="padding-left: 2rem;">
+									{{ config('pms.company.name') }}
 								</li>
 								<li>
 									<a href="#!" onclick="if (!window.__cfRLUnblockHandlers) return false; javascript:toggleFullScreen()" class="waves-effect waves-light" data-cf-modified-a03e1dd1be4b097e43526b44-="">
-									<i class="full-screen feather icon-maximize"></i>
+										<i class="full-screen feather icon-maximize"></i>
 									</a>
 								</li>
 							</ul>
@@ -103,11 +107,6 @@
 												<i class="feather icon-user"></i> Profile
 												</a>
 											</li>
-											{{-- <li>
-												<a href="email-inbox.html">
-												<i class="feather icon-mail"></i> My Messages
-												</a>
-											</li> --}}
 											<li>
 												<a href="auth-lock-screen.html">
 												<i class="feather icon-lock"></i> Lock Screen

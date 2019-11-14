@@ -15,7 +15,7 @@ class CreateUtilityBillsTable extends Migration
     {
         Schema::create('utility_bills', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->integer('leasing_agreement_detail_id');
+            $table->integer('leasing_agreement_details_id');
             $table->integer('utility_id');
             $table->string('to_bill');
             $table->double('amount', 8, 2);

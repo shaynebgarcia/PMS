@@ -16,6 +16,7 @@ class CreateLeasingAgreementDetailsTable extends Migration
         Schema::create('leasing_agreement_details', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->integer('leasing_agreement_id');
+            $table->string('agreement_no')->unique();
             $table->string('description')->default('Original');
             $table->double('agreed_lease_price', 8, 2)->nullable()->default(null);
             $table->date('term_start')->nullable()->default(null);

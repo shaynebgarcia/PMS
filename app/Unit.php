@@ -9,7 +9,8 @@ class Unit extends Model
     protected $fillable = [
         'property_id', 'unit_type_id',
         'number', 'floor_no',
-        'leasing_agreement_id'
+        'leasing_agreement_id',
+        'slug'
     ];
 
     // Relationships

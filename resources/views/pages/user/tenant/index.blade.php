@@ -5,8 +5,11 @@
 @endsection
 
 @section('breadcrumbs')
-    <?php   $breadcrumb_title = 'Tenants';
-            $breadcrumb_subtitle = 'lorem ipsum dolor sit amet, consectetur adipisicing elit'; ?>
+    @php
+        $breadcrumb_icon = config('pms.breadcrumbs.user.icon');
+        $breadcrumb_title = config('pms.breadcrumbs.user.tenant-index.title');
+        $breadcrumb_subtitle = config('pms.breadcrumbs.user.tenant-show.subtitle');
+    @endphp
     {{ Breadcrumbs::render('tenant') }}
 @endsection
 

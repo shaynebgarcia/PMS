@@ -2,6 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\LeasingAgreement;
+use App\LeasingAgreementDetail;
+use App\Billing;
+
+use Carbon\Carbon;
+use Alert;
+
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -23,6 +30,10 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('welcome');
+        $leasing_agreements = LeasingAgreement::all();
+        $leasing_agreement_details = LeasingAgreementDetail::all();
+        $billings = Billing::all();
+        $now = Carbon::now();
+        return view('welcome', compact('leasing_agreements', 'leasing_agreement_details', 'billings', 'now'));
     }
 }

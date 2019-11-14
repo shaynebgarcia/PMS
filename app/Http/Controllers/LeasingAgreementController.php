@@ -11,6 +11,7 @@ use App\Payment;
 use App\Billing;
 use App\Service;
 use App\ServiceType;
+use App\Utility;
 use App\Property;
 use App\Unit;
 use App\UnitType;
@@ -27,12 +28,21 @@ class LeasingAgreementController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index($property_id)
     {
-        $leases = LeasingAgreement::all();
+        $property = Property::findorFail($property_id);
+        $leases = LeasingAgreement::where('property_id', $property->id)->get();
+
         $details = LeasingAgreementDetail::all();
         $property_access = PropertyAccess::all();
-        return view('pages.lease.index', compact('leases', 'details', 'property_access'));
+        $payments = Payment::all();
+        $services = Service::all();
+        $utilities = Utility::all();
+        $billings = Billing::all();
+
+        $now = Carbon::now();
+
+        return view('pages.lease.index', compact('property', 'leases', 'details', 'property_access', 'payments', 'services', 'utilities', 'billings', 'now'));
     }
 
     /**
@@ -40,16 +50,18 @@ class LeasingAgreementController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create($property_id)
     {
+        $property = Property::findorFail($property_id);
         $properties = Property::where([
+                                        ['id', '=', $property_id],
                                         ['date_start_leasing', '<', Carbon::now()],
                                     ])->get();
         $units = Unit::where('leasing_agreement_id', null)->get();
         $tenants = Tenant::all();
-        $payments = Payment::all();
+        $payments = Payment::where('leasing_agreement_details_id', null)->where('billing_id', null)->get();
         $services = ServiceType::all();
-        return view('pages.lease.form', compact('properties', 'units', 'tenants', 'payments', 'services'));
+        return view('pages.lease.form', compact('property', 'properties', 'units', 'tenants', 'payments', 'services'));
     }
 
     /**
@@ -58,13 +70,14 @@ class LeasingAgreementController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request, $property_id)
     {
         $request->validate([
             'unit' => 'required',
             'tenant' => 'required',
+            'agreement_no' => 'required|unique:leasing_agreement_details',
             'monthly_due' => 'required|min:1|max:31',
-            'first_day' => 'required'
+            'first_day' => 'required',
             // 'date_of_contract' => 'date',
             // 'move_in' => 'date',
             // 'term_start' => 'date',
@@ -82,6 +95,7 @@ class LeasingAgreementController extends Controller
 
         // Creating agreement
         $agreement_stored = LeasingAgreement::create([
+            'property_id' => $property_id,
             'tenant_id' => $request->tenant,
             'unit_id' => $request->unit,
             'agreement_status_id' => 1,
@@ -89,9 +103,14 @@ class LeasingAgreementController extends Controller
 
         if ($agreement_stored) {
 
+            $agreement_stored->update([
+                'link_id' => $agreement_stored->unit_id.$agreement_stored->tenant_id.'-'.$agreement_stored->id,
+            ]);
+
             // Creating agreement details
             $agreement_details_stored = LeasingAgreementDetail::create([
                 'leasing_agreement_id' => $agreement_stored->id,
+                'agreement_no' => $request->agreement_no,
                 'agreed_lease_price' => $rental_price,
                 'term_start' => $request->term_start,
                 'term_end' => $request->term_end,
@@ -101,29 +120,30 @@ class LeasingAgreementController extends Controller
 
             if ($agreement_details_stored) {
                 // Check and creating services applied
-                if(count($request->subscriptions)>0) {
-                    foreach($request->subscriptions as $item =>$v) {
-                        // Check if service price was overriden
-                        if ($request->amounts[$item] == null) {
-                            $service = ServiceType::where('id', $request->subscriptions[$item])->first();
-                            $service_price = $service->amount;
-                        } else {
-                            $service_price = floatval($request->amounts[$item]);
+                if ($request->subscriptions != null) {
+                    if(count($request->subscriptions)>0) {
+                        foreach($request->subscriptions as $item =>$v) {
+                            // Check if service price was overriden
+                            if ($request->amounts[$item] == null) {
+                                $service = ServiceType::where('id', $request->subscriptions[$item])->first();
+                                $service_price = $service->amount;
+                            } else {
+                                $service_price = floatval($request->amounts[$item]);
+                            }
+                            // Create each service subscription
+                            $array = array (
+                                'leasing_agreement_details_id' => $agreement_details_stored->id,
+                                'service_type_id' => $request->subscriptions[$item],
+                                'agreed_amount' => $service_price,
+                            );
+                            $new_sub_id = Service::create($array)->id;
                         }
-                        // Create each service subscription
-                        $array = array (
-                            'leasing_agreement_details_id' => $agreement_details_stored->id,
-                            'service_type_id' => $request->subscriptions[$item],
-                            'agreed_amount' => $service_price,
-                        );
-                        $new_sub_id = Service::create($array)->id;
                     }
                 }
-
                 // Check and update if there is payments applied
                 if ($request->reservation != null) {
                     $payment = Payment::where('id', $request->reservation)->first();
-                    $payment_updated = $payment->update(['leasing_agreement_id' => $agreement_stored->id]);
+                    $payment_updated = $payment->update(['leasing_agreement_details_id' => $agreement_stored->id]);
                 }
             }
                 
@@ -140,8 +160,9 @@ class LeasingAgreementController extends Controller
                 'leasing_agreement_id' => $agreement_stored->id,
             ]);
 
+            $unit_stored = Unit::where('id', $agreement_stored->unit_id)->first();
             Alert::success('Leasing complete', 'Success')->persistent('Close');
-            return redirect()->route('lease.show', $agreement_stored->id);
+            return redirect()->route('lease.show', [$unit_stored->property_id,$agreement_stored->id]);
         } else {
             Alert::error('Encountered an error', 'Oops')->persistent('Close');
             return redirect()->route('lease.create');
@@ -149,23 +170,35 @@ class LeasingAgreementController extends Controller
 
     }
 
+    public function renewform($property_id, $link, $id)
+    {
+        $property = Property::findorFail($property_id);
+        $lease = LeasingAgreement::findorFail($link);
+        $payments = Payment::where('leasing_agreement_id', null)->where('billing_id', null)->get();
+        $services = ServiceType::all();
+        return view('pages.lease.renew', compact('property', 'lease', 'payments', 'services'));
+    }
+
+    public function renew(Request $request) {
+
+    }
     /**
      * Display the specified resource.
      *
      * @param  \App\LeasingAgreement  $leasingAgreement
      * @return \Illuminate\Http\Response
      */
-    public function show($property, $id)
+    public function show($property_id, $link)
     {
-        $property = Property::findorFail($property);
-        $lease = LeasingAgreement::findorFail($id);
-        $lease_detail = LeasingAgreementDetail::where('leasing_agreement_id', $lease->id)->latest()->first();
-        $payables = LeasingPayable::all();
+        $property = Property::findorFail($property_id);
+        $lease = LeasingAgreement::findorFail($link);
+        $lease_detail = LeasingAgreementDetail::where('leasing_agreement_id', $lease->id)->get();
         $payments = Payment::all();
+        $services = Service::all();
+        $utilities = Utility::all();
         $billings = Billing::all();
-        $now = Carbon::now();
-        $bill_month_now = $now->format('MY');
-        return view('pages.lease.show', compact('property', 'lease', 'lease_detail', 'payables', 'payments', 'billings', 'bill_month_now'));
+
+        return view('pages.lease.show', compact('property', 'lease', 'lease_detail', 'payments', 'services', 'utilities', 'billings'));
     }
 
     /**

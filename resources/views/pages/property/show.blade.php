@@ -135,27 +135,22 @@
                                 <i class="fa fa-plus fa-sm" style="color: white;"></i>
                             </button>
                         </a>
-                        {{-- <ul class="list-unstyled card-option">
-                            <li class="first-opt"><i class="feather icon-chevron-left open-card-option"></i></li>
-                            <li><i class="feather icon-maximize full-card"></i></li>
-                            <li><i class="feather icon-minus minimize-card"></i></li>
-                            <li><i class="feather icon-refresh-cw reload-card"></i></li>
-                            <li><i class="feather icon-trash close-card"></i></li> <li><i class="feather icon-chevron-left open-card-option"></i></li>
-                        </ul> --}}
                     </div>
                 </div>
                 <div class="card-block">
                     @if(count($property->unit) > 0)
-                        <div class="table-responsive">
-                            <table id="order-table" class="table table-bordered">
+                        <div>
+                            <table id="order-table" class="table table-bordered table-responsive">
                                 <thead>
                                     <tr>
-                                        <th>Number (Floor)</th>
-                                        <th>Type</th>
-                                        <th data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Default leasing price">Default</th>
-                                        <th data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Current leasing price">Current</th>
-                                        <th>Status</th>
-                                        <th>Action</th>
+                                        <th class="f-14">Number (Floor)</th>
+                                        <th class="f-14">Type</th>
+                                        <th class="f-14">Electricity Meter#</th>
+                                        <th class="f-14">Water Meter#</th>
+                                        <th class="f-14" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Default leasing price">Default</th>
+                                        <th class="f-14" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Current leasing price">Current</th>
+                                        <th class="f-14">Status</th>
+                                        <th class="f-14">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -163,24 +158,38 @@
                                         @php
                                             $detail = $lease_details->where('leasing_agreement_id', $unit->leasing_agreement_id)->first();
                                             if ($detail != null) {
-                                                $diff_percent = ($unit->unit_type->lease_price - $detail->agreed_lease_price) / (($unit->unit_type->lease_price + $detail->agreed_lease_price) / 2) * 100;
+                                                $diff_percent = ($detail->agreed_lease_price / $unit->unit_type->lease_price) * 100 - 100;
                                                 if ($detail->agreed_lease_price >= $unit->unit_type->lease_price) {
                                                     $color = 'text-c-green';
-                                                    $text = '+'.$diff_percent.'%';
+                                                    $text = '+'.round($diff_percent, 2).'%';
                                                 } else {
                                                     $color = 'text-c-red';
-                                                    $text = '-'.$diff_percent.'%';
+                                                    $text = round($diff_percent, 2).'%';
                                                 }
                                             }
                                         @endphp
                                         <tr>
                                             <td class="f-12 f-w-700">
-                                                <a href="{{ route('unit.show', [$property->id, $unit->slug]) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="View Details">
-                                                    {{ $unit->number }} ({{ $unit->floor_no }})
-                                                </a>
+                                                {{ $unit->number }} ({{ $unit->floor_no }})
                                             </td>
-                                            <td class="f-12">{{ $unit->unit_type->name }} ({{ $unit->unit_type->size }})</td>
-                                            <td class="f-12">{{ $unit->unit_type->lease_price_currency_sign }}</td>
+                                            <td class="f-12">
+                                                {{ $unit->unit_type->name }} ({{ $unit->unit_type->size }})
+                                            </td>
+                                            <td class="f-12">
+                                                @php
+                                                    $elec = $utility_electricity->where('unit_id', $unit->id)->first();
+                                                @endphp
+                                                {{ $elec->no ?? '---' }}
+                                            </td>
+                                            <td class="f-12">
+                                                @php
+                                                    $water = $utility_water->where('unit_id', $unit->id)->first();
+                                                @endphp
+                                                {{ $water->no ?? '---' }}
+                                            </td>
+                                            <td class="f-12">
+                                                {{ $unit->unit_type->lease_price_currency_sign }}
+                                            </td>
                                             <td class="f-12">
                                                 {{ $detail->agreed_lease_price_currency_sign ?? '---' }}
                                                 @if($detail != null)
@@ -209,13 +218,14 @@
                                                                 Term:
                                                                 {{ date('M d, Y', strtotime($detail->term_start)) }} - {{ date('M d, Y', strtotime($detail->term_end)) }}
                                                                 <br>
-                                                                <a href="{{ route('lease.show', [$unit->property->id, $unit->leasing_agreement->id]) }}" class="text-primary">
+                                                                {{-- <a href="{{ route('lease.show', [$unit->property->id, $unit->leasing_agreement->id]) }}" class="text-primary">
                                                                     View details <i class="icon feather icon-eye f-w-600 f-18 m-r-15 text-c-blue"></i>
-                                                                </a>
+                                                                </a> --}}
                                                             @else
                                                                 Vacant Since:
                                                                 <a href="#">
-                                                                    {{ date('M d, Y', strtotime('2010-01-01')) }}
+                                                                    ---
+                                                                    {{-- {{ date('M d, Y', strtotime('2010-01-01')) }} --}}
                                                                 </a>
                                                             @endif
                                                         </span>
@@ -224,14 +234,14 @@
                                             </td>
                                             <td class="f-12">
                                                 @if($unit->leasing_agreement_id != null)
-                                                <a href="{{ route('lease.show', [$unit->property->id, $unit->leasing_agreement->id]) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="View Details">
+                                                {{-- <a href="{{ route('lease.show', [$unit->property->id, $unit->leasing_agreement->id]) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="View Details">
                                                     <i class="icon feather icon-eye f-w-600 f-18 m-r-15 text-c-blue"></i>
-                                                </a>
+                                                </a> --}}
                                                 @endif
-                                                <a href="{{ route('property.edit', $property->slug) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Edit">
+                                                <a href="{{ route('unit.edit', [$property->id, $unit->id]) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Edit">
                                                     <i class="icon feather icon-edit f-w-600 f-16 m-r-15 text-c-green"></i>
                                                 </a>
-                                                <a href="{{ route('property.destroy', $property->slug) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Delete">
+                                                <a href="{{ route('unit.destroy', [$property->id, $unit->id]) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Delete">
                                                     <i class="feather icon-trash-2 f-w-600 f-16 text-c-red"></i>
                                                 </a>
                                             </td>

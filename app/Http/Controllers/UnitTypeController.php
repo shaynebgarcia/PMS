@@ -24,8 +24,9 @@ class UnitTypeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create(Property $property)
+    public function create($id)
     {
+        $property = Property::findorFail($id);
         return view('pages.unit-type.create', compact('property'));
     }
 
@@ -35,13 +36,15 @@ class UnitTypeController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request, Property $property)
+    public function store(Request $request, $id)
     {
         $request->validate([
             'name' => 'required|max:255',
             'size' => 'max:255',
             'lease_price' => 'required|max:255',
         ]);
+
+        $property = Property::findorFail($id);
 
         $store = UnitType::create([
             'property_id' => $property->id,
@@ -76,9 +79,11 @@ class UnitTypeController extends Controller
      * @param  \App\UnitType  $unitType
      * @return \Illuminate\Http\Response
      */
-    public function edit(Property $property, UnitType $unitType)
+    public function edit($id, UnitType $unitType)
     {
-        //
+        $property = Property::findorFail($id);
+
+        return view('pages.unit-type.edit', compact('property', 'unitType'));
     }
 
     /**
@@ -88,9 +93,29 @@ class UnitTypeController extends Controller
      * @param  \App\UnitType  $unitType
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Property $property, UnitType $unitType)
+    public function update(Request $request, $id, UnitType $unitType)
     {
-        //
+        $request->validate([
+            'name' => 'required|max:255',
+            'size' => 'max:255',
+            'lease_price' => 'required|max:255',
+        ]);
+
+        $property = Property::findorFail($id);
+
+        $update = $unitType->update([
+            'name' => $request->name,
+            'size' => $request->size,
+            'lease_price' => $request->lease_price,
+        ]);
+
+        if (!$update) {
+            Alert::error('Encountered an error', 'Oops')->persistent('Close');
+            return redirect()->back();
+        } else {
+            Alert::success('Updated unit type '.'"'.$unitType->name.'"','Success')->autoclose(2500);
+            return redirect()->route('property.show', $property->id);
+        }
     }
 
     /**

@@ -6,9 +6,11 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Str;
 
+use App\PropertyAccess;
 use App\LeasingAgreement;
 use App\Payment;
 use App\PaymentType;
+use App\Billing;
 use App\Tenant;
 use App\Property;
 use App\File;
@@ -26,7 +28,8 @@ class PaymentController extends Controller
     public function index()
     {
         $payments = Payment::all();
-        return view('pages.payment.index', compact('payments'));
+        $property_access = PropertyAccess::all();
+        return view('pages.payment.index', compact('payments', 'property_access'));
     }
 
     /**
@@ -40,7 +43,8 @@ class PaymentController extends Controller
         $tenants = Tenant::all();
         $properties = Property::all();
         $types = PaymentType::all();
-        return view('pages.payment.create', compact('leases', 'properties', 'types', 'tenants'));
+        $bills = Billing::all();
+        return view('pages.payment.create', compact('leases', 'properties', 'types', 'tenants', 'bills'));
     }
 
     /**
@@ -56,14 +60,18 @@ class PaymentController extends Controller
             'payment_type' => 'required',
             'amount_due' => 'required',
             'amount_paid' => 'required',
+            'date_payment' => 'required',
             'reference_no' => 'nullable',
             'note' => 'nullable',
             'payment_file' => 'nullable',
+            'agreement' => 'nullable',
+            'bill' => 'required_if:payment_type,1',
         ]);
 
         // Creating payment
             $payment_stored = Payment::create([
-                // 'agreement_id' => $request->agreement_id,
+                'leasing_agreement_details_id' => $request->agreement,
+                'billing_id' => $request->bill,
                 'tenant_id' => $request->tenant,
                 'payment_type_id' => $request->payment_type,
                 'amount_due' => $request->amount_due,
@@ -71,6 +79,7 @@ class PaymentController extends Controller
                 'reference_no' => $request->reference_no,
                 'note' => $request->note,
                 'processed_by_user' => auth()->user()->id,
+                'date_paid' => $request->date_payment,
             ]);
 
             // Updating slug payment

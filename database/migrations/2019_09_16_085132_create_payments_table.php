@@ -17,7 +17,8 @@ class CreatePaymentsTable extends Migration
             $table->bigIncrements('id');
             $table->integer('payment_type_id');
 
-            $table->integer('leasing_agreement_id')->nullable()->default(null);
+            // $table->integer('leasing_agreement_id')->nullable()->default(null);
+            $table->integer('leasing_agreement_details_id')->nullable()->default(null);
             $table->integer('billing_id')->nullable()->default(null);
             $table->integer('tenant_id')->nullable()->default(null);
 
@@ -30,6 +31,7 @@ class CreatePaymentsTable extends Migration
             $table->integer('file_id')->nullable()->default(null);
 
             $table->string('slug')->nullable()->default(null)->unique();
+            $table->date('date_paid')->nullable()->default(null);
             $table->timestamps();
         });
     }

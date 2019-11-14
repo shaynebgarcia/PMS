@@ -15,6 +15,7 @@ class CreateBillingDetailsTable extends Migration
     {
         Schema::create('billing_details', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->integer('billing_id');
             $table->string('description');
             $table->double('amount', 8, 2);
             $table->timestamps();

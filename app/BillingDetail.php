@@ -7,4 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 class BillingDetail extends Model
 {
     //
+
+    public function getAmountCurrencySignAttribute()
+    {
+        $num_format = config('pms.currency.sign').number_format($this->amount, 2);
+        return $num_format;
+    }
+    public function getAmountCurrencyCodeAttribute()
+    {
+        $num_format = number_format($this->amount, 2)." ".config('pms.currency.code');
+        return $num_format;
+    }
 }

@@ -19,5 +19,9 @@ class DatabaseSeeder extends Seeder
         $this->call(LeasingStatusTableSeeder::class);
         $this->call(ServiceTypeTableSeeder::class);
         $this->call(UtilityTableSeeder::class);
+        $this->call(OtherIncomeTypeTableSeeder::class);
+        
+        $this->call(FakerTableSeeder::class);
+        $this->call(Faker2TableSeeder::class);
     }
 }

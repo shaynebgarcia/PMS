@@ -12,15 +12,15 @@
 @endsection
 
 @section('content')
-    <div class="row">
-        <div class="col-lg-12 col-md-12 col-sm-12">
-            <div class="card">
-                <div class="card-header">
-                    <h5>Payment Form</h5>
-                </div>
-                <div class="card-block">
-                    <form id="create-payment" method="POST" action="{{ route('payment.store') }}" enctype="multipart/form-data">
-                        @CSRF
+    <form id="create-payment" method="POST" action="{{ route('payment.store') }}" enctype="multipart/form-data">
+        @CSRF
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Payment Form</h5>
+                    </div>
+                    <div class="card-block">
                         <div class="form-group row">
                             <label class="col-lg-2 col-md-2 col-sm-2 col-form-label">Tenant</label>
                                 <div class="col-lg-10 col-md-10 col-sm-10">
@@ -90,6 +90,17 @@
                                 </div>
                         </div>
                         <div class="form-group row">
+                            <label class="col-lg-2 col-md-2 col-sm-2 col-form-label">Date of Payment</label>
+                                <div class="col-lg-10 col-md-10 col-sm-10">
+                                    <input type="date" class="form-control" name="date_payment" value="">
+                                    @error('date_payment')
+                                        <span class="messages">
+                                            <p class="text-danger error">{{ $message }}</p>
+                                        </span>
+                                    @enderror
+                                </div>
+                        </div>
+                        <div class="form-group row">
                             <label class="col-lg-2 col-md-2 col-sm-2 col-form-label">Supporting File</label>
                                 <div class="col-lg-10 col-md-10 col-sm-10">
                                     <input type="file" class="form-control" name="payment_file">
@@ -111,31 +122,73 @@
                                     @enderror
                                 </div>
                         </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Attach Payment</h5>
+                    </div>
+                    <div class="card-block">
                         <div class="form-group row">
-                            <div class="col-lg-12 col-md-12 col-sm-12 text-right">
-                                <button type="submit" class="btn waves-effect waves-light btn-info btn-round">Submit</button>
-                            </div>
+                            <label class="col-lg-2 col-md-2 col-sm-2 col-form-label">Lease Agreement</label>
+                                <div class="col-lg-10 col-md-10 col-sm-10">
+                                    <select class="select2" name="agreement" style="width: 100%">
+                                        <option value="#" disabled selected>Select an Agreement</option>
+                                        @foreach($leases as $lease)
+                                            <option value="{{ $lease->id }}">{{ $lease->id }} | {{ $lease->unit->property->name }} - {{ $lease->unit->number }} | {{ $lease->tenant->user->fullnamewm }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
                         </div>
-                    </form>
+                        <div class="form-group row">
+                            <label class="col-lg-2 col-md-2 col-sm-2 col-form-label">Payment to Invoice</label>
+                                <div class="col-lg-10 col-md-10 col-sm-10">
+                                    <select class="select2" name="bill" id="bill" style="width: 100%">
+                                        <option value="#" disabled selected>Select a Billing Invoice</option>
+                                        @foreach($bills as $bill)
+                                            <option value="{{ $bill->id }}">{{ $bill->invoice_no }} | {{ $bill->monthyear }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                        </div>
+                    </div>
+                </div>
+                {{-- <div class="card">
+                    <div class="card-block">
+                    <div action="#" class="dropzone">
+                    <div class="fallback">
+                    <input name="file" type="file" multiple />
+                    </div>
+                    </div>
+                    <div class="text-center m-t-20">
+                    <button class="btn btn-primary">Upload Now</button>
+                    </div>
+                    </div>
+                </div> --}}
+                <div class="form-group row">
+                    <div class="col-lg-12 col-md-12 col-sm-12 text-right">
+                        <button type="submit" class="btn waves-effect waves-light btn-primary btn-block btn-round">Submit</button>
+                    </div>
                 </div>
             </div>
-            {{-- <div class="card">
-                <div class="card-block">
-                <div action="#" class="dropzone">
-                <div class="fallback">
-                <input name="file" type="file" multiple />
-                </div>
-                </div>
-                <div class="text-center m-t-20">
-                <button class="btn btn-primary">Upload Now</button>
-                </div>
-                </div>
-            </div> --}}
         </div>
-    </div>
+    </form>
 @endsection
 
 @section('js-plugin')
     @include('includes.plugins.select-js')
     @include('includes.plugins.fileupload-js')
+    <script type='text/javascript'>
+        $(document).ready(function() {
+            // $('#bill').attr('disabled','disabled'); 
+            $('select[name="payment_type"]').on('change',function(){
+            var bill = $(this).val();
+                if(bill == 1){           
+                    $('#bill').removeAttr('disabled');          
+                 }else{
+                    $('#bill').attr('disabled','disabled'); 
+                }  
+              });
+        });
+    </script>
 @endsection

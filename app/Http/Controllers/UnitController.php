@@ -48,9 +48,30 @@ class UnitController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request, $id)
     {
-        //
+        $request->validate([
+            'number' => 'required',
+            'type' => 'required',
+        ]);
+
+        $property = Property::findorFail($id);
+
+        $store = Unit::create([
+            'property_id' => $property->id,
+            'unit_type_id' => $request->type,
+            'floor_no' => $request->floor_no,
+            'number' => $request->number,
+            'slug' => $property->id.'-'.$request->number,
+        ]);
+
+        if (!$store) {
+            Alert::error('Encountered an error', 'Oops')->persistent('Close');
+            return redirect()->back();
+        } else {
+            Alert::success('Created a new unit '.'"'.$property->name." (".$store->number.")".'"','Success')->autoclose(2500);
+            return redirect()->route('property.show', $property->id);
+        }
     }
 
     /**
@@ -74,9 +95,16 @@ class UnitController extends Controller
      * @param  \App\Unit  $unit
      * @return \Illuminate\Http\Response
      */
-    public function edit($id, $slug)
+    public function edit($id, Unit $unit)
     {
-        //
+        $property = Property::findorFail($id);
+        $unit_types = UnitType::where('property_id', $property->id)->get();
+
+        if (count($unit_types) < 0) {
+            return redirect()->back();
+        } else {
+            return view('pages.unit.edit', compact('property', 'unit', 'unit_types'));
+        }
     }
 
     /**
@@ -86,9 +114,33 @@ class UnitController extends Controller
      * @param  \App\Unit  $unit
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id, $slug)
+    public function update(Request $request, $id, Unit $unit)
     {
-        //
+        $request->validate([
+            'number' => 'required',
+            'type' => 'required',
+        ]);
+
+        $property = Property::findorFail($id);
+
+        preg_match_all('!\d+!', $request->floor_no, $no_only);
+        $var = implode(' ', $no_only[0]);
+
+        $update = $unit->update([
+            'unit_type_id' => $request->type,
+            'floor_no' => $var,
+            'number' => $request->number,
+        ]);
+
+        if (!$update) {
+            Alert::error('Encountered an error', 'Oops')->persistent('Close');
+            return redirect()->back();
+        } else {
+            Alert::success('Updated a unit '.'"'.$property->name." (".$unit->number.")".'"','Success')->autoclose(2500);
+            return redirect()->route('property.show', $property->id);
+        }
+
+        return redirect()->route('property.show', $property->id);
     }
 
     /**

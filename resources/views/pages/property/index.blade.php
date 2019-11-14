@@ -39,7 +39,7 @@
                                 <th>Contact</th>
                                 <th>Floors</th>
                                 <th>Units</th>
-                                <th>Vacant/Occupied</th>
+                                <th>Occupied/Vacant</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -52,10 +52,12 @@
                                                 $color = 'btn-success';
                                                 $icon = 'fa-check';
                                                 $title = 'You can manage this property';
+                                                $check_access = true;
                                             } else {
                                                 $color = 'btn-danger';
                                                 $icon = 'fa-ban';
                                                 $title = 'You do not have access to manage this property';
+                                                $check_access = false;
                                             }
                                         @endphp
                                         <button class="btn waves-effect waves-light {{ $color }} btn-icon" style="height: 25px;width: 25px; padding: 0;line-height: 0;padding-left: 4px;" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="{{ $title }}">
@@ -69,9 +71,14 @@
                                     <td style="font-size: 13px;">{{ $property->contact }}</td>
                                     <td style="font-size: 13px;">{{ $property->floor_total }}</td>
                                     <td style="font-size: 13px;">{{ $property->unit_total }}</td>
-                                    <td style="font-size: 13px;">{{ $property->unit->where('status', 'Vacant')->count() }}/{{ $property->unit->where('status', 'Occupied')->count() }}</td>
+                                    <td style="font-size: 13px;">{{ $property->unit->where('leasing_agreement_id', !null)->count() }}/{{ $property->unit->where('leasing_agreement_id', null)->count() }}</td>
                                     <td style="font-size: 13px;">
-                                        <a href="{{ route('property.edit', $property->slug) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Edit">
+                                        @if($check_access == true)
+                                            <a href="{{ route('lease.index', $property->id) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="View Lessee List">
+                                                <i class="icon feather icon-eye f-w-600 f-16 m-r-15 text-c-blue"></i>
+                                            </a>
+                                        @endif
+                                        <a href="{{ route('property.edit', $property->id) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Edit">
                                             <i class="icon feather icon-edit f-w-600 f-16 m-r-15 text-c-green"></i>
                                         </a>
                                         <a href="{{ route('property.destroy', $property->id) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Delete">
@@ -85,7 +92,7 @@
                 </div>
             @else
                 <button class="btn waves-effect waves-light btn-warning btn-icon" type="button" style="height: 30px;width: 30px; padding: 0;line-height: 0;padding-left: 4px;"><i class="fa fa-warning"></i></button>
-                <small>You have no available property <a href="#" title="" style="color:#4099ff;font-size: 12px;">Add here.</a></small>
+                <small>You have no available property <a href="{{ route('property.create') }}" title="" style="color:#4099ff;font-size: 12px;">Add here.</a></small>
             @endif
         </div>
     </div>

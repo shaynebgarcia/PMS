@@ -1,6 +1,6 @@
 <div class="page-header card">
 	<div class="row align-items-end">
-		<div class="col-lg-6">
+		<div class="col-lg-4">
 			<div class="page-header-title">
 			<i class="feather {{ $breadcrumb_icon ?? 'icon-home' }} bg-c-blue"></i>
 				<div class="d-inline">
@@ -9,7 +9,7 @@
 				</div>
 			</div>
 		</div>
-		<div class="col-lg-6">
+		<div class="col-lg-8">
 			<div class="page-header-breadcrumb">
 				@yield('breadcrumbs')
 				{{-- <ul class=" breadcrumb breadcrumb-title">

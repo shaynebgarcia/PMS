@@ -15,6 +15,8 @@ class CreateLeasingAgreementsTable extends Migration
     {
         Schema::create('leasing_agreements', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->string('link_id')->unique()->nullable();
+            $table->integer('property_id');
             $table->integer('unit_id');
             $table->integer('tenant_id');
             $table->integer('agreement_status_id');

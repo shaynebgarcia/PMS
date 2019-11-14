@@ -5,9 +5,10 @@
                     <div class="row">
                         <div class="col-sm-12">
                             <form class="md-float-material form-material" method="POST" action="{{ route('login') }}">
-                                @csrf
+                                @CSRF
                                 <div class="text-center">
-                                    <img src="{{ asset('admindek/files/assets/images/logo.png') }}" alt="logo.png" style="padding: 2rem 0;">
+                                    <i class="feather icon-home text-white" style="font-size: xx-large;" ></i>
+                                    {{-- <img src="{{ asset('admindek/files/assets/images/logo.png') }}" alt="logo.png" style="padding: 2rem 0;"> --}}
                                 </div>
                                 <div class="auth-box card">
                                     <div class="card-block">
@@ -35,7 +36,7 @@
                                             <span class="form-bar"></span>
                                             <label class="float-label">Password</label>
                                         </div>
-                                        <div class="row m-t-25 text-left">
+                                        {{-- <div class="row m-t-25 text-left">
                                             <div class="col-12">
                                                 <div class="checkbox-fade fade-in-primary">
                                                     <label>
@@ -50,7 +51,7 @@
                                                     </div>
                                                 @endif
                                             </div>
-                                        </div>
+                                        </div> --}}
                                         <div class="row m-t-30">
                                             <div class="col-md-12">
                                                 <button type="submit" class="btn btn-primary btn-md btn-block waves-effect text-center m-b-20">LOGIN</button>

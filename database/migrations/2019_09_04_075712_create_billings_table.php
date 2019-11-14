@@ -18,8 +18,11 @@ class CreateBillingsTable extends Migration
             $table->integer('leasing_agreement_details_id');
             $table->string('invoice_no');
             $table->string('monthyear');
+            $table->date('billing_from');
+            $table->date('billing_to');
             $table->date('billing_date');
             $table->date('due_date');
+            $table->string('prepared_by');
 
             $table->double('subtotal_amount', 8, 2);
             $table->double('ou_amount', 8, 2)->default(0);

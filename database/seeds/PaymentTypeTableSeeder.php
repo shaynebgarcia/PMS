@@ -12,6 +12,7 @@ class PaymentTypeTableSeeder extends Seeder
     public function run()
     {
 		  $types = [
+          [ 'name' => 'Bill Payment'],
 	        [ 'name' => 'Reservation Fee'],
 	        [ 'name' => 'Partial Payment'],
 	        [ 'name' => 'Full Payment'],

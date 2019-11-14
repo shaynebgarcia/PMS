@@ -102,7 +102,8 @@ class UserController extends Controller
     public function show($id)
     {
         $user = User::findorFail($id);
-        return view('pages.user.show', compact('user'));
+        $access = PropertyAccess::all();
+        return view('pages.user.show', compact('user', 'access'));
     }
 
     /**

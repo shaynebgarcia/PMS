@@ -114,8 +114,8 @@ class UtilityTableSeeder extends Seeder
             \App\Utility::create($watermeter);
       	}
 
-      	\App\UtilityBill::create(['leasing_agreement_detail_id'=>1,'utility_id' => 1,'to_bill'=>'Oct2019','amount'=>1358.75]); 
+      	// \App\UtilityBill::create(['leasing_agreement_detail_id'=>1,'utility_id' => 1,'to_bill'=>'Oct2019','amount'=>1358.75]); 
 
-      	\App\UtilityBill::create(['leasing_agreement_detail_id'=>1,'utility_id' => 12,'to_bill'=>'Oct2019','amount'=>550.00]); 
+      	// \App\UtilityBill::create(['leasing_agreement_detail_id'=>1,'utility_id' => 12,'to_bill'=>'Oct2019','amount'=>550.00]); 
     }
 }

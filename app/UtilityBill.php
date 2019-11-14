@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class UtilityBill extends Model
 {
     protected $fillable = [
-    	'leasing_agreement_detail_id', 
+    	'leasing_agreement_details_id', 
         'utility_id', 
         'to_bill',
         'amount',
@@ -15,7 +15,7 @@ class UtilityBill extends Model
 
     public function agreement_detail()
     {
-        return $this->belongsTo(LeasingAgreementDetail::class, 'leasing_agreement_detail_id');
+        return $this->belongsTo(LeasingAgreementDetail::class, 'leasing_agreement_details_id');
     }
 
     public function utility()
