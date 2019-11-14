@@ -35,8 +35,6 @@ Route::middleware(['auth'])->group(function () {
 			// Leasing Payable Routes
 			// Route::resource('/lease/{lease}/payable', 'LeasingPayableController');
 
-
-
 		Route::middleware(['has_access'])->group(function () {
 
 			// Property

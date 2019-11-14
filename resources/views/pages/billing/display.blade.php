@@ -29,7 +29,7 @@
 				<h5>Billing Invoice</h5>
 				<div class="card-header-right">
 	                <button type="submit"
-	                @if($bill_due >= $bill_date)
+	                @if(($bill_due <= $bill_date)) == true)
 	                	class="btn btn-disabled disabled waves-effect waves-light btn-success btn-icon"
 	                	onclick="event.preventDefault()"
 	                @else

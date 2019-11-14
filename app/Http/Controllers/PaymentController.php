@@ -27,7 +27,7 @@ class PaymentController extends Controller
      */
     public function index()
     {
-        $payments = Payment::all();
+        $payments = Payment::all()->sortby('created_at');
         $property_access = PropertyAccess::all();
         return view('pages.payment.index', compact('payments', 'property_access'));
     }

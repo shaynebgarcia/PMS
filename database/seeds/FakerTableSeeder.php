@@ -37,8 +37,8 @@ class FakerTableSeeder extends Seeder
 	    		'agreed_lease_price' =>  11000.00,
 	    		'term_start' => '2018-10-15',
 	    		'term_end' => '2019-10-16',
-	    		'first_day' => '2018-10-22',
-	    		'monthly_due' => 22,
+	    		'first_day' => '2018-10-21',
+	    		'monthly_due' => 21,
 	    		'status' => 'Expired',
 
 	    		'created_at' => '2018-10-15 07:38:21',
@@ -51,8 +51,8 @@ class FakerTableSeeder extends Seeder
 	    		'agreed_lease_price' =>  12000.00,
 	    		'term_start' => '2019-10-15',
 	    		'term_end' => '2020-10-16',
-	    		'first_day' => '2019-10-22',
-	    		'monthly_due' => 22,
+	    		'first_day' => '2019-10-21',
+	    		'monthly_due' => 21,
 	    		'status' => 'Active',
 
 	    		'created_at' => Carbon\Carbon::now(),
