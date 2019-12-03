@@ -5,10 +5,11 @@ namespace App;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use Notifiable;
+    use HasRoles, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -18,7 +19,9 @@ class User extends Authenticatable
     protected $fillable = [
         'lastname', 'firstname', 'middlename',
         'username', 'email', 'password',
-        'role_id', 'slug', 'access_property_id'
+        'image_file_id', 'file_list_id',
+        'slug', 'access_property_id'
+
     ];
 
     /**
@@ -42,6 +45,11 @@ class User extends Authenticatable
     public function role()
     {
         return $this->belongsTo(Role::class, 'role_id');
+    }
+
+    public function avatar()
+    {
+        return $this->belongsTo(File::class, 'image_file_id');
     }
 
     public function getFullNamewMAttribute()

@@ -12,7 +12,6 @@ class AdminTableSeeder extends Seeder
     public function run()
     {
     	User::create([
-        'role_id' => 1,
     		'lastname' => 'Support',
     		'firstname' => 'Bitverse',
     		'middlename' => 'Admin',

@@ -104,7 +104,18 @@
                 </div>
             </div>
         </div> --}}
+        {{-- <div class="col-md-12">
+            @php
+                print_r(Session::all());
+            @endphp
+        </div> --}}
         <div class="col-md-12">
+            <div class="alert alert-primary background-primary">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <i class="icofont icofont-close-line-circled"></i>
+                </button>
+                <strong>Hi <span class="f-w-700">{{ Auth::user()->firstname }}</span>!</strong> You are currently managing <span class="text-uppercase f-w-700">{{ $property->name }}</span>.
+            </div>
             <div class="card table-card">
                 <div class="card-header">
                     <h5>Rental Due Date Reminder</h5>

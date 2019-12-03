@@ -19,6 +19,10 @@ use PDF;
 
 class OtherIncomeController extends Controller
 {
+    public function __construct(Request $request)
+    {
+        $this->property = $request->session()->get('property_id');
+    }
     /**
      * Display a listing of the resource.
      *
@@ -45,9 +49,41 @@ class OtherIncomeController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request, $link, $id)
     {
-        //
+        $property = Property::findorFail($this->property);
+
+        $request->validate([
+            'oincome_type' => 'required',
+            'amount' => 'nullable',
+            'note' => 'nullable',
+            'to_bill' => 'required',
+        ]);
+
+        // Check if default lease price was overriden
+        if ($request->amount == null) {
+            $oincome_price_default = OtherIncomeType::where('id', $request->oincome_type)->first();
+            $oincome_amount = $oincome_price_default->amount;
+        } else {
+            $oincome_amount = floatval($request->amount);
+        }
+
+        // Creating other income
+        $oincome_stored = OtherIncome::create([
+            'leasing_agreement_details_id' => $id,
+            'other_income_type_id' => $request->oincome_type,
+            'to_bill' => $request->to_bill,
+            'total_amount' => $oincome_amount,
+            'note' => $request->note,
+        ]);
+
+        if (!$oincome_stored) {
+            Alert::error('Encountered an error', 'Oops')->persistent('Close');
+            return redirect()->back();
+        } else {
+            Alert::success('Other income creation complete', 'Success')->persistent('Close');
+            return redirect()->route('oincome.group.lease', [$link, $id]);
+        }
     }
 
     /**
@@ -61,9 +97,9 @@ class OtherIncomeController extends Controller
         //
     }
 
-    public function group($property_id, $link, $id)
+    public function group($link, $id)
     {
-        $property = Property::findorFail($property_id);
+        $property = Property::findorFail($this->property);
         $lease = LeasingAgreement::findorFail($link);
         $lease_detail = LeasingAgreementDetail::findorFail($id);
         $otherincome_types = OtherIncomeType::all();

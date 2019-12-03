@@ -154,8 +154,8 @@
                                 <select class="select2" name="role" style="width: 100%" required>
                                     <option value="#" disabled selected>Select Role</option>
                                     @foreach($roles as $role)
-                                        <option @if($user->role_id == $role->id) value="{{ $user->role_id }}" selected @else value="{{ $role->id }}" @endif>
-                                            {{ $role->title }}
+                                        <option @if($user->getRoleNames()->first() == $role->name) value="{{ $user->role_id }}" selected @else value="{{ $role->id }}" @endif>
+                                            {{ $role->name }}
                                         </option>
                                     @endforeach
                                 </select>

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+
 use App\LeasingAgreement;
 use App\LeasingAgreementDetail;
 use App\LeasingAgreementStatus;
@@ -28,14 +30,18 @@ use PDF;
 
 class LeasingAgreementController extends Controller
 {
+    public function __construct(Request $request)
+    {
+        $this->property = $request->session()->get('property_id');
+    }
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index($property_id)
+    public function index()
     {
-        $property = Property::findorFail($property_id);
+        $property = Property::findorFail($this->property);
         $leases = LeasingAgreement::where('property_id', $property->id)->get();
 
         $details = LeasingAgreementDetail::all();
@@ -55,11 +61,11 @@ class LeasingAgreementController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create($property_id)
+    public function create()
     {
-        $property = Property::findorFail($property_id);
+        $property = Property::findorFail($this->property);
         $properties = Property::where([
-                                        ['id', '=', $property_id],
+                                        ['id', '=', $property->id],
                                         ['date_start_leasing', '<', Carbon::now()],
                                     ])->get();
         $units = Unit::where('leasing_agreement_id', null)->get();
@@ -75,19 +81,22 @@ class LeasingAgreementController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request, $property_id)
+    public function store(Request $request)
     {
         $request->validate([
             'unit' => 'required',
             'tenant' => 'required',
-            'agreement_no' => 'required|unique:leasing_agreement_details',
-            'monthly_due' => 'required|min:1|max:31',
-            'first_day' => 'required',
+            // 'agreement_no' => 'required|unique:leasing_agreement_details',
+            'term_start' => 'required|date|after:term_end',
+            'term_end' => 'required|date|before:term_start',
+            'monthly_due' => Rule::requiredIf($request->full_payment, !null),
+            'first_day' => Rule::requiredIf($request->full_payment, !null),
             // 'date_of_contract' => 'date',
             // 'move_in' => 'date',
-            // 'term_start' => 'date',
-            // 'term_end' => 'date',
+            
         ]);
+
+        $property = Property::findorFail($this->property);
 
         // Check if default lease price was overriden
         if ($request->agreed_lease_price == null) {
@@ -100,7 +109,7 @@ class LeasingAgreementController extends Controller
 
         // Creating agreement
         $agreement_stored = LeasingAgreement::create([
-            'property_id' => $property_id,
+            'property_id' => $property->id,
             'tenant_id' => $request->tenant,
             'unit_id' => $request->unit,
             'agreement_status_id' => 1,
@@ -115,7 +124,6 @@ class LeasingAgreementController extends Controller
             // Creating agreement details
             $agreement_details_stored = LeasingAgreementDetail::create([
                 'leasing_agreement_id' => $agreement_stored->id,
-                'agreement_no' => $request->agreement_no,
                 'agreed_lease_price' => $rental_price,
                 'term_start' => $request->term_start,
                 'term_end' => $request->term_end,
@@ -124,6 +132,11 @@ class LeasingAgreementController extends Controller
             ]);
 
             if ($agreement_details_stored) {
+                //Update unique id
+                $agreement_details_stored->update([
+                    'agreement_no' => config('pms.unique_prefix.leasing_agreement_details').$agreement_details_stored->id,
+                    'last_billing_my' => date('MY', strtotime($request->term_end)),
+                ]);
                 // Check and creating services applied
                 if ($request->subscriptions != null) {
                     if(count($request->subscriptions)>0) {
@@ -167,7 +180,7 @@ class LeasingAgreementController extends Controller
 
             $unit_stored = Unit::where('id', $agreement_stored->unit_id)->first();
             Alert::success('Leasing complete', 'Success')->persistent('Close');
-            return redirect()->route('lease.show', [$unit_stored->property_id,$agreement_stored->id]);
+            return redirect()->route('lease.index', [$property->code]);
         } else {
             Alert::error('Encountered an error', 'Oops')->persistent('Close');
             return redirect()->route('lease.create');
@@ -175,11 +188,12 @@ class LeasingAgreementController extends Controller
 
     }
 
-    public function renewform($property_id, $link, $id)
+    public function renewform($link)
     {
-        $property = Property::findorFail($property_id);
+        $property = Property::findorFail($this->property);
+
         $lease = LeasingAgreement::findorFail($link);
-        $payments = Payment::where('leasing_agreement_id', null)->where('billing_id', null)->get();
+        $payments = Payment::where('leasing_agreement_details_id', null)->where('billing_id', null)->get();
         $services = ServiceType::all();
         return view('pages.lease.renew', compact('property', 'lease', 'payments', 'services'));
     }
@@ -193,9 +207,10 @@ class LeasingAgreementController extends Controller
      * @param  \App\LeasingAgreement  $leasingAgreement
      * @return \Illuminate\Http\Response
      */
-    public function show($property_id, $link)
+    public function show($link)
     {
-        $property = Property::findorFail($property_id);
+        $property = Property::findorFail($this->property);
+
         $lease = LeasingAgreement::findorFail($link);
         $lease_detail = LeasingAgreementDetail::where('leasing_agreement_id', $lease->id)->get();
         $payments = Payment::all();
@@ -239,12 +254,15 @@ class LeasingAgreementController extends Controller
     {
         //
     }
-    public function exportPDF_contract($property_id, $link, $lease_id)
+    public function exportPDF_contract($link, $lease_id)
     {
+        $property = Property::findorFail($this->property);
         $lease = LeasingAgreementDetail::findorFail($lease_id);
         $date_generated = date('F d, Y H:i A');
         $PDF = PDF::loadView('reports.pdf_contract', ['lease'=>$lease, 'date_generated'=>$date_generated])->setPaper('portrait');
         /*->setOptions(['defaultFont'=>'Helvetica']);*/
+        // return $PDF->stream();
+
         return $PDF->stream();
     }
 }

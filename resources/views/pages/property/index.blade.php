@@ -35,6 +35,7 @@
                         <thead>
                             <tr>
                                 <th>Name</th>
+                                <th></th>
                                 <th>Address</th>
                                 <th>Contact</th>
                                 <th>Floors</th>
@@ -46,7 +47,7 @@
                         <tbody>
                             @foreach($properties as $property)
                                 <tr>
-                                    <td style="font-size: 13px; font-weight: bold">
+                                    <td class="f-w-700" style="font-size: 13px;">
                                         @php
                                             if (($property_access->where('property_id', $property->id)->where('user_id', auth()->user()->id)->count()) > 0) {
                                                 $color = 'btn-success';
@@ -60,12 +61,15 @@
                                                 $check_access = false;
                                             }
                                         @endphp
-                                        <button class="btn waves-effect waves-light {{ $color }} btn-icon" style="height: 25px;width: 25px; padding: 0;line-height: 0;padding-left: 4px;" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="{{ $title }}">
+                                        <button class="btn waves-effect waves-light {{ $color }} btn-sm btn-icon" style="height: 25px;width: 25px; padding: 0;line-height: 0;padding-left: 4px;" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="{{ $title }}">
                                             <i class="fa {{ $icon }} fa-sm" style="color: white;"></i>
                                         </button>
-                                        <a href="{{ route('property.show', $property->id) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="View Details">
+                                        <a href="{{ route('property.show', $property->code) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="View Details">
                                             {{ $property->name }}
                                         </a>
+                                    </td>
+                                    <td class="f-w-700 text-uppercase" style="font-size: 13px;">
+                                        {{ $property->code }}
                                     </td>
                                     <td style="font-size: 13px;">{{ $property->address }}</td>
                                     <td style="font-size: 13px;">{{ $property->contact }}</td>
@@ -73,15 +77,10 @@
                                     <td style="font-size: 13px;">{{ $property->unit_total }}</td>
                                     <td style="font-size: 13px;">{{ $property->unit->where('leasing_agreement_id', !null)->count() }}/{{ $property->unit->where('leasing_agreement_id', null)->count() }}</td>
                                     <td style="font-size: 13px;">
-                                        @if($check_access == true)
-                                            <a href="{{ route('lease.index', $property->id) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="View Lessee List">
-                                                <i class="icon feather icon-eye f-w-600 f-16 m-r-15 text-c-blue"></i>
-                                            </a>
-                                        @endif
-                                        <a href="{{ route('property.edit', $property->id) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Edit">
+                                        <a href="{{ route('property.edit', $property->code) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Edit">
                                             <i class="icon feather icon-edit f-w-600 f-16 m-r-15 text-c-green"></i>
                                         </a>
-                                        <a href="{{ route('property.destroy', $property->id) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Delete">
+                                        <a href="{{ route('property.destroy', $property->code) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Delete">
                                             <i class="feather icon-trash-2 f-w-600 f-16 text-c-red"></i>
                                         </a>
                                     </td>

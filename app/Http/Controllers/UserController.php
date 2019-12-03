@@ -6,7 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 use App\User;
-use App\Role;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
 use App\Property;
 use App\PropertyAccess;
 
@@ -15,6 +16,12 @@ use Alert;
 
 class UserController extends Controller
 {
+
+    public function __construct(Request $request)
+    {
+        $this->property = $request->session()->get('property_id');
+    }
+
     public function rules()
     {
         return [
@@ -36,9 +43,10 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::whereIn('role_id', [1,2,3,4,5,6])->get();
+        $property = Property::findorFail($this->property);
+        $users = User::all();
         $access = PropertyAccess::all();
-        return view('pages.user.index', compact('users', 'access'));
+        return view('pages.user.index', compact('property', 'users', 'access'));
     }
 
     /**
@@ -48,9 +56,10 @@ class UserController extends Controller
      */
     public function create()
     {
+        $property = Property::findorFail($this->property);
         $properties = Property::all();
         $roles = Role::all();
-        return view('pages.user.create', compact('properties', 'roles'));
+        return view('pages.user.create', compact('properties', 'property', 'roles'));
     }
 
     /**
@@ -101,9 +110,10 @@ class UserController extends Controller
      */
     public function show($id)
     {
+        $property = Property::findorFail($this->property);
         $user = User::findorFail($id);
         $access = PropertyAccess::all();
-        return view('pages.user.show', compact('user', 'access'));
+        return view('pages.user.show', compact('property', 'user', 'access'));
     }
 
     /**
@@ -114,12 +124,13 @@ class UserController extends Controller
      */
     public function edit($id)
     {
+        $property = Property::findorFail($this->property);
         $user = User::findorFail($id);
         $roles = Role::all();
         $properties = Property::all();
         $access = PropertyAccess::all();
         $access_properties_id = PropertyAccess::select('property_id')->where('user_id', $user->id)->get();
-        return view('pages.user.edit', compact('user', 'properties', 'roles', 'access', 'access_properties_id'));
+        return view('pages.user.edit', compact('Property', 'user', 'properties', 'roles', 'access', 'access_properties_id'));
     }
 
     /**

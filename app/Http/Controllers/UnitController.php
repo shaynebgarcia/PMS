@@ -9,10 +9,17 @@ use App\Property;
 use App\Unit;
 use App\UnitType;
 use App\LeasingAgreement;
+use App\LeasingAgreementDetail;
+use App\Utility;
+
 use Alert;
 
 class UnitController extends Controller
 {
+    public function __construct(Request $request)
+    {
+        $this->property = $request->session()->get('property_id');
+    }
     /**
      * Display a listing of the resource.
      *
@@ -20,8 +27,16 @@ class UnitController extends Controller
      */
     public function index()
     {
-        $units = Unit::all();
-        return view('pages.unit.index', compact('units'));
+        $property = Property::findorFail($this->property);
+        $units = Unit::where('property_id', $property->id)->get();
+        $unit_types = UnitType::where('property_id', $property->id)->get();
+
+        $leases = LeasingAgreement::all();
+        $lease_details = LeasingAgreementDetail::all();
+        $utility_electricity = Utility::where('type', 'Electricity')->get();
+        $utility_water = Utility::where('type', 'Water')->get();
+
+        return view('pages.unit.index', compact('property', 'units', 'unit_types', 'leases', 'lease_details', 'utility_electricity', 'utility_water'));
     }
 
     /**
@@ -29,16 +44,19 @@ class UnitController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create($id)
+    public function create(Request $request)
     {
-        $property = Property::findorFail($id);
-        // $property = Property::where('slug', $property_slug)->first();
+        $property = Property::findorFail($this->property);
         $unit_types = UnitType::where('property_id', $property->id)->get();
+
+        $utilities = Utility::where('unit_id', null)->whereIn('unit_id', $property->unit()->pluck('id'))->get();
+        $utilities_electricity = Utility::where('type', 'Electricity')->where('unit_id', null)->whereIn('unit_id', $property->unit()->pluck('id'))->get();
+        $utilities_water = Utility::where('type', 'Water')->where('unit_id', null)->whereIn('unit_id', $property->unit()->pluck('id'))->get();
 
         if (count($unit_types) < 0) {
             return back();
         } else {
-            return view('pages.unit.create', compact('property', 'unit_types'));
+            return view('pages.unit.create', compact('property', 'unit_types', 'utilities', 'utilities_electricity', 'utilities_water'));
         }
     }
 
@@ -48,14 +66,14 @@ class UnitController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request, $id)
+    public function store(Request $request)
     {
         $request->validate([
             'number' => 'required',
             'type' => 'required',
         ]);
 
-        $property = Property::findorFail($id);
+        $property = Property::findorFail($this->property);
 
         $store = Unit::create([
             'property_id' => $property->id,
@@ -69,8 +87,20 @@ class UnitController extends Controller
             Alert::error('Encountered an error', 'Oops')->persistent('Close');
             return redirect()->back();
         } else {
+            if ($request->ue_type != null) {
+                $utility_electricity = Utility::findorFail($request->ue_type);
+                $update_ue = $utility_electricity->update([
+                    'unit_id' => $store->id,
+                ]);
+            }
+            if ($request->uw_type != null) {
+                $utility_water = Utility::findorFail($request->uw_type);
+                $update_uw = $utility_water->update([
+                    'unit_id' => $store->id,
+                ]);
+            }
             Alert::success('Created a new unit '.'"'.$property->name." (".$store->number.")".'"','Success')->autoclose(2500);
-            return redirect()->route('property.show', $property->id);
+            return redirect()->route('unit.index');
         }
     }
 
@@ -80,11 +110,11 @@ class UnitController extends Controller
      * @param  \App\Unit  $unit
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show()
     {
-        $property = Property::findorFail($id);
-        // $property = Property::where('slug', $property_slug)->first();
-        $unit = Unit::where('property_id', $id)->first();
+        $property = Property::findorFail($this->property);
+
+        $unit = Unit::where('property_id', $property->$id)->first();
         
         return view('pages.unit.show', compact('property', 'unit'));
     }
@@ -95,15 +125,19 @@ class UnitController extends Controller
      * @param  \App\Unit  $unit
      * @return \Illuminate\Http\Response
      */
-    public function edit($id, Unit $unit)
+    public function edit(Unit $unit)
     {
-        $property = Property::findorFail($id);
+        $property = Property::findorFail($this->property);
         $unit_types = UnitType::where('property_id', $property->id)->get();
+
+        $utilities = Utility::whereIn('unit_id', $property->unit()->pluck('id'))->get();
+        $utilities_electricity = Utility::where('type', 'Electricity')->whereIn('unit_id', $property->unit()->pluck('id'))->get();
+        $utilities_water = Utility::where('type', 'Water')->whereIn('unit_id', $property->unit()->pluck('id'))->get();
 
         if (count($unit_types) < 0) {
             return redirect()->back();
         } else {
-            return view('pages.unit.edit', compact('property', 'unit', 'unit_types'));
+            return view('pages.unit.edit', compact('property', 'unit', 'unit_types', 'utilities', 'utilities_electricity', 'utilities_water'));
         }
     }
 
@@ -114,14 +148,14 @@ class UnitController extends Controller
      * @param  \App\Unit  $unit
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id, Unit $unit)
+    public function update(Request $request, Unit $unit)
     {
         $request->validate([
             'number' => 'required',
             'type' => 'required',
         ]);
 
-        $property = Property::findorFail($id);
+        $property = Property::findorFail($this->property);
 
         preg_match_all('!\d+!', $request->floor_no, $no_only);
         $var = implode(' ', $no_only[0]);
@@ -136,6 +170,18 @@ class UnitController extends Controller
             Alert::error('Encountered an error', 'Oops')->persistent('Close');
             return redirect()->back();
         } else {
+            if ($request->ue_type != null) {
+                $utility_electricity = Utility::findorFail($request->ue_type);
+                $update_ue = $utility_electricity->update([
+                    'unit_id' => $store->id,
+                ]);
+            }
+            if ($request->uw_type != null) {
+                $utility_water = Utility::findorFail($request->uw_type);
+                $update_uw = $utility_water->update([
+                    'unit_id' => $store->id,
+                ]);
+            }
             Alert::success('Updated a unit '.'"'.$property->name." (".$unit->number.")".'"','Success')->autoclose(2500);
             return redirect()->route('property.show', $property->id);
         }
@@ -149,9 +195,9 @@ class UnitController extends Controller
      * @param  \App\Unit  $unit
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id, $slug)
+    public function destroy()
     {
-        //
+        $property = Property::findorFail($this->property);
     }
 
     // GET | Assigning tenant to a unit

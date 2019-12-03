@@ -3,10 +3,14 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Billing extends Model
 {
+    use LogsActivity;
 
+    protected static $logAttributes = true;
+    
     protected $fillable = [
     	'leasing_agreement_details_id',
         'invoice_no', 'prepared_by',

@@ -2,9 +2,17 @@
 
 namespace Illuminate\Foundation\Auth;
 
+use App\User;
+use App\Property;
+use App\PropertyAccess;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
+
+use Alert;
 
 trait AuthenticatesUsers
 {
@@ -17,7 +25,9 @@ trait AuthenticatesUsers
      */
     public function showLoginForm()
     {
-        return view('auth.login');
+        $roles = Role::all();
+        $properties = Property::all();
+        return view('auth.login', compact('roles', 'properties'));
     }
 
     /**
@@ -30,6 +40,7 @@ trait AuthenticatesUsers
      */
     public function login(Request $request)
     {
+
         $this->validateLogin($request);
 
         // If the class is using the ThrottlesLogins trait, we can automatically throttle
@@ -42,8 +53,23 @@ trait AuthenticatesUsers
             return $this->sendLockoutResponse($request);
         }
 
-        if ($this->attemptLogin($request)) {
-            return $this->sendLoginResponse($request);
+        $property = Property::findorFail($request->selected_property_id);
+
+        $attempting_user_email = User::where('email', $request->email)->first();
+        $attempting_user_username = User::where('username', $request->email)->first();
+
+        if ($attempting_user_email == null) {
+            $attempting_user = $attempting_user_username;
+        } else {
+            $attempting_user = $attempting_user_email;
+        }
+
+        $get_role = $attempting_user->getRoleNames()->first();
+        if ($request->role == $get_role) {
+            $check_access = PropertyAccess::where('user_id', $attempting_user->id)->where('property_id', $property->id)->first();
+            if ($check_access && $this->attemptLogin($request)) {
+                return $this->sendLoginResponse($request);
+            } 
         }
 
         // If the login attempt was unsuccessful we will increment the number of attempts

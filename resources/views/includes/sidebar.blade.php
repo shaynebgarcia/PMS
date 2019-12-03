@@ -1,6 +1,9 @@
 <nav class="pcoded-navbar">
     <div class="nav-list">
         <div class="pcoded-inner-navbar main-menu">
+            <div class="pcoded-navigation-label pcoded-navigation-main-label" data-toggle="tooltip" data-placement="right" data-trigger="hover" title="" data-original-title="Property currently managing">
+                {{ $property->name }}
+            </div>
             <div class="pcoded-navigation-label">Navigation</div>
                 <ul class="pcoded-item pcoded-left-item">
                     <li class="pcoded-hasmenu active pcoded-trigger">
@@ -10,7 +13,7 @@
                         </a>
                         <ul class="pcoded-submenu">
                             <li class="active">
-                                <a href="index.html" class="waves-effect waves-dark">
+                                <a href="/" class="waves-effect waves-dark">
                                 <span class="pcoded-mtext">Default</span>
                                  </a>
                             </li>
@@ -21,33 +24,37 @@
                             </li>
                         </ul>
                     </li>
-                    <li class="">
+                    {{-- <li class="">
                         <a href="navbar-light.html" class="waves-effect waves-dark">
                             <span class="pcoded-micon">
                                 <i class="feather icon-menu"></i>
                             </span>
                             <span class="pcoded-mtext">Navigation</span>
                         </a>
-                    </li>
+                    </li> --}}
                 </ul>
             <div class="pcoded-navigation-label">Property Management</div>
                 <ul class="pcoded-item pcoded-left-item">
+                    @role('Admin')
+                        @can('List Property')
+                            <li class=" ">
+                                <a href="{{ route('property.index') }}" class="waves-effect waves-dark">
+                                    <span class="pcoded-micon">
+                                    <i class="feather icon-home"></i>
+                                    </span>
+                                    <span class="pcoded-mtext">Properties</span>
+                                </a>
+                            </li>
+                        @endcan
+                    @endrole
                     <li class=" ">
-                        <a href="{{ route('property.index') }}" class="waves-effect waves-dark">
-                            <span class="pcoded-micon">
-                            <i class="feather icon-home"></i>
-                            </span>
-                            <span class="pcoded-mtext">Properties</span>
-                        </a>
-                    </li>
-                    {{-- <li class=" ">
                         <a href="{{ route('unit.index') }}" class="waves-effect waves-dark">
                             <span class="pcoded-micon">
                             <i class="feather icon-edit-1"></i>
                             </span>
                             <span class="pcoded-mtext">Units</span>
                         </a>
-                    </li> --}}
+                    </li>
                 </ul>
             <div class="pcoded-navigation-label">Tenant Management</div>
                 <ul class="pcoded-item pcoded-left-item">
@@ -85,16 +92,24 @@
                         </a>
                             <ul class="pcoded-submenu">
                                 <li class="">
-                                    {{-- <a href="{{ route('lease.index') }}" class="waves-effect waves-dark"> --}}
+                                    <a href="{{ route('lease.index') }}" class="waves-effect waves-dark">
                                     <span class="pcoded-mtext">Leasing Agreements</span>
                                     </a>
                                 </li>
                                 <li class="">
-                                    <a href="menu-bottom.html" class="waves-effect waves-dark">
-                                    <span class="pcoded-mtext">Contracts</span>
+                                    <a href="{{ route('lease.create') }}" class="waves-effect waves-dark">
+                                    <span class="pcoded-mtext">Create New Agreement</span>
                                     </a>
                                 </li>
                             </ul>
+                    </li>
+                    <li class=" ">
+                        <a href="{{ route('payment.index') }}" class="waves-effect waves-dark">
+                            <span class="pcoded-micon">
+                            <i class="feather icon-edit-1"></i>
+                            </span>
+                            <span class="pcoded-mtext">Payments</span>
+                        </a>
                     </li>
                     <li class="pcoded-hasmenu">
                         <a href="javascript:void(0)" class="waves-effect waves-dark">
@@ -103,13 +118,8 @@
                         </a>
                             <ul class="pcoded-submenu">
                                 <li class="">
-                                    <a href="{{ route('payment.index') }}" class="waves-effect waves-dark">
-                                    <span class="pcoded-mtext">Payment</span>
-                                    </a>
-                                </li>
-                                <li class="">
                                     <a href="menu-bottom.html" class="waves-effect waves-dark">
-                                    <span class="pcoded-mtext">List All Billings</span>
+                                    <span class="pcoded-mtext">Published Billing Invoice</span>
                                     </a>
                                 </li>
                                 <li class=" pcoded-hasmenu">
@@ -119,34 +129,7 @@
                                     <ul class="pcoded-submenu">
                                         <li class="">
                                             <a href="menu-static.html" class="waves-effect waves-dark">
-                                            <span class="pcoded-mtext">List All Utility Types</span>
-                                            </a>
-                                        </li>
-                                        <li class="">
-                                            <a href="menu-header-fixed.html" class="waves-effect waves-dark">
-                                            <span class="pcoded-mtext">Add Billing</span>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </li>
-                                <li class=" pcoded-hasmenu">
-                                    <a href="javascript:void(0)" class="waves-effect waves-dark">
-                                    <span class="pcoded-mtext">Facility Usage</span>
-                                    </a>
-                                    <ul class="pcoded-submenu">
-                                        <li class="">
-                                            <a href="menu-static.html" class="waves-effect waves-dark">
-                                            <span class="pcoded-mtext">Created Facility Usage Fee</span>
-                                            </a>
-                                        </li>
-                                        <li class="">
-                                            <a href="menu-static.html" class="waves-effect waves-dark">
-                                            <span class="pcoded-mtext">List Facility Usage Types</span>
-                                            </a>
-                                        </li>
-                                        <li class="">
-                                            <a href="menu-header-fixed.html" class="waves-effect waves-dark">
-                                            <span class="pcoded-mtext">Add Facility Usage</span>
+                                            <span class="pcoded-mtext">Published Utility Billing Invoice</span>
                                             </a>
                                         </li>
                                     </ul>
@@ -173,9 +156,105 @@
                                         </li>
                                     </ul>
                                 </li>
+                                <li class=" pcoded-hasmenu">
+                                    <a href="javascript:void(0)" class="waves-effect waves-dark">
+                                    <span class="pcoded-mtext">Other Income</span>
+                                    </a>
+                                    <ul class="pcoded-submenu">
+                                        <li class="">
+                                            <a href="menu-header-fixed.html" class="waves-effect waves-dark">
+                                            <span class="pcoded-mtext">Create Job Order</span>
+                                            </a>
+                                        </li>
+                                        <li class="">
+                                            <a href="menu-static.html" class="waves-effect waves-dark">
+                                            <span class="pcoded-mtext">List Services</span>
+                                            </a>
+                                        </li>
+                                        <li class="">
+                                            <a href="menu-static.html" class="waves-effect waves-dark">
+                                            <span class="pcoded-mtext">Add Service</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
                             </ul>
                     </li>
                 </ul>
+            <div class="pcoded-navigation-label">Utilitites & Services</div>
+                <ul class="pcoded-item pcoded-left-item">
+                    <li class="pcoded-hasmenu">
+                        <a href="javascript:void(0)" class="waves-effect waves-dark">
+                            <span class="pcoded-micon"><i class="feather icon-users"></i></span>
+                            <span class="pcoded-mtext">Utilities</span>
+                        </a>
+                        <ul class="pcoded-submenu">
+                            <li class="active">
+                                <a href="{{ route('utilities.index') }}" class="waves-effect waves-dark">
+                                <span class="pcoded-mtext">List All Utilities</span>
+                                 </a>
+                            </li>
+                            <li class="active">
+                                <a href="{{ route('utilities.create') }}" class="waves-effect waves-dark">
+                                <span class="pcoded-mtext">Add new utility/meter</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="pcoded-hasmenu">
+                        <a href="javascript:void(0)" class="waves-effect waves-dark">
+                            <span class="pcoded-micon"><i class="feather icon-file-text"></i></span>
+                            <span class="pcoded-mtext">Services & Subscriptions</span>
+                        </a>
+                            <ul class="pcoded-submenu">
+                                <li class="">
+                                    <a href="{{ route('service-type.index') }}" class="waves-effect waves-dark">
+                                    <span class="pcoded-mtext">Service Types</span>
+                                    </a>
+                                </li>
+                                <li class="">
+                                    <a href="menu-bottom.html" class="waves-effect waves-dark">
+                                    <span class="pcoded-mtext">Active Services</span>
+                                    </a>
+                                </li>
+                            </ul>
+                    </li>
+                    <li class="pcoded-hasmenu">
+                        <a href="javascript:void(0)" class="waves-effect waves-dark">
+                            <span class="pcoded-micon"><i class="feather icon-file-text"></i></span>
+                            <span class="pcoded-mtext">Job Order</span>
+                        </a>
+                            <ul class="pcoded-submenu">
+                                <li class="">
+                                    <a href="#" class="waves-effect waves-dark">
+                                    <span class="pcoded-mtext">Published Job Orders</span>
+                                    </a>
+                                </li>
+                                <li class="">
+                                    <a href="#" class="waves-effect waves-dark">
+                                    <span class="pcoded-mtext">Create A New Job Order</span>
+                                    </a>
+                                </li>
+                                {{-- <li class="">
+                                    <a href="menu-bottom.html" class="waves-effect waves-dark">
+                                    <span class="pcoded-mtext">Contracts</span>
+                                    </a>
+                                </li> --}}
+                            </ul>
+                    </li>
+                </ul>
+            <div class="pcoded-navigation-label">Inventory Management</div>
+                <ul class="pcoded-item pcoded-left-item">
+                    <li class=" ">
+                        <a href="#" class="waves-effect waves-dark">
+                            <span class="pcoded-micon">
+                            <i class="feather icon-home"></i>
+                            </span>
+                            <span class="pcoded-mtext">Inventory</span>
+                        </a>
+                    </li>
+                </ul>
+            @role('Admin')
             <div class="pcoded-navigation-label">Administrator Settings</div>
                 <ul class="pcoded-item pcoded-left-item">
                     <li class="pcoded-hasmenu">
@@ -437,6 +516,7 @@
                     </ul>
                     </li>
                 </ul> --}}
+            @endrole
         </div>
     </div>
 </nav>

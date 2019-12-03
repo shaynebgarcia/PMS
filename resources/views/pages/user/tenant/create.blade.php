@@ -6,11 +6,11 @@
         $breadcrumb_title = config('pms.breadcrumbs.user.tenant-create.title');
         $breadcrumb_subtitle = config('pms.breadcrumbs.user.tenant-create.subtitle');
     @endphp
-    {{ Breadcrumbs::render('tenant-create') }}
+    {{ Breadcrumbs::render('tenant-create', $property) }}
 @endsection
 
 @section('content')
-    <form id="create-tenant" method="POST" action="{{ route('tenant.store') }}">
+    <form id="create-tenant" enctype="multipart/form-data" method="POST" action="{{ route('tenant.store') }}">
     @CSRF
     <div class="col-lg-12 col-md-12 col-sm-12">
         <div class="card">
@@ -18,6 +18,16 @@
                 <h5>Tenant Information</h5>
             </div>
             <div class="card-block">
+                <div class="form-group row">
+                    <label class="col-lg-2 col-md-2 col-sm-2 col-form-label">Photo</label>
+                        <div class="col-lg-10 col-md-10 col-sm-10">
+                            <input type="file" class="form-control" name="user_photo" aria-describedby="fileHelp">
+                            <small id="fileHelp" class="form-text text-muted">Please upload a valid image file. Size of image should not be more than 2MB.</small>
+                            @error('user_photo')
+                                @include('errors.validation')
+                            @enderror
+                        </div>
+                </div>
                 <div class="form-group row">
                     <label class="col-lg-2 col-md-2 col-sm-2 col-form-label">Last Name*</label>
                         <div class="col-lg-10 col-md-10 col-sm-10">
@@ -436,14 +446,36 @@
             </div>
         </div>
 
-        {{-- <div class="card">
+        <div class="card">
             <div class="card-header">
                 <h5>Questions</h5>
             </div>
             <div class="card-block">
-
+                <div class="form-group row">
+                    <label class="col-lg-4 col-md-4 col-sm-4 col-form-label">Where did you find about our apartment?</label>
+                        <div class="col-lg-8 col-md-8 col-sm-8">
+                            <textarea rows="5" type="text" class="form-control" name="survey_question"></textarea>
+                        </div>
+                </div>
             </div>
-        </div> --}}
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h5>Upload Documents/ID</h5>
+            </div>
+            <div class="card-block">
+                <div class="form-group row">
+                    <div class="col-lg-10 col-md-10 col-sm-10">
+                        <input multiple="multiple" name="documents[]" type="file">
+                        <small id="fileHelp" class="form-text text-muted">Select photos and/or documents to be uploaded. Size of file should not be more than 2MB.</small>
+                        @error('documents')
+                            @include('errors.validation')
+                        @enderror
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <div class="form-group row">
             <div class="col-lg-12 col-md-12 col-sm-12 text-right">

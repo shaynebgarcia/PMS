@@ -8,6 +8,7 @@ use Illuminate\Support\Str;
 
 use App\PropertyAccess;
 use App\LeasingAgreement;
+use App\LeasingAgreementDetail;
 use App\Payment;
 use App\PaymentType;
 use App\Billing;
@@ -17,9 +18,14 @@ use App\File;
 
 use Carbon\Carbon;
 use Alert;
+use Storage;
 
 class PaymentController extends Controller
 {
+    public function __construct(Request $request)
+    {
+        $this->property = $request->session()->get('property_id');
+    }
     /**
      * Display a listing of the resource.
      *
@@ -27,9 +33,11 @@ class PaymentController extends Controller
      */
     public function index()
     {
-        $payments = Payment::all()->sortby('created_at');
+        $property = Property::findorFail($this->property);
+        $payments = Payment::where('property_id', $property->id)->get();
+        $files = File::where('model', 'Payment')->get();
         $property_access = PropertyAccess::all();
-        return view('pages.payment.index', compact('payments', 'property_access'));
+        return view('pages.payment.index', compact('property', 'payments', 'files', 'property_access'));
     }
 
     /**
@@ -39,12 +47,13 @@ class PaymentController extends Controller
      */
     public function create()
     {
+        $property = Property::findorFail($this->property);
         $leases = LeasingAgreement::all();
         $tenants = Tenant::all();
         $properties = Property::all();
         $types = PaymentType::all();
         $bills = Billing::all();
-        return view('pages.payment.create', compact('leases', 'properties', 'types', 'tenants', 'bills'));
+        return view('pages.payment.create', compact('property', 'leases', 'properties', 'types', 'tenants', 'bills'));
     }
 
     /**
@@ -70,6 +79,7 @@ class PaymentController extends Controller
 
         // Creating payment
             $payment_stored = Payment::create([
+                'property_id' => $this->property,
                 'leasing_agreement_details_id' => $request->agreement,
                 'billing_id' => $request->bill,
                 'tenant_id' => $request->tenant,
@@ -83,21 +93,43 @@ class PaymentController extends Controller
             ]);
 
             // Updating slug payment
-            $payment_stored->update(['slug' => 'payment-'.$payment_stored->id]);
+            $payment_stored->update(['slug' => 'PYM-'.$payment_stored->id]);
 
-            if (request()->hasFile('payment_file')) {
+            // if (request()->hasFile('payment_file')) {
+            //     $file_stored = File::create([   'name' => 'Payment',
+            //                                     'model' => 'Payment',
+            //                                     'path' => $request->file('payment_file')->store('payments')
+            //                                 ]);
+            //     $payment_stored->update([   'file_id' => $file_stored->id
+            //                             ]);
+            // }
+
+            // Handle File Upload
+            if($request->hasFile('payment_file')){
+                // Get filename with the extension
+                $filenameWithExt = $request->file('payment_file')->getClientOriginalName();
+                // Get just filename
+                $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME);
+                // Get just ext
+                $extension = $request->file('payment_file')->getClientOriginalExtension();
+                // Filename to store
+                $fileNameToStore= $filename.'_'.time().'.'.$extension;
+                // Upload Image
                 $file_stored = File::create([   'name' => 'Payment',
-                                                'path' => $request->file('payment_file')->store('payments')
+                                                'model' => 'Payment',
+                                                'path' => $request->file('payment_file')->storeAs('payments', $fileNameToStore)
                                             ]);
                 $payment_stored->update([   'file_id' => $file_stored->id
                                         ]);
+            } else {
+                $fileNameToStore = 'noimage.jpg';
             }
 
             if (!$payment_stored) {
                 Alert::error('Encountered an error', 'Oops')->persistent('Close');
                 return redirect()->route('payment.create');
             } else {
-                Alert::success('Payment creation complete', 'Success')->persistent('Close');
+                Alert::success('Payment creation complete '.$payment_stored->slug, 'Success')->persistent('Close');
                 return redirect()->route('payment.index');
             }
     }
@@ -121,7 +153,14 @@ class PaymentController extends Controller
      */
     public function edit($slug)
     {
-        //
+        $property = Property::findorFail($this->property);
+        $payment = Payment::where('slug', $slug)->first();
+        $leases = LeasingAgreement::all();
+        $tenants = Tenant::all();
+        $properties = Property::all();
+        $types = PaymentType::all();
+        $bills = Billing::all();
+        return view('pages.payment.edit', compact('property', 'payment', 'leases', 'properties', 'types', 'tenants', 'bills'));
     }
 
     /**
@@ -133,7 +172,18 @@ class PaymentController extends Controller
      */
     public function update(Request $request, $slug)
     {
-        //
+        $request->validate([
+            'tenant' => 'required',
+            'payment_type' => 'required',
+            'amount_due' => 'required',
+            'amount_paid' => 'required',
+            'date_payment' => 'required',
+            'reference_no' => 'nullable',
+            'note' => 'nullable',
+            'payment_file' => 'nullable',
+            'agreement' => 'nullable',
+            'bill' => 'required_if:payment_type,1',
+        ]);
     }
 
     /**
@@ -145,5 +195,35 @@ class PaymentController extends Controller
     public function destroy($slug)
     {
         //
+    }
+
+    public function group($link, $id)
+    {
+        $property = Property::findorFail($this->property);
+        $lease = LeasingAgreement::findorFail($link);
+        $lease_detail = LeasingAgreementDetail::findorFail($id);
+        $null_payments = Payment::where('leasing_agreement_details_id', null)->get();
+        $payments = Payment::where('leasing_agreement_details_id', $id)->get();
+        $now = Carbon::now();
+        return view('pages.payment.group', compact('property', 'lease', 'lease_detail', 'payments', 'null_payments'));
+    }
+
+    public function attach(Request $request, $link, $id)
+    {
+        $request->validate([
+            'payment_attach' => 'required',
+        ]);
+
+        // $property = Property::where('code', $code)->first();
+        // $lease = LeasingAgreement::findorFail($link);
+        $lease_detail = LeasingAgreementDetail::findorFail($id);
+
+        $payment = Payment::findorFail($request->payment_attach);
+        $update = $payment->update([
+            'leasing_agreement_details_id' => $id
+        ]);
+
+        Alert::success('Payment has been attached', 'Success');
+        return redirect()->route('payment.group.lease', [$link, $id]);
     }
 }

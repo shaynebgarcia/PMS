@@ -18,7 +18,7 @@
 @section('content')
     <div class="row">
         <div class="col-lg-12 col-md-12 col-sm-12">
-        	<form id="lease-store" method="POST" action="{{ route('lease.store', $property->id) }}">
+        	<form id="lease-store" method="POST" action="{{ route('lease.store', $property->code) }}">
 	        @CSRF
 	            <div class="card">
 	                <div class="card-header">
@@ -30,7 +30,7 @@
 	                        <label class="col-lg-2 col-md-2 col-sm-2 col-form-label">Property/Unit*</label>
 	                            <div class="col-lg-10 col-md-10 col-sm-10">
 	                                <select class="select2" name="unit" style="width: 100%">
-	                                    <option value="#" disabled selected>Select Unit</option>
+	                                    <option value="#" disabled selected>Select an Available Unit</option>
 	                                    @foreach($properties as $property)
 	                                        <optgroup label="{{ $property->name }}">
 	                                            @foreach($units->where('property_id', $property->id) as $unit)
@@ -65,10 +65,8 @@
                                     @enderror
 	                            </div>
 	                            <div class="col-lg-1 col-md-1 col-sm-1">
-	                                <a href="{{ route('user.create') }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Fill-up user information sheet">
-	                                    <button class="btn waves-effect waves-light btn-primary btn-icon" style="height: 40px;width: 40px; padding: 0;line-height: 0;padding-left: 6px;">
-	                                        <i class="fa fa-user-plus fa-lg"></i>
-	                                    </button>
+	                                <a href="{{ route('tenant.create') }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Fill-up tenant information sheet">
+	                                        <i class="fa fa-user-plus fa-2x text-c-blue"></i>
 	                                </a>
 	                            </div>
 	                    </div>
@@ -81,7 +79,7 @@
 	                </div>
 	                <div class="card-block">
 	                	{{-- INPUT Agreement Unique Number --}}
-	                    <div class="form-group row">
+	                    {{-- <div class="form-group row">
 	                        <label class="col-lg-2 col-md-2 col-sm-2 col-form-label">Agreement NO</label>
 	                            <div class="col-lg-10 col-md-10 col-sm-10">
 	                            	<input type="text" class="form-control" name="agreement_no" value="">
@@ -91,7 +89,7 @@
                                         </span>
                                     @enderror
 	                            </div>
-	                    </div>
+	                    </div> --}}
 	                    {{-- INPUT Lease Price --}}
 	                    <div class="form-group row">
 	                        <label class="col-lg-2 col-md-2 col-sm-2 col-form-label">Rent (Monthly)</label>
@@ -101,6 +99,11 @@
 	                                        <label class="input-group-text">{{ config('pms.currency.sign') }}</label>
 	                                    </span>
 	                                    <input type="number" min="1" step="any" class="form-control {{-- autonumber fill --}}" name="agreed_lease_price" value="" placeholder="Override lease price here. Leave blank to keep default leasing price">
+	                                    @error('agreed_lease_price')
+	                                        <span class="messages">
+	                                            <p class="text-danger error">{{ $message }}</p>
+	                                        </span>
+	                                    @enderror
 	                                </div>
 	                            </div>
 	                    </div>
@@ -109,38 +112,37 @@
 	                        <label class="col-lg-2 col-md-2 col-sm-2 col-form-label">Term Start</label>
 	                            <div class="col-lg-4 col-md-4 col-sm-4">
 	                                <input type="date" class="form-control" name="term_start">
+	                                @error('term_start')
+	                                    <span class="messages">
+	                                        <p class="text-danger error">{{ $message }}</p>
+	                                    </span>
+	                                @enderror
 	                            </div>
 	                        <label class="col-lg-2 col-md-2 col-sm-2 col-form-label">Term End</label>
 	                            <div class="col-lg-4 col-md-4 col-sm-4">
 	                                <input type="date" class="form-control" name="term_end">
-	                            </div>
-	                    </div>
-	                    {{-- INPUT Monthly Due/Collection --}}
-	                    <div class="form-group row">
-	                        <label class="col-lg-2 col-md-2 col-sm-2 col-form-label">Monthly Billing Date</label>
-	                            <div class="col-lg-4 col-md-4 col-sm-4">
-	                            	<div class="input-group">
-	                                    <span class="input-group-prepend">
-	                                        <label class="input-group-text">Every</label>
+	                                @error('term_end')
+	                                    <span class="messages">
+	                                        <p class="text-danger error">{{ $message }}</p>
 	                                    </span>
-	                                    <input type="number" min=1 max=31 class="form-control" name="monthly_due">
-	                                    <span class="input-group-append">
-											<label class="input-group-text">of the month</label>
-										</span>
-	                                </div>
-	                                @error('monthly_due')
-                                        <span class="messages">
-                                            <p class="text-danger error">{{ $message }}</p>
-                                        </span>
-                                    @enderror
+	                                @enderror
 	                            </div>
 	                    </div>
-	                    {{-- INPUT Move-in/First Day --}}
+	                    {{-- SELECT Term DURATION --}}
 	                    <div class="form-group row">
-	                        <label class="col-lg-2 col-md-2 col-sm-2 col-form-label">Move-in Date</label>
-	                            <div class="col-lg-4 col-md-4 col-sm-4">
-	                                <input type="date" class="form-control" name="first_day">
-	                            </div>
+	                    	<label class="col-lg-2 col-md-2 col-sm-2 col-form-label">Term Duration</label>
+	                    	<div class="col-lg-4 col-md-4 col-sm-4">
+	                    		<select name="term_duration" class="js-example-basic-single" style="width:100%;">
+                                    <option disabled selected value>Select Month(s)</option>
+                                        <option value="6">6 months</option>
+                                        <option value="12">12 months</option>
+                                 </select>
+                                 @error('term_duration')
+                                    <span class="messages">
+                                        <p class="text-danger error">{{ $message }}</p>
+                                    </span>
+                                @enderror
+	                    	</div>
 	                    </div>
 	                </div>
 	            </div>
@@ -155,7 +157,8 @@
                              <thead>
                                  <tr>
                                     <th width="40%">Subscriptions</th>
-                                    <th width="20%">Amount</th>
+                                    <th width="10%">Monthly Amount</th>
+                                    <th width="10%">Daily Amount</th>
                                     <th width="10%">
                                     	<a href="#" id="addrow">
                                     		<button class="btn waves-effect waves-light btn-success btn-icon" style="height: 40px;width: 40px; padding: 0;line-height: 0;padding-left: 6px;">
@@ -171,7 +174,7 @@
                                   <select name="subscriptions[]" class="js-example-basic-single" style="width:100%;">
                                     <option disabled selected value>Select Service(s)</option>
                                       @foreach ($services->where('is_subscription', true) as $subscription)
-                                        <option value="{{ $subscription->id }}">{{ $subscription->name }} ({{ $subscription->monthly_price_length }})</option>
+                                        <option value="{{ $subscription->id }}">{{ $subscription->name }} ({{ $subscription->monthly_price_length }}) ({{ $subscription->daily_price_length }})</option>
                                       @endforeach
                                   </select>
                                 </td>
@@ -201,7 +204,7 @@
 	                    <h5>Payment</h5>
 	                </div>
 	                <div class="card-block">
-	                    {{-- SELECT Property --}}
+	                    {{-- SELECT Payment --}}
 	                    <div class="form-group row">
 	                        <label class="col-lg-2 col-md-2 col-sm-2 col-form-label">Reservation</label>
 	                            <div class="col-lg-9 col-md-9 col-sm-9">
@@ -212,32 +215,66 @@
                                                 {{ $payment->payment_type->name }} - {{ $payment->reference_no }} ({{ $payment->date_paid }}) | {{ $payment->tenant->user->fullnamewm }} ({{ $payment->amount_paid_currency_sign }})
                                             </option>
 	                                    @endforeach
+	                                    <option value="null">None</option>
 	                                </select>
 	                            </div>
 	                            <div class="col-lg-1 col-md-1 col-sm-1">
 	                                <a href="{{ route('payment.create') }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Create Payment">
-	                                    <button class="btn waves-effect waves-light btn-primary btn-icon" style="height: 40px;width: 40px; padding: 0;line-height: 0;padding-left: 6px;">
-	                                        <i class="fa fa-credit-card fa-lg"></i>
-	                                    </button>
+	                                       <i class="fa fa-credit-card fa-2x text-c-blue"></i>
 	                                </a>
 	                            </div>
 	                    </div>
 	                    <div class="form-group row">
-	                        <label class="col-lg-2 col-md-2 col-sm-2 col-form-label">Full Payment</label>
+	                        <label class="col-lg-2 col-md-2 col-sm-2 col-form-label">Full Payment/ Advance Payment Deposit</label>
 	                            <div class="col-lg-9 col-md-9 col-sm-9">
-	                                <select class="select2" name="reservation" style="width: 100%">
+	                                <select class="select2" name="full_payment" style="width: 100%">
 	                                    <option value="#" disabled selected>Select Payment</option>
-	                                    @foreach($payments->where('payment_type_id', 4) as $payment)
+	                                    @foreach($payments->where('payment_type_id', 3) as $payment)
                                             <option value="{{ $payment->id }}">
                                                 {{ $payment->payment_type->name }} - {{ $payment->reference_no }} ({{ $payment->date_paid }}) | {{ $payment->tenant->user->fullnamewm }} ({{ $payment->amount_paid_currency_sign }})
                                             </option>
 	                                    @endforeach
+	                                    <option value="null">None</option>
 	                                </select>
 	                            </div>
 	                    </div>
 	                </div>
 	            </div>
 
+	            <div class="card">
+	            	<div class="card-header">
+	                    <h5>Billing</h5>
+	                </div>
+	                <div class="card-block">
+	                	{{-- INPUT Monthly Due/Collection --}}
+	                    <div class="form-group row">
+	                        <label class="col-lg-2 col-md-2 col-sm-2 col-form-label">Pay Period</label>
+	                            <div class="col-lg-4 col-md-4 col-sm-4">
+	                            	<div class="input-group">
+	                                    <span class="input-group-prepend">
+	                                        <label class="input-group-text">Every</label>
+	                                    </span>
+	                                    <input type="number" min=1 max=31 class="form-control" name="monthly_due">
+	                                    <span class="input-group-append">
+											<label class="input-group-text">of the month</label>
+										</span>
+	                                </div>
+	                                @error('monthly_due')
+                                        <span class="messages">
+                                            <p class="text-danger error">{{ $message }}</p>
+                                        </span>
+                                    @enderror
+	                            </div>
+	                    </div>
+	                    {{-- INPUT Move-in/First Day --}}
+	                    <div class="form-group row">
+	                        <label class="col-lg-2 col-md-2 col-sm-2 col-form-label">Date Start of Billing</label>
+	                            <div class="col-lg-4 col-md-4 col-sm-4">
+	                                <input type="date" class="form-control" name="first_day">
+	                            </div>
+	                    </div>
+	                </div>
+	            </div>
 	            {{-- SELECT TABLE Deposits --}}
 	            {{-- <div class="card">
 	            	<div class="card-header">

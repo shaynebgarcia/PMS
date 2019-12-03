@@ -13,7 +13,7 @@ class Payment extends Model
         'note', 'processed_by_user',
         'slug',
         'file_id',
-        'date_payment'
+        'date_paid'
     ];
 
     public function payment_type()
@@ -31,6 +31,10 @@ class Payment extends Model
     public function bill()
     {
         return $this->belongsTo(Billing::class, 'billing_id');
+    }
+    public function supporting_file()
+    {
+        return $this->belongsTo(File::class);
     }
     public function getAmountDueCurrencySignAttribute()
     {

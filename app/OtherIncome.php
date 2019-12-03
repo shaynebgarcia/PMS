@@ -10,18 +10,24 @@ class OtherIncome extends Model
         'leasing_agreement_details_id',
         'other_income_type_id',
         'to_bill',
-        'amount',
+        'total_amount',
         'note',
     ];
 
-    public function getAmountCurrencySignAttribute()
+    public function income_type()
     {
-        $num_format = config('pms.currency.sign').number_format($this->amount, 2);
+        return $this->belongsTo(OtherIncomeType::class, 'other_income_type_id');
+    }
+
+    public function getTotalAmountCurrencySignAttribute()
+    {
+        $num_format = config('pms.currency.sign').number_format($this->total_amount, 2);
         return $num_format;
     }
-    public function getAmountCurrencyCodeAttribute()
+
+    public function getTotalAmountCurrencyCodeAttribute()
     {
-        $num_format = number_format($this->amount, 2)." ".config('pms.currency.code');
+        $num_format = number_format($this->total_amount, 2)." ".config('pms.currency.code');
         return $num_format;
     }
 }

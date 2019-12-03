@@ -33,7 +33,6 @@ class Faker2TableSeeder extends Seeder
     		'agreement_status_id' => 1,
 
     		'created_at' => Carbon\Carbon::now(),
-        	'updated_at' => Carbon\Carbon::now(),
     	]);
 	    	// Agreement Details
 	    	$lease_detail = LeasingAgreementDetail::create([
@@ -46,16 +45,17 @@ class Faker2TableSeeder extends Seeder
 	    		'first_day' => '2019-08-30',
 	    		'monthly_due' => 30,
 	    		'status' => 'Active',
+                'last_billing_my' => date('MY', strtotime('2020-08-29')),
 
 	    		'created_at' => Carbon\Carbon::now(),
 	    	]);
 
             // Updating tenant role
-            $tenant = Tenant::where('id', $lease->tenant_id)->first();
-            $user = User::where('id', $tenant->user_id)->first();
-            $user_updated = $user->update([
-                'role_id' => 8,
-            ]);
+            // $tenant = Tenant::where('id', $lease->tenant_id)->first();
+            // $user = User::where('id', $tenant->user_id)->first();
+            // $user_updated = $user->update([
+            //     'role_id' => 8,
+            // ]);
 
             // Updating unit status
             $unit = Unit::where('id', $lease->unit_id)->first();
@@ -65,6 +65,7 @@ class Faker2TableSeeder extends Seeder
 
     	// Reservation
     	Payment::create([
+            'property_id' => 5,
 	        'payment_type_id' => 2,
 			'leasing_agreement_details_id' => $lease_detail->id,
 			'billing_id' => null,
@@ -82,7 +83,8 @@ class Faker2TableSeeder extends Seeder
 
     	// Full Payment
     	Payment::create([
-	        'payment_type_id' => 4,
+            'property_id' => 5,
+	        'payment_type_id' => 3,
 			'leasing_agreement_details_id' => $lease_detail->id,
 			'billing_id' => null,
 			
@@ -113,16 +115,28 @@ class Faker2TableSeeder extends Seeder
 
     	// Utility Billing
     	UtilityBill::create([
+            'property_id' => 5,
     		'leasing_agreement_details_id' => $lease_detail->id,
     		'utility_id' => 1,
     		'to_bill' => 'Oct2019',
+            'start_date' => '2019-08-25',
+            'end_date' => '2019-09-25',
+            'prev_reading' => '1045',
+            'pres_reading' => '990',
+            'kw_used' => '30',
     		'amount' =>  3076.25,
     		'created_at' => Carbon\Carbon::now(),
     	]);
     	UtilityBill::create([
+            'property_id' => 5,
     		'leasing_agreement_details_id' => $lease_detail->id,
     		'utility_id' => 12,
     		'to_bill' => 'Oct2019',
+            'start_date' => '2019-09-01',
+            'end_date' => '2019-10-01',
+            'prev_reading' => '130',
+            'pres_reading' => '125',
+            'cubic_meter' => '21',
     		'amount' =>  550.00,
     		'created_at' => Carbon\Carbon::now(),
     	]);
@@ -130,7 +144,7 @@ class Faker2TableSeeder extends Seeder
     	//Billing
     	$bill = Billing::create([
     		'leasing_agreement_details_id' => $lease_detail->id,
-    		'invoice_no' => 'INV-6589',
+    		'invoice_no' => '19X-001',
     		'monthyear' => 'Oct2019',
     		'billing_from' => '2019-09-30',
     		'billing_to' => '2019-10-29',
@@ -175,8 +189,9 @@ class Faker2TableSeeder extends Seeder
                 'created_at' => Carbon\Carbon::now(),
             ]);
 
-        // Full Payment
+        // Bill Payment
         Payment::create([
+            'property_id' => 5,
             'payment_type_id' => 1,
             'leasing_agreement_details_id' => $lease_detail->id,
             'billing_id' => $bill->id,

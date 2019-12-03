@@ -2,11 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Service;
 use Illuminate\Http\Request;
+use App\Service;
+use App\Property;
+use App\LeasingAgreement;
+use App\LeasingAgreementDetail;
+use App\ServiceType;
 
 class ServiceController extends Controller
 {
+    public function __construct(Request $request)
+    {
+        $this->property = $request->session()->get('property_id');
+    }
     /**
      * Display a listing of the resource.
      *
@@ -81,5 +89,15 @@ class ServiceController extends Controller
     public function destroy(Service $service)
     {
         //
+    }
+
+    public function group($link, $id)
+    {
+        $property = Property::findorFail($this->property);
+        $lease = LeasingAgreement::findorFail($link);
+        $lease_detail = LeasingAgreementDetail::findorFail($id);
+        $services = Service::where('leasing_agreement_details_id', $id)->get();
+
+        return view('pages.service.service-subscriptions.group', compact('property', 'lease', 'lease_detail', 'services'));
     }
 }

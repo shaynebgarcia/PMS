@@ -10,6 +10,34 @@ return [
         'name' => 'SMART MAIL',
     ],
 
+    // Default currency to use
+    'currency' => [
+        'title' => 'Philippine Peso',
+        'code' => 'PHP',
+        'sign' => '₱',
+    ],
+
+    'unique_prefix' => [
+        'leasing_agreement' => '',
+        'leasing_agreement_details' => 'AGR-',
+    ],
+
+    'billing' => [
+        'invoice' => [
+            //Filtered ID format
+            'num_filter' => '%03d',
+            // Needs to be invoiced before
+            'before_due_date' => '-7 day', 
+            'before_due_date_limit' => '-3 day', 
+            // After issuing invoice
+            'after_due_date' => '+3 day',
+            'after_due_date_limit' => '+1 day',
+            'terms' => [
+                
+            ],
+        ],
+    ],
+
 	'breadcrumbs' => [
         'default' => [
             'icon' => 'icon-home',
@@ -39,7 +67,7 @@ return [
             'icon' => 'icon-home',
             'unit-index' => [
                 'title' => 'Units',
-                'subtitle' => 'Lists all units',
+                'subtitle' => 'Lists all units under a property',
             ],
             'unit-show' => [
                 'title' => '{ ? }',
@@ -64,6 +92,80 @@ return [
                 'title' => 'Update Unit Type Details - ',
                 'subtitle' => "Form to update an existing unit type's details",
             ],
+        ],
+        'payment' => [
+            'icon' => 'icon-home',
+            'payment-index' => [
+                'title' => 'Payments',
+                'subtitle' => 'List of all payments under a property',
+            ],
+            'payment-create' => [
+                'title' => 'Create New Payment',
+                'subtitle' => 'Form to create a new payment',
+            ],
+            'payment-edit' => [
+                'title' => 'Update Payment Details - ',
+                'subtitle' => "Form to update an existing payment details",
+            ],
+            'payment-group' => [
+                'title' => 'Payments & Deposits',
+                'subtitle' => 'Lists all payments and deposits under an agreement',
+            ],
+        ],
+        'utility' => [
+            'icon' => 'icon-zap',
+            'utility-index' => [
+                'title' => 'Utilities',
+                'subtitle' => 'List of all utilities under a property',
+            ],
+            'utility-create' => [
+                'title' => 'Create New Utility',
+                'subtitle' => 'Form to create a new utility',
+            ],
+            'utility-edit' => [
+                'title' => 'Update Utility Details - ',
+                'subtitle' => "Form to update an existing utility details",
+            ],
+            'utility-bill-index' => [
+                'title' => 'Utility Billing',
+                'subtitle' => 'Lists all utility bill',
+            ],
+            'utility-bill-group' => [
+                'title' => 'Utility Billing',
+                'subtitle' => 'Lists all utility bill under an agreement',
+            ],
+        ],
+        'service' => [
+            'icon' => 'icon-zap',
+            'service-index' => [
+                'title' => 'Services & Subscriptions',
+                'subtitle' => 'List of all services and/or subscriptions',
+            ],
+            'service-create' => [
+                'title' => 'Create A New Service',
+                'subtitle' => 'Form to create a new service',
+            ],
+            'service-edit' => [
+                'title' => 'Update Service Details - ',
+                'subtitle' => "Form to update an existing service details",
+            ],
+            'service-bill-group' => [
+                'title' => 'Services & Subscription Billing',
+                'subtitle' => "Lists all services billing",
+            ],
+            'service-type-index' => [
+                'title' => 'Services & Subscriptions Types',
+                'subtitle' => 'Lists all types of services and/or subscriptions',
+            ],
+            'service-type-create' => [
+                'title' => 'Create A New Service Type',
+                'subtitle' => 'Form to create a new service type',
+            ],
+            'service-type-edit' => [
+                'title' => 'Update Service Type Details - ',
+                'subtitle' => "Form to update an existing service type details",
+            ],
+
         ],
         'lease' => [
             'icon' => 'icon-feather',
@@ -153,26 +255,10 @@ return [
         ],
     ],
 
-    // Default currency to use
-    'currency' => [
-        'title' => 'Philippine Peso',
-        'code' => 'PHP',
-        'sign' => '₱',
-    ],
 
-    'billing' => [
-        'invoice' => [
-            // Needs to be invoiced before
-            'before_due_date' => '-7 day', 
-            'before_due_date_limit' => '-3 day', 
-            // After issuing invoice
-            'after_due_date' => '+3 day',
-            'after_due_date_limit' => '+1 day',
-            'terms' => [
-                
-            ],
-        ],
-    ],
+
+
+
     'contract' => [
         // Needs to be notified before expiry
         'before_due_date' => '-3 month', 

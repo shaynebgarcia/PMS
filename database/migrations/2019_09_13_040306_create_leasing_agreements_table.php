@@ -19,6 +19,7 @@ class CreateLeasingAgreementsTable extends Migration
             $table->integer('property_id');
             $table->integer('unit_id');
             $table->integer('tenant_id');
+            /*$table->integer('tenant_list_id');*/
             $table->integer('agreement_status_id');
             $table->timestamps();
         });

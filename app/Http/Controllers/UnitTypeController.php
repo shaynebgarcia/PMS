@@ -3,12 +3,18 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+
 use App\Property;
 use App\UnitType;
+
 use Alert;
 
 class UnitTypeController extends Controller
 {
+    public function __construct(Request $request)
+    {
+        $this->property = $request->session()->get('property_id');
+    }
     /**
      * Display a listing of the resource.
      *
@@ -24,9 +30,9 @@ class UnitTypeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create($id)
+    public function create()
     {
-        $property = Property::findorFail($id);
+        $property = Property::findorFail($this->property);
         return view('pages.unit-type.create', compact('property'));
     }
 
@@ -36,7 +42,7 @@ class UnitTypeController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request, $id)
+    public function store(Request $request)
     {
         $request->validate([
             'name' => 'required|max:255',
@@ -44,7 +50,7 @@ class UnitTypeController extends Controller
             'lease_price' => 'required|max:255',
         ]);
 
-        $property = Property::findorFail($id);
+        $property = Property::findorFail($this->property);
 
         $store = UnitType::create([
             'property_id' => $property->id,
@@ -55,10 +61,10 @@ class UnitTypeController extends Controller
 
         if (!$store) {
             Alert::error('Encountered an error', 'Oops')->persistent('Close');
-            return redirect()->route('property.show', $property->id);
+            return redirect()->route('unit.index');
         } else {
             Alert::success('Created a new unit type '.'"'.$store->name." (".$store->size.")".'"','Success')->autoclose(2500);
-            return redirect()->route('property.show', $property->id);
+            return redirect()->route('unit.index');
         }
     }
 
@@ -79,10 +85,9 @@ class UnitTypeController extends Controller
      * @param  \App\UnitType  $unitType
      * @return \Illuminate\Http\Response
      */
-    public function edit($id, UnitType $unitType)
+    public function edit(UnitType $unitType)
     {
-        $property = Property::findorFail($id);
-
+        $property = Property::findorFail($this->property);
         return view('pages.unit-type.edit', compact('property', 'unitType'));
     }
 
@@ -93,7 +98,7 @@ class UnitTypeController extends Controller
      * @param  \App\UnitType  $unitType
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id, UnitType $unitType)
+    public function update(Request $request, UnitType $unitType)
     {
         $request->validate([
             'name' => 'required|max:255',
@@ -101,7 +106,7 @@ class UnitTypeController extends Controller
             'lease_price' => 'required|max:255',
         ]);
 
-        $property = Property::findorFail($id);
+        $property = Property::findorFail($this->property);
 
         $update = $unitType->update([
             'name' => $request->name,
@@ -124,8 +129,8 @@ class UnitTypeController extends Controller
      * @param  \App\UnitType  $unitType
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Property $property, UnitType $unitType)
+    public function destroy(UnitType $unitType)
     {
-        //
+        $property = Property::findorFail($this->property);
     }
 }

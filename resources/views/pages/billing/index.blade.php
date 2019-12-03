@@ -22,10 +22,10 @@
             	<div class="form-group row">
             		<label class="col-lg-3 col-md-3 col-sm-3 col-form-label">Generate Bill</label>
                         <div class="col-lg-9 col-md-9 col-sm-9">
-                        	<a href="{{ route('billing.display', [$property->id, $lease_detail->id, $bill_this])}}">
+                        	<a href="{{ route('billing.display', [$property->code, $lease_detail->id, $bill_this])}}">
 			            		<button class="btn btn-primary btn-sm">{{ date('F Y', strtotime($bill_this)) }}</button>
 			            	</a>
-			            	<input id="property_id" value="{{ $property->id }}" hidden>
+			            	<input id="property_id" value="{{ $property->code }}" hidden>
 			            	<input id="lease_d_id" value="{{ $lease_detail->id }}" hidden>
                         </div>
             	</div>
@@ -99,7 +99,7 @@
 	                        @foreach($billings as $bill)
 	                            <tr>
 	                            	<td class="f-12">
-	                                    <a href="{{ route('export.invoice', [$property->id, $bill->leasing_agreement_details_id, $bill->id]) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="View Invoice">
+	                                    <a href="{{ route('export.invoice', [$property->code, $bill->leasing_agreement_details_id, $bill->id]) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="View Invoice">
 	                                        <i class="icon feather icon-eye f-w-600 f-18 m-r-15 text-c-blue"></i>
 	                                    </a>
 	                                </td>

@@ -44,7 +44,7 @@
 	                        @foreach($leases as $lease)
 	                            <tr>
 	                            	<td class="f-12">
-	                                    <a href="{{ route('export.invoice', [$property->id, $lease_detail->id, $bill->id]) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="View Invoice">
+	                                    <a href="{{ route('export.invoice', [$property->code, $lease_detail->id, $bill->id]) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="View Invoice">
 	                                        <i class="icon feather icon-eye f-w-600 f-18 m-r-15 text-c-blue"></i>
 	                                    </a>
 	                                </td>

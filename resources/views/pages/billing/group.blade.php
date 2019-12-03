@@ -20,12 +20,13 @@
     	<div class="card">
             <div class="card-block">
             	<div class="form-group row">
-            		<label class="col-lg-3 col-md-3 col-sm-3 col-form-label">Generate Bill</label>
+            		<label class="col-lg-3 col-md-3 col-sm-3 col-form-label">Generate Next Bill</label>
                         <div class="col-lg-9 col-md-9 col-sm-9">
-                        	<a href="{{ route('billing.display', [$property->id, $lease->id, $lease_detail->id, $bill_this])}}">
+                        	<a href="{{ route('billing.display', [$lease->id, $lease_detail->id, $bill_this])}}">
 			            		<button class="btn btn-primary btn-sm">{{ date('F Y', strtotime($bill_this)) }}</button>
 			            	</a>
-			            	<input id="property_id" value="{{ $property->id }}" hidden>
+			            	<input id="property_id" value="{{ $property->code }}" hidden>
+			            	<input id="lease_id" value="{{ $lease_detail->agreement->id }}" hidden>
 			            	<input id="lease_d_id" value="{{ $lease_detail->id }}" hidden>
                         </div>
             	</div>
@@ -46,7 +47,7 @@
                         </div>
                 </div>
             	<div class="form-group row">
-            		<label class="col-lg-3 col-md-3 col-sm-3 col-form-label">Generate Previous Bill</label>
+            		<label class="col-lg-3 col-md-3 col-sm-3 col-form-label">Generate Bill</label>
                         <div class="col-lg-7 col-md-7 col-sm-7">
                         	<select class="select2" id="gen_prev_bill" style="width: 100%">
                                 <option value="#" disabled selected>Select Month</option>
@@ -93,7 +94,7 @@
 	                        @foreach($billings as $bill)
 	                            <tr>
 	                            	<td class="f-12">
-	                                    <a href="{{ route('export.invoice', [$property->id, $lease->id, $lease_detail->id, $bill->id]) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="View Invoice">
+	                                    <a href="{{ route('export.invoice', [$lease->id, $lease_detail->id, $bill->id]) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="View Invoice">
 	                                        <i class="icon feather icon-eye f-w-600 f-18 m-r-15 text-c-blue"></i>
 	                                    </a>
 	                                </td>
@@ -180,9 +181,10 @@
 			$("#gen_prev_bill").change(function(){
 		        var monthyear = $(this).val();
 		        var property = $("#property_id").val();
+		        var link = $("#lease_id").val();
 		        var lease = $("#lease_d_id").val();
-		        console.log(monthyear);
-		        $("#gen_prev_bill_btn").attr("href", "/property/"+property+"/lease/"+lease+"/bill/"+ monthyear);
+		        console.log(link);
+		        $("#gen_prev_bill_btn").attr("href", "/lease/"+link+"/"+lease+"/billing/"+ monthyear);
 		    });
 		});
 	</script>

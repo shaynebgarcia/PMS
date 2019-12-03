@@ -28,7 +28,7 @@
         <div class="card-block">
             @if(count($users) > 0)
                 <div>
-                    <table id="order-table" class="table table-striped table-bordered">
+                    <table id="order-table" class="table table-responsive table-bordered">
                         <thead>
                             <tr>
                                 <th>Full Name</th>
@@ -48,7 +48,9 @@
                                         </a>
                                     </td>
                                     <td style="font-size: 13px; text-transform: capitalize;">
-                                        {{ $user->role->title }}
+                                        @foreach($user->getRoleNames() as $role)
+                                            {{ $role }} <br>
+                                        @endforeach
                                     </td>
                                     <td style="font-size: 13px;">
                                         {{ $user->username }}

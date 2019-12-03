@@ -6,7 +6,7 @@
         $breadcrumb_title = $tenant->user->fullnamewm;
 		$breadcrumb_subtitle = config('pms.breadcrumbs.user.tenant-show.subtitle');
     @endphp
-    {{ Breadcrumbs::render('tenant-show', $tenant) }}
+    {{ Breadcrumbs::render('tenant-show', $property, $tenant) }}
 @endsection
 
 @section('content')
@@ -45,7 +45,7 @@
 							<h5>{{ $tenant->user->fullnamewm }}</h5>
 						</div>
 						<div class="card-block">
-							<img src="@if($tenant->user->image_file_id == null) https://api.adorable.io/avatars/285/<?php echo rand(5, 15); ?>@adorable.png @else {{ $tenant->user->image_file_id }} @endif"  class="img-radius img-100" alt="user.png" style="margin:0 30% 0 30%;">
+							<img src="@if($tenant->user->image_file_id == null) https://api.adorable.io/avatars/285/<?php echo rand(5, 15); ?>@adorable.png @else {{ asset(Storage::url($avatar->path)) }} @endif"  class="img-radius img-100" alt="user.png" style="margin:0 30% 0 30%;">
 							@if ($tenant->user->lastname == !null)
 								<div class="row mt-4">
 				                	<p class="col-4 f-12 p-r-0">Last Name</p>
@@ -90,7 +90,7 @@
 						<div class="card-block">
 							<ul class="nav navigation">
 								<li class="waves-effect waves-light">
-									<a href="{{ route('lease.create') }}" target="_blank">Create Leasing Agreement</a>
+									<a href="#" target="_blank">Create Leasing Agreement</a>
 								</li>
 								<li class="waves-effect waves-light">
 									<a href="#" target="_blank">Payment History</a>
@@ -414,7 +414,7 @@
 				@foreach($leases as $lease)
 				<div class="card m-t-10">
 					<div class="card-header">
-						<h5><a class="f-16" data-toggle="tooltip" data-placement="left" title="" data-original-title="View Unit Details" href="{{ route('unit.show', [$lease->unit->property->id, $lease->unit->id]) }}" title="">{{ $lease->unit->property->name }} {{ $lease->unit->number }}</a></h5>
+						<h5><a class="f-16" data-toggle="tooltip" data-placement="left" title="" data-original-title="View Unit Details" href="#" title="">{{ $lease->unit->property->name }} {{ $lease->unit->number }}</a></h5>
 						<div class="card-header-right">
 		                    <label class="label label-lg @if($lease->status->name == 'Active') label-success @else label-danger @endif" style="font-size: 14px;font-weight: bold;">{{ $lease->status->name }}</label>
 			            </div>
@@ -449,7 +449,7 @@
 						</div>
 					</div>
 					<div class="card-footer">
-						<a href="{{ route('lease.show', [$lease->unit->property->id, $lease->details->last()->id]) }}" title="">
+						<a href="{{ route('lease.show', [$lease->unit->property->id, $lease->id]) }}" title="">
 							<button type="button" class="btn btn-md btn-primary btn-round btn-block waves-effect waves-light">View</button>
 						</a>
 					</div>

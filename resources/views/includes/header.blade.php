@@ -92,19 +92,23 @@
 								<li class="user-profile header-notification">
 									<div class="dropdown-primary dropdown">
 										<div class="dropdown-toggle" data-toggle="dropdown">
-											<img src="https://api.adorable.io/avatars/285/<?php echo rand(5, 15); ?>@adorable.png" class="img-radius" alt="User-Profile-Image">
+											<img src="@if(Auth::user()->image_file_id == null) https://api.adorable.io/avatars/285/<?php echo rand(5, 15); ?>@adorable.png @else {{ asset(Storage::url(Auth::user()->avatar->path)) }} @endif" class="img-radius" alt="User-Profile-Image">
 											<span>{{ Auth::user()->firstname }} {{ Auth::user()->lastname }}</span>
 											<i class="feather icon-chevron-down"></i>
 										</div>
 										<ul class="show-notification profile-notification dropdown-menu" data-dropdown-in="fadeIn" data-dropdown-out="fadeOut">
 											<li>
-												<a href="#!">
-												<i class="feather icon-settings"></i> Settings
+												<small>You are currently managing:</small>
+												<h5>{{ $property->name }}</h5>
+											</li>
+											<li>
+												<a href="{{ route('property.switch') }}">
+												<i class="feather icon-external-link"></i> Switch Property
 												</a>
 											</li>
 											<li>
-												<a href="#">
-												<i class="feather icon-user"></i> Profile
+												<a href="#!">
+												<i class="feather icon-settings"></i> Settings
 												</a>
 											</li>
 											<li>

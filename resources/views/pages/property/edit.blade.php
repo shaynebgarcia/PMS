@@ -10,7 +10,7 @@
 @endsection
 
 @section('content')
-<form id="update-property" method="POST" action="{{ route('property.update', $property->id) }}">
+<form id="update-property" method="POST" action="{{ route('property.update', $property->code) }}">
     @CSRF @METHOD('PATCH')
 <div class="row">
     <div class="col-lg-12 col-md-12 col-sm-12">

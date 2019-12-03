@@ -24,10 +24,7 @@ class FakerTableSeeder extends Seeder
     		'unit_id' => 2,
     		'tenant_id' => 2,
     		'agreement_status_id' => 1,
-
-
     		'created_at' => Carbon\Carbon::now(),
-        	'updated_at' => Carbon\Carbon::now(),
     	]);
 	    	// Agreement Details
     		$orig_lease_detail = LeasingAgreementDetail::create([
@@ -38,11 +35,11 @@ class FakerTableSeeder extends Seeder
 	    		'term_start' => '2018-10-15',
 	    		'term_end' => '2019-10-16',
 	    		'first_day' => '2018-10-21',
-	    		'monthly_due' => 21,
+	    		'monthly_due' => 22,
 	    		'status' => 'Expired',
+	    		'last_billing_my' => date('MY', strtotime('2019-10-16')),
 
 	    		'created_at' => '2018-10-15 07:38:21',
-	        	'updated_at' => '2018-10-15 07:38:21',
 	    	]);
 	    	$lease_detail = LeasingAgreementDetail::create([
 	    		'agreement_no' => 'AGR-0001',
@@ -52,18 +49,19 @@ class FakerTableSeeder extends Seeder
 	    		'term_start' => '2019-10-15',
 	    		'term_end' => '2020-10-16',
 	    		'first_day' => '2019-10-21',
-	    		'monthly_due' => 21,
+	    		'monthly_due' => 22,
 	    		'status' => 'Active',
+	    		'last_billing_my' => date('MY', strtotime('2020-10-16')),
 
 	    		'created_at' => Carbon\Carbon::now(),
-	        	'updated_at' => Carbon\Carbon::now(),
 	    	]);
 
 
     	// Reservation
     	Payment::create([
+    		'property_id' => 5,
 	        'payment_type_id' => 2,
-			'leasing_agreement_details_id' => $lease_detail->id,
+			'leasing_agreement_details_id' => $orig_lease_detail->id,
 			'billing_id' => null,
 
 			'tenant_id' => 2,
@@ -80,8 +78,9 @@ class FakerTableSeeder extends Seeder
 
     	// Full Payment
     	Payment::create([
-	        'payment_type_id' => 4,
-			'leasing_agreement_details_id' => $lease_detail->id,
+    		'property_id' => 5,
+	        'payment_type_id' => 3,
+			'leasing_agreement_details_id' => $orig_lease_detail->id,
 			'billing_id' => null,
 			
 			'tenant_id' => 2,

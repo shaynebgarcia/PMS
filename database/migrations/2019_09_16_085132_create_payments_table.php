@@ -15,6 +15,7 @@ class CreatePaymentsTable extends Migration
     {
         Schema::create('payments', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->integer('property_id');
             $table->integer('payment_type_id');
 
             // $table->integer('leasing_agreement_id')->nullable()->default(null);
@@ -24,6 +25,7 @@ class CreatePaymentsTable extends Migration
 
             $table->double('amount_due', 8, 2);
             $table->double('amount_paid', 8, 2);
+            $table->string('payment_method')->nullable()->default(null);
             $table->string('reference_no')->nullable()->default(null);
             $table->string('note')->nullable()->default(null);
             

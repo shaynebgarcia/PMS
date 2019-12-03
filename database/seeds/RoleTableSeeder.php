@@ -11,22 +11,22 @@ class RoleTableSeeder extends Seeder
      */
     public function run()
     {
-		$roles = [
-            [ 'title' => 'Administrator'],
-            [ 'title' => 'Level 3 Employee'],
-            [ 'title' => 'Level 2 Employee'],
-            [ 'title' => 'Level 1 Employee'],
-            [ 'title' => 'Employee'],
-            [ 'title' => 'Supplier'],
-            [ 'title' => 'Pre-Tenant'],
-            [ 'title' => 'Tenant'],
-            [ 'title' => 'Pre-terminated Tenant'],
-            [ 'title' => 'Terminated Tenant'],
-            [ 'title' => 'Transferee'],
-        ];
+  		// $roles = [
+    //           [ 'title' => 'Administrator'],
+    //           [ 'title' => 'Level 3 Employee'],
+    //           [ 'title' => 'Level 2 Employee'],
+    //           [ 'title' => 'Level 1 Employee'],
+    //           [ 'title' => 'Employee'],
+    //           [ 'title' => 'Supplier'],
+    //           [ 'title' => 'Pre-Tenant'],
+    //           [ 'title' => 'Tenant'],
+    //           [ 'title' => 'Pre-terminated Tenant'],
+    //           [ 'title' => 'Terminated Tenant'],
+    //           [ 'title' => 'Transferee'],
+    //       ];
 
-      foreach ($roles as $role) {
-            \App\Role::create($role);
-      }
+    //     foreach ($roles as $role) {
+    //           \App\Role::create($role);
+    //     }
     }
 }

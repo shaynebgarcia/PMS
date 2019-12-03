@@ -20,7 +20,7 @@
         </style>
     </head>
     <body>
-        <span style="font-size: xx-large; text-align: center;">CONTRACT OF LEASE</span><br><br><br>
+        {{-- <span style="font-size: xx-large; text-align: center;">CONTRACT OF LEASE</span><br><br><br> --}}
         Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
         tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
         quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo

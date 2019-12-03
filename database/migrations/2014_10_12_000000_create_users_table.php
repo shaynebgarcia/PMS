@@ -15,7 +15,6 @@ class CreateUsersTable extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('role_id')->default(5);
             $table->string('lastname');
             $table->string('firstname');
             $table->string('middlename')->nullable();
@@ -25,6 +24,8 @@ class CreateUsersTable extends Migration
             $table->string('password')->nullable();
             
             $table->integer('image_file_id')->nullable()->default(null);
+            $table->integer('file_list_id')->nullable()->default(null);
+
             $table->string('slug')->unique()->nullable();
             $table->integer('access_property_id')->nullable();
             $table->rememberToken();

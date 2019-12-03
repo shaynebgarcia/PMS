@@ -23,7 +23,7 @@ class CreateBillingsTable extends Migration
             $table->date('billing_date');
             $table->date('due_date');
             $table->string('prepared_by');
-
+            $table->integer('published_by')->default(1);
             $table->double('subtotal_amount', 8, 2);
             $table->double('ou_amount', 8, 2)->default(0);
             $table->double('total_amount_due', 8, 2);

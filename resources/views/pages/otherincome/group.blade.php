@@ -17,71 +17,74 @@
 @section('content')
 <div class="row">
     <div class="col-lg-12 col-md-12 col-sm-12">
-    	<form id="oincome-store" method="POST" action="{{ route('oincome.store', [$property->id, $lease->id, $lease_detail->id]) }}">
+    	<form id="oincome-store" method="POST" action="{{ route('oincome.store', [$property->code, $lease->id, $lease_detail->id]) }}">
 	    @CSRF
     	<div class="card">
     		<div class="card-header">
     			Add new Other Income
     		</div>
     		<div class="card-block">
-    			<div class="form-group row">
-            		<label class="col-lg-3 col-md-3 col-sm-3 col-form-label">Income Type</label>
-                        <div class="col-lg-4 col-md-4 col-sm-4">
-                        	<select class="select2" name="oincome_type" style="width: 100%" required>
-                                <option value="#" disabled selected>Select Income Type</option>
-									@foreach($otherincome_types as $oit)
-	                                    <option value="{{ $oit->id }}">
-	                                        {{ $oit->name }} ({{ $oit->amount_currency_sign }})
-	                                    </option>
-									@endforeach
-                            </select>
-                            @error('oincome_type')
-                                <span class="messages">
-                                    <p class="text-danger error">{{ $message }}</p>
-                                </span>
-                            @enderror
-                        </div>
-                        <div class="col-lg-3 col-md-3 col-sm-3">
-                        	<input type="text" class="form-control" name="amount" value="" placeholder="Override amount here">
-	                            @error('amount')
-	                                <span class="messages">
-	                                    <p class="text-danger error">{{ $message }}</p>
-	                                </span>
-	                            @enderror
-                        </div>
-            	</div>
-            	<div class="form-group row">
-            		<label class="col-lg-3 col-md-3 col-sm-3 col-form-label">Note</label>
-                        <div class="col-lg-7 col-md-7 col-sm-7">
-                        	<textarea rows="3" cols="5" class="form-control" name="note" value=""></textarea>
-                            @error('note')
-                                <span class="messages">
-                                    <p class="text-danger error">{{ $message }}</p>
-                                </span>
-                            @enderror
-                        </div>
-            	</div>
-            	<div class="form-group row">
-            		<label class="col-lg-3 col-md-3 col-sm-3 col-form-label">Month to Bill</label>
-                        <div class="col-lg-7 col-md-7 col-sm-7">
-                        	<select class="select2" name="to_bill" style="width: 100%" required>
-                                <option value="#" disabled selected>Select Month</option>
-									@foreach($period as $dt)
-	                                    <option value="{{ $dt->format("MY") }}">
-	                                        {{ $dt->format("F Y") }}
-	                                    </option>
-									@endforeach
-                            </select>
-                            @error('to_bill')
-                                <span class="messages">
-                                    <p class="text-danger error">{{ $message }}</p>
-                                </span>
-                            @enderror
-                        </div>
-                        <div class="col-lg-2 col-md-2 col-sm-2">
-                        	<button type="submit" class="btn btn-primary btn-sm">Create</button>
-                        </div>
-            	</div>
+                <form id="create-otherincome" method="POST" action="{{ route('oincome.store', [$property->code, $lease->id, $lease_detail->id]) }}" enctype="multipart/form-data">
+                    @CSRF
+        			<div class="form-group row">
+                		<label class="col-lg-3 col-md-3 col-sm-3 col-form-label">Income Type</label>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                            	<select class="select2" name="oincome_type" style="width: 100%" required>
+                                    <option value="#" disabled selected>Select Income Type</option>
+    									@foreach($otherincome_types as $oit)
+    	                                    <option value="{{ $oit->id }}">
+    	                                        {{ $oit->name }} ({{ $oit->amount_currency_sign }})
+    	                                    </option>
+    									@endforeach
+                                </select>
+                                @error('oincome_type')
+                                    <span class="messages">
+                                        <p class="text-danger error">{{ $message }}</p>
+                                    </span>
+                                @enderror
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3">
+                            	<input type="text" class="form-control" name="amount" value="" placeholder="Override amount here">
+    	                            @error('amount')
+    	                                <span class="messages">
+    	                                    <p class="text-danger error">{{ $message }}</p>
+    	                                </span>
+    	                            @enderror
+                            </div>
+                	</div>
+                	<div class="form-group row">
+                		<label class="col-lg-3 col-md-3 col-sm-3 col-form-label">Note</label>
+                            <div class="col-lg-7 col-md-7 col-sm-7">
+                            	<textarea rows="3" cols="5" class="form-control" name="note" value=""></textarea>
+                                @error('note')
+                                    <span class="messages">
+                                        <p class="text-danger error">{{ $message }}</p>
+                                    </span>
+                                @enderror
+                            </div>
+                	</div>
+                	<div class="form-group row">
+                		<label class="col-lg-3 col-md-3 col-sm-3 col-form-label">Month to Bill</label>
+                            <div class="col-lg-7 col-md-7 col-sm-7">
+                            	<select class="select2" name="to_bill" style="width: 100%" required>
+                                    <option value="#" disabled selected>Select Month</option>
+    									@foreach($period as $dt)
+    	                                    <option value="{{ $dt->format("MY") }}">
+    	                                        {{ $dt->format("F Y") }}
+    	                                    </option>
+    									@endforeach
+                                </select>
+                                @error('to_bill')
+                                    <span class="messages">
+                                        <p class="text-danger error">{{ $message }}</p>
+                                    </span>
+                                @enderror
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                            	<button type="submit" class="btn btn-primary btn-sm">Create</button>
+                            </div>
+                	</div>
+                </form>
     		</div>
     	</div>
     	</form>
@@ -107,13 +110,13 @@
 	                        @foreach($otherincome->where('leasing_agreement_details_id', $lease_detail->id) as $oi)
 	                            <tr>
 	                                <td class="f-12">
-	                                	{{ $oi->other_income_type_id }}
+	                                	{{ $oi->income_type->name }}
 	                                </td>
 	                                <td class="f-12">
 	                                	{{ date('F Y', strtotime($oi->to_bill)) }}
 	                                </td>
 	                                <td class="f-12">
-	                                	{{ $oi->amount }}
+	                                	{{ $oi->total_amount }}
 	                                </td>
 	                                <td class="f-12">
 	                                	{{ $oi->note }}

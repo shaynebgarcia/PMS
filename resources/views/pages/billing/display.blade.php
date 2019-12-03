@@ -22,20 +22,13 @@
 	</div>
 @endif
 
-	<form name="publish-bill" class="md-float-material form-material" method="POST" action="{{ route('billing.publish', [$property->id, $lease->id, $lease_detail->id, $billing_my]) }}">
+	<form name="publish-bill" class="md-float-material form-material" method="POST" action="{{ route('billing.publish', [$lease->id, $lease_detail->id, $billing_my]) }}">
 		@csrf
 		<div class="card m-t-10">
 			<div class="card-header">
 				<h5>Billing Invoice</h5>
 				<div class="card-header-right">
-	                <button type="submit"
-	                @if(($bill_due <= $bill_date)) == true)
-	                	class="btn btn-disabled disabled waves-effect waves-light btn-success btn-icon"
-	                	onclick="event.preventDefault()"
-	                @else
-	                	class="btn waves-effect waves-light btn-success btn-icon"
-	                	onclick="btnPublish()"
-	                @endif
+	                <button type="submit" class="btn waves-effect waves-light btn-success btn-icon" onclick="btnPublish()"
 	                data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Publish Bill"style="height: 30px;width: 30px; padding: 0;line-height: 0;padding-left: 2px;">
 	                    <i class="fa fa-fax fa-sm" style="color: white;"></i>
 	                </button>
@@ -53,10 +46,7 @@
 							<h6>Invoice NO:</h6>
 						</div>
 						<div class="col-6 f-14 p-r-0">
-							<div class="form-group form-primary">
-	                            <input type="text" name="invoice_no" class="form-control fill" required="" style="height: 20px;width: 80%;">
-	                            <span class="form-bar"></span>
-	                        </div>
+							<h6>{{ $invoice_no }}</h6>
 						</div>
 						<div class="col-2 f-14 p-r-0">
 							<h6>Billing Date:</h6>
@@ -129,10 +119,18 @@
 									<tr>
 										<th style="width: 20%; padding: 0.5rem;">Rental</th>
 										<td style="width: 70%; padding: 0.5rem;">
-											{{ $bill_from }} to {{ $bill_to }}
+											@if($rental_price != 0)
+												{{ $bill_from }} to {{ $bill_to }}
+											@else
+												<span class="text-danger">FOR TERMINATION</span>
+											@endif
 										</td>
 										<td style="width: 10%; padding: 0.5rem;">
-											{{ $lease_detail->agreed_lease_price_currency_code }}
+											@if($rental_price != 0)
+												{{ $lease_detail->agreed_lease_price_currency_code }}
+											@else
+												<span class="text-danger">FOR TERMINATION</span>
+											@endif
 										</td>
 									</tr>
 
@@ -165,6 +163,13 @@
 										<td style="width: 40%; padding: 0.5rem;"></td>
 										<td style="width: 40%; padding: 0.5rem;"></td>
 									</tr>
+									@foreach($other_bill as $obill)
+									<tr>
+										<th style="padding: 0.5rem 2rem;">{{ $obill->income_type->name }}</th>
+										<td style="width: 40%; padding: 0.5rem;">September 01 to August 02, 2019</td>
+										<td style="padding: 0.5rem;">{{ $obill->total_amount_currency_code }}</td>
+									</tr>
+									@endforeach
 
 								</tbody>
 							</table>

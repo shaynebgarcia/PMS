@@ -20,7 +20,7 @@
                 <h5>Leasing Agreements</h5>
             </div>
             <div class="card-header-right">
-                <a href="{{ route('lease.create', $property->id) }}" title="">
+                <a href="{{ route('lease.create') }}" title="">
                     <button class="btn btn-sm btn-inverse waves-effect waves-light m-b-10">Create New Agreement</button>
                 </a>
             </div>
@@ -32,6 +32,7 @@
                         <thead>
                             <tr>
                                 <th class="f-14"></th>
+                                <th class="f-14">ID</th>
                                 <th class="f-14">Property</th>
                                 <th class="f-14">Unit</th>
                                 <th class="f-14">Tenant</th>
@@ -53,18 +54,24 @@
                             @endphp
                             <tr>
                                 <td class="f-12">
-                                    <a href="{{ route('lease.show', [$lease->unit->property->id, $lease->id]) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="View History">
+                                    <a id="actionTOGGLE" data-property="{{ $lease->unit->property->code }}" data-lease="{{ $lease->id }}" data-detail="{{ $detail->last()->id }}" data-toggle="modal" data-target="#action">
+                                        <i class="icon feather icon-grid f-16 f-w-600 f-16 m-r-15 text-c-gray" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="View More Actions"></i>
+                                    </a>
+                                    {{-- <a href="{{ route('lease.show', [$lease->unit->property->code, $lease->id]) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="View History">
                                         <i class="icon feather icon-eye f-w-600 f-18 m-r-15 text-c-blue"></i>
                                     </a>
-                                    <a href="{{ route('export.contract', [$lease->unit->property->id, $lease->id, $detail->last()->id]) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="View PDF">
+                                    <a href="{{ route('export.contract', [$lease->unit->property->code, $lease->id, $detail->last()->id]) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="View PDF">
                                         <i class="icon feather icon-file f-w-600 f-18 m-r-15 text-c-blue"></i>
                                     </a>
-                                    {{-- <a href="{{ route('billing.group.lease', [$lease->unit->property->id, $lease->id, $detail->last()->id]) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="{{ $title }}">
-                                        <i class="icon feather {{ $icon }} f-w-600 f-18 m-r-15 {{ $color }}"></i>
+                                    <a href="{{ route('billing.group.lease', [$lease->unit->property->code, $lease->id, $detail->last()->id]) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="View Billing">
+                                        <i class="icon feather icon-file f-w-600 f-18 m-r-15 text-c-green"></i>
                                     </a> --}}
                                 </td>
                                 <td class="f-12 f-w-700">
-                                    <a href="{{ route('property.show', $lease->unit->property->id) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="View Property Details">
+                                    {{ $detail->last()->agreement_no }}
+                                </td>
+                                <td class="f-12 f-w-700">
+                                    <a href="{{ route('property.show', $property->code) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="View Property Details">
                                             {{ $lease->unit->property->name }}
                                     </a>
                                 </td>
@@ -89,13 +96,23 @@
                                     {{ $detail->last()->agreed_lease_price_currency_sign }}
                                 </td>
                                 <td class="f-12">
-                                    @foreach($payments->where('leasing_agreement_details_id', $detail->last()->id)->whereNotIn('payment_type_id', [1]) as $payment)
-                                        {{ $payment->payment_type->name }} ({{ $payment->amount_paid_currency_sign }}) <br>
-                                    @endforeach
+                                    @if(count($payments->where('leasing_agreement_details_id', $detail->last()->id)->whereIn('payment_type_id', [2, 6])) > 0)
+                                        @foreach($payments->where('leasing_agreement_details_id', $detail->last()->id)->whereIn('payment_type_id', [2, 6]) as $payment)
+                                            {{ $payment->payment_type->name }} ({{ $payment->amount_paid_currency_sign }}) <br>
+                                        @endforeach
+                                    @else
+                                        NONE
+                                    @endif
                                 </td>
                                 <td class="f-12">
                                     {{-- deposits --}}
-                                    NONE
+                                    @if(count($payments->where('leasing_agreement_details_id', $detail->last()->id)->whereIn('payment_type_id', [3, 4, 5, 7])) > 0)
+                                        @foreach($payments->where('leasing_agreement_details_id', $detail->last()->id)->whereIn('payment_type_id', [3, 4, 5, 7]) as $payment)
+                                            {{ $payment->payment_type->name }} ({{ $payment->amount_paid_currency_sign }}) <br>
+                                        @endforeach
+                                    @else
+                                        NONE
+                                    @endif
                                 </td>
                                 <td class="f-12">
                                     @if(count($services->where('leasing_agreement_details_id', $detail->last()->id)) >= 1 )
@@ -124,13 +141,10 @@
                                     <label class="label label-lg {{ $color }}" style="font-size:12px;font-weight:bold">{{ $detail->last()->status }}</label>
                                 </td>
                                 <td class="f-12">
-                                     <a id="actionToggle" lease-property_id="{{ $lease->unit->property->id }}" lease-id="{{ $lease->id }}" lease-detail-id="{{ $detail->last()->id }}" data-toggle="modal" data-target="#action">
-                                        <i class="icon feather icon-more-vertical f-w-600 f-16 m-r-15 text-c-gray" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="View More Actions"></i>
-                                     </a>
                                     <a href="#" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Edit" id="edit-item" data-item-id="{{ $lease->id}}">
                                         <i class="icon feather icon-edit f-w-600 f-16 m-r-15 text-c-green"></i>
                                     </a>
-                                    <a href="{{ route('lease.destroy', [$lease->unit->property->id, $lease->id, $detail->last()->id]) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Delete">
+                                    <a href="{{ route('lease.destroy', [$lease->id, $detail->last()->id]) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Delete">
                                         <i class="feather icon-trash-2 f-w-600 f-16 text-c-red"></i>
                                     </a>
                                 </td>
@@ -141,7 +155,7 @@
                 </div>
             @else
                 <button class="btn waves-effect waves-light btn-warning btn-icon" type="button" style="height: 30px;width: 30px; padding: 0;line-height: 0;padding-left: 4px;"><i class="fa fa-warning"></i></button>
-                <small>You have no available lease <a href="{{ route('lease.create', $property->id) }}" title="" style="color:#4099ff;font-size: 12px;">Add here.</a></small>
+                <small>You have no available lease <a href="{{ route('lease.create') }}" title="" style="color:#4099ff;font-size: 12px;">Add here.</a></small>
             @endif
         </div>
     </div>
@@ -159,40 +173,46 @@
                   <div class="modal-body version" style="padding: 0;">
                     <ul class="nav navigation">
                         <li class="navigation-header" style="border-top: 0;">
-                            <i class="icon-history pull-right"></i> <b>Payment</b>
+                            <i class="icon-history pull-right"></i> <b class="text-uppercase">Contract</b>
                         </li>
                         <li class="waves-effect waves-light">
-                            <a href="">Attach Payment</a><br>
+                            <a id="href-lease-export" href="#">Generate Contract (.PDF)<span class="text-muted text-regular pull-right">Jan 2019</span></a><br>
                         </li>
                         <li class="waves-effect waves-light">
-                            <a href="">Payment History</a><br>
+                            <a id="href-lease-renew" href="#">Renew Contract <span class="text-muted text-regular pull-right">Jan 2019</span></a><br>
+                        </li>
+                        <li class="waves-effect waves-light">
+                            <a id="href-lease-renew" href="#">Termination <span class="text-muted text-regular pull-right">Jan 2019</span></a><br>
+                        </li>
+                        <li class="waves-effect waves-light">
+                            <a id="href-lease-show" href="#">Contract History</a><br>
                         </li>
                         <li class="navigation-header" style="border-top: 0;">
-                            <i class="icon-history pull-right"></i> <b>Contract</b>
+                            <i class="icon-history pull-right"></i> <b class="text-uppercase">Billing</b></a>
                         </li>
                         <li class="waves-effect waves-light">
-                            <a href="">Generate Contract (PDF)<span class="text-muted text-regular pull-right">Jan 2019</span></a><br>
+                            <a id="href-billing" href="#">Monthly Billing Invoice</a><br>
                         </li>
-                        <li class="waves-effect waves-light">
-                            <a href="">Renew Contract <span class="text-muted text-regular pull-right">Jan 2019</span></a><br>
-                        </li>
-                        <li class="waves-effect waves-light">
-                            <a href="">Contract History</a><br>
-                        </li>
-                        <li class="navigation-header" style="border-top: 0;">
-                            <i class="icon-history pull-right"></i> <b>Billing</b></a>
-                        </li>
-                        <li class="waves-effect waves-light">
-                            <a href="{{ route('billing.group.lease', [$lease->unit->property->id, $lease->id, $detail->last()->id]) }}">Billing</a><br>
-                        </li>
-                        <li class="waves-effect waves-light">
+                        {{-- <li class="waves-effect waves-light">
                             <a href="">Electricity Bill <span class="text-muted text-regular pull-right">Jan 2019</span></a><br>
                         </li>
                         <li class="waves-effect waves-light">
                             <a href="">Water Bill <span class="text-muted text-regular pull-right">Jan 2019</span></a><br>
+                        </li> --}}
+                        <li class="waves-effect waves-light">
+                            <a id="href-utility" href="#">Utility</a><br>
                         </li>
                         <li class="waves-effect waves-light">
-                            <a href="{{ route('oincome.group.lease', [$lease->unit->property->id, $lease->id, $detail->last()->id]) }}">Other Income to Bill</a><br>
+                            <a id="href-service" href="#">Services</a><br>
+                        </li>
+                        <li class="waves-effect waves-light">
+                            <a id="href-oincome" href="#">Other Income</a><br>
+                        </li>
+                        <li class="navigation-header" style="border-top: 0;">
+                            <i class="icon-history pull-right"></i> <b class="text-uppercase">Payment</b>
+                        </li>
+                        <li class="waves-effect waves-light">
+                            <a id="href-payments" href="#">Payments & Deposits</a><br>
                         </li>
                     </ul>
                   </div>
@@ -200,6 +220,28 @@
             </div>
         </div>
     @endif
+
+    <script type="text/javascript">
+        $(document).on('click', '#actionTOGGLE', function() {
+            propertycode = $(this).data('property');
+            leaseid = $(this).data('lease');
+            leasedid = $(this).data('detail');
+
+            console.log(propertycode);
+            console.log(leaseid);
+            console.log(leasedid);
+
+            $('#href-lease-show').attr("href", "/lease/"+leaseid);
+            $('#href-lease-export').attr("href", "/lease/"+leaseid+"/"+leasedid+"/export");
+            $('#href-lease-renew').attr("href", "/lease/"+leaseid+"/renew");
+            $('#href-lease-termination').attr("href", "/lease/"+leaseid+"/"+leasedid+"/termination");
+            $('#href-billing').attr("href", "/lease/"+leaseid+"/"+leasedid+"/billing");
+            $('#href-oincome').attr("href", "/lease/"+leaseid+"/"+leasedid+"/other-income");
+            $('#href-payments').attr("href", "/lease/"+leaseid+"/"+leasedid+"/payment");
+            $('#href-utility').attr("href", "/lease/"+leaseid+"/"+leasedid+"/utility-bill");
+            $('#href-service').attr("href", "/lease/"+leaseid+"/"+leasedid+"/service-bill");
+        });
+    </script>
     @include('includes.plugins.datatable-js')
 @endsection
 

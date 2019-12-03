@@ -46,6 +46,7 @@
 	                                <th class="f-14">Deposits</th>
 	                                <th class="f-14">Subscriptions</th>
 	                                <th class="f-14">Utility Meter</th>
+                                    <th class="f-14">Billing Total</th>
 	                                <th class="f-14">Status</th>
 	                                <th class="f-14">Date Expired</th>
 	                                <th class="f-14">Date Renewed</th>
@@ -56,7 +57,7 @@
 	                        @foreach($lease_detail as $ld)
 	                            <tr>
                                 <td class="f-12">
-                                    <a href="#" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="View PDF">
+                                    <a href="{{ route('export.contract', [$ld->agreement->unit->property->id, $ld->agreement->id, $ld->id]) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="View PDF">
                                         <i class="icon feather icon-file f-w-600 f-18 m-r-15 text-c-blue"></i>
                                     </a>
                                 </td>
@@ -73,13 +74,23 @@
                                     {{ $ld->agreed_lease_price_currency_sign }}
                                 </td>
                                 <td class="f-12">
-                                    @foreach($payments->where('leasing_agreement_details_id', $ld->id)->whereNotIn('payment_type_id', [1]) as $payment)
-                                        {{ $payment->payment_type->name }} ({{ $payment->amount_paid_currency_sign }}) <br>
-                                    @endforeach
+                                    @if(count($payments->where('leasing_agreement_details_id', $ld->id)->whereIn('payment_type_id', [2, 6])) > 0)
+                                        @foreach($payments->where('leasing_agreement_details_id', $ld->id)->whereIn('payment_type_id', [2, 6]) as $payment)
+                                            {{ $payment->payment_type->name }} ({{ $payment->amount_paid_currency_sign }}) <br>
+                                        @endforeach
+                                    @else
+                                        NONE
+                                    @endif
                                 </td>
                                 <td class="f-12">
                                     {{-- deposits --}}
-                                    NONE
+                                    @if(count($payments->where('leasing_agreement_details_id', $ld->id)->whereIn('payment_type_id', [3, 4, 5, 7])) > 0)
+                                        @foreach($payments->where('leasing_agreement_details_id', $ld->id)->whereIn('payment_type_id', [3, 4, 5, 7]) as $payment)
+                                            {{ $payment->payment_type->name }} ({{ $payment->amount_paid_currency_sign }}) <br>
+                                        @endforeach
+                                    @else
+                                        NONE
+                                    @endif
                                 </td>
                                 <td class="f-12">
                                     @if(count($services->where('leasing_agreement_details_id', $ld->id)) >= 1 )
@@ -96,6 +107,18 @@
                                     @endforeach
                                 </td>
                                 <td class="f-12">
+                                    @if(count($payments->where('leasing_agreement_details_id', $ld->id)->whereIn('payment_type_id', [1])) > 0)
+                                        @foreach($payments->where('leasing_agreement_details_id', $ld->id)->whereIn('payment_type_id', [1]) as $payment)
+                                            MONTHS BILLED :
+                                                {{ count($billings->where('leasing_agreement_details_id', $ld->id)) }} <br>
+                                            TOTAL AMOUNT:
+                                                ({{ $payments->where('leasing_agreement_details_id', $ld->id)->whereIn('payment_type_id', [1])->sum('amount_paid')}}) <br>
+                                        @endforeach
+                                    @else
+                                        NONE
+                                    @endif
+                                </td>
+                                <td class="f-12">
                                     @php
                                         if ($ld->status == 'Active') {
                                             $color = 'label-success';
@@ -108,8 +131,10 @@
                                     <label class="label label-lg {{ $color }}" style="font-size:12px;font-weight:bold">{{ $ld->status }}</label>
                                 </td>
                                 <td class="f-12">
+                                    {{ $ld->expired ?? '---' }}
                                 </td>
                                 <td class="f-12">
+                                    {{ $ld->renewed ?? '---' }}
                                 </td>
                                 <td class="f-12">
                                     <a href="#" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Edit" id="edit-item" data-item-id="{{ $lease->id}}">

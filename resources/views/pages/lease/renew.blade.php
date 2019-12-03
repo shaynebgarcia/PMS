@@ -18,35 +18,66 @@
 @section('content')
     <div class="row">
         <div class="col-lg-12 col-md-12 col-sm-12">
-        	<form id="lease-renew" method="POST" action="{{ route('lease.renew', [$property->id, $lease->id]) }}">
+        	<form id="lease-renew" method="POST" action="{{ route('lease.renew', [$property->code, $lease->id]) }}">
 	        @CSRF
-	            <div class="card">
-	                <div class="card-header">
-	                    <h5>Property/Unit</h5>
-	                </div>
-	                <div class="card-block">
-	                    {{-- SELECT Property --}}
-	                    <div class="form-group row">
-	                        <label class="col-lg-2 col-md-2 col-sm-2 col-form-label">Property/Unit</label>
-	                            <div class="col-lg-10 col-md-10 col-sm-10">
-	                            	<input type="text" class="form-control" name="property" value="{{ $property->name }} - {{ $lease->unit->number }}" readonly>
-	                            </div>
-	                    </div>
-	                    {{-- SELECT Tenant --}}
-	                    <div class="form-group row">
-	                        <label class="col-lg-2 col-md-2 col-sm-2 col-form-label">Tenant</label>
-	                            <div class="col-lg-10 col-md-10 col-sm-10">
-	                            	<input type="text" class="form-control" name="property" value="{{ $lease->tenant->user->fullnamewm }}" readonly>
-	                            </div>
-	                    </div>
-	                </div>
-	            </div>
+		        <div class="row">
+		        	<div class="col-lg-6 col-md-6 col-sm-6">
+			            <div class="card">
+			                <div class="card-header">
+			                    <h5>Property/Unit</h5>
+			                </div>
+			                <div class="card-block">
+			                    {{-- SELECT Property --}}
+			                    <div class="form-group row">
+			                        <label class="col-lg-2 col-md-2 col-sm-2 col-form-label">Property/Unit</label>
+			                            <div class="col-lg-10 col-md-10 col-sm-10">
+			                            	<input type="text" class="form-control" name="property" value="{{ $property->name }} - {{ $lease->unit->number }}" readonly>
+			                            </div>
+			                    </div>
+			                    {{-- SELECT Tenant --}}
+			                    <div class="form-group row">
+			                        <label class="col-lg-2 col-md-2 col-sm-2 col-form-label">Tenant</label>
+			                            <div class="col-lg-10 col-md-10 col-sm-10">
+			                            	<input type="text" class="form-control" name="property" value="{{ $lease->tenant->user->fullnamewm }}" readonly>
+			                            </div>
+			                    </div>
+			                </div>
+			            </div>
+		        	</div>
+		        	<div class="col-lg-6 col-md-6 col-sm-6">
+			            <div class="card">
+			                <div class="card-header">
+			                    <h5>Current/Previous Agreement Details</h5>
+			                </div>
+			                <div class="card-block">
+			                	<h6>Leasing Agreement ID: {{ $lease->details->last()->agreement_no }}</h6>
+			                	<h6>Type/Status: {{ $lease->details->last()->description }}</h6>
+			                	<h6>Lease Price: {{ $lease->details->last()->agreed_lease_price_currency_sign }}</h6>
+					        	{{-- <h6>Property: {{ $lease->name }}</h6>
+					        	<h6>Unit: {{ $lease->unit->number }}</h6>
+					        	<h6>Tenant: {{ $lease->tenant->user->fullnamewm }}</h6> --}}
+			                </div>
+			            </div>
+			        </div>
+		        </div>
 
 	            <div class="card">
 	            	<div class="card-header">
 	                    <h5>Leasing Agreements (Renewing)</h5>
 	                </div>
 	                <div class="card-block">
+	                	{{-- INPUT Date of Execution --}}
+	                    <div class="form-group row">
+	                        <label class="col-lg-2 col-md-2 col-sm-2 col-form-label">Date of Execution</label>
+	                            <div class="col-lg-4 col-md-4 col-sm-4">
+	                                <input type="date" class="form-control" name="execution_date">
+	                                @error('execution_date')
+	                                    <span class="messages">
+	                                        <p class="text-danger error">{{ $message }}</p>
+	                                    </span>
+	                                @enderror
+	                            </div>
+	                    </div>
 	                    {{-- INPUT Lease Price --}}
 	                    <div class="form-group row">
 	                        <label class="col-lg-2 col-md-2 col-sm-2 col-form-label">Rent (Monthly)</label>
@@ -56,6 +87,11 @@
 	                                        <label class="input-group-text">{{ config('pms.currency.sign') }}</label>
 	                                    </span>
 	                                    <input type="number" min="1" step="any" class="form-control {{-- autonumber fill --}}" name="agreed_lease_price" value="" placeholder="Override lease price here. Leave blank to keep default leasing price">
+	                                    @error('agreed_lease_price')
+	                                        <span class="messages">
+	                                            <p class="text-danger error">{{ $message }}</p>
+	                                        </span>
+	                                    @enderror
 	                                </div>
 	                            </div>
 	                    </div>
@@ -64,38 +100,37 @@
 	                        <label class="col-lg-2 col-md-2 col-sm-2 col-form-label">Term Start</label>
 	                            <div class="col-lg-4 col-md-4 col-sm-4">
 	                                <input type="date" class="form-control" name="term_start">
+	                                @error('term_start')
+	                                    <span class="messages">
+	                                        <p class="text-danger error">{{ $message }}</p>
+	                                    </span>
+	                                @enderror
 	                            </div>
 	                        <label class="col-lg-2 col-md-2 col-sm-2 col-form-label">Term End</label>
 	                            <div class="col-lg-4 col-md-4 col-sm-4">
 	                                <input type="date" class="form-control" name="term_end">
-	                            </div>
-	                    </div>
-	                    {{-- INPUT Monthly Due/Collection --}}
-	                    <div class="form-group row">
-	                        <label class="col-lg-2 col-md-2 col-sm-2 col-form-label">Monthly Billing Date</label>
-	                            <div class="col-lg-4 col-md-4 col-sm-4">
-	                            	<div class="input-group">
-	                                    <span class="input-group-prepend">
-	                                        <label class="input-group-text">Every</label>
+	                                @error('term_end')
+	                                    <span class="messages">
+	                                        <p class="text-danger error">{{ $message }}</p>
 	                                    </span>
-	                                    <input type="number" min=1 max=31 class="form-control" name="monthly_due">
-	                                    <span class="input-group-append">
-											<label class="input-group-text">of the month</label>
-										</span>
-	                                </div>
-	                                @error('monthly_due')
-                                        <span class="messages">
-                                            <p class="text-danger error">{{ $message }}</p>
-                                        </span>
-                                    @enderror
+	                                @enderror
 	                            </div>
 	                    </div>
-	                    {{-- INPUT Move-in/First Day --}}
+	                    {{-- SELECT Term DURATION --}}
 	                    <div class="form-group row">
-	                        <label class="col-lg-2 col-md-2 col-sm-2 col-form-label">Move-in Date</label>
-	                            <div class="col-lg-4 col-md-4 col-sm-4">
-	                                <input type="date" class="form-control" name="first_day">
-	                            </div>
+	                    	<label class="col-lg-2 col-md-2 col-sm-2 col-form-label">Term Duration</label>
+	                    	<div class="col-lg-4 col-md-4 col-sm-4">
+	                    		<select name="term_duration" class="js-example-basic-single" style="width:100%;">
+                                    <option disabled selected value>Select Month(s)</option>
+                                        <option value="6">6 months</option>
+                                        <option value="12">12 months</option>
+                                 </select>
+                                 @error('term_duration')
+                                    <span class="messages">
+                                        <p class="text-danger error">{{ $message }}</p>
+                                    </span>
+                                @enderror
+	                    	</div>
 	                    </div>
 	                </div>
 	            </div>
@@ -158,7 +193,7 @@
 	                <div class="card-block">
 	                    {{-- SELECT Property --}}
 	                    <div class="form-group row">
-	                        <label class="col-lg-2 col-md-2 col-sm-2 col-form-label">Reservation</label>
+	                        <label class="col-lg-2 col-md-2 col-sm-2 col-form-label">Deposit</label>
 	                            <div class="col-lg-9 col-md-9 col-sm-9">
 	                                <select class="select2" name="reservation" style="width: 100%">
 	                                    <option value="#" disabled selected>Select Payment</option>
@@ -179,6 +214,42 @@
 	                    </div>
 	                </div>
 	            </div>
+
+	            <div class="card">
+	            	<div class="card-header">
+	                    <h5>Billing</h5>
+	                </div>
+	                <div class="card-block">
+	                	{{-- INPUT Monthly Due/Collection --}}
+	                    <div class="form-group row">
+	                        <label class="col-lg-2 col-md-2 col-sm-2 col-form-label">Pay Period</label>
+	                            <div class="col-lg-4 col-md-4 col-sm-4">
+	                            	<div class="input-group">
+	                                    <span class="input-group-prepend">
+	                                        <label class="input-group-text">Every</label>
+	                                    </span>
+	                                    <input type="number" min=1 max=31 class="form-control" name="monthly_due">
+	                                    <span class="input-group-append">
+											<label class="input-group-text">of the month</label>
+										</span>
+	                                </div>
+	                                @error('monthly_due')
+                                        <span class="messages">
+                                            <p class="text-danger error">{{ $message }}</p>
+                                        </span>
+                                    @enderror
+	                            </div>
+	                    </div>
+	                    {{-- INPUT Move-in/First Day --}}
+	                    <div class="form-group row">
+	                        <label class="col-lg-2 col-md-2 col-sm-2 col-form-label">Date Start of Billing</label>
+	                            <div class="col-lg-4 col-md-4 col-sm-4">
+	                                <input type="date" class="form-control" name="first_day">
+	                            </div>
+	                    </div>
+	                </div>
+	            </div>
+
                 <div class="form-group row">
                     <div class="col-lg-12 col-md-12 col-sm-12 text-right">
                         <button type="submit" class="btn waves-effect waves-light btn-primary btn-block btn-round">Submit</button>

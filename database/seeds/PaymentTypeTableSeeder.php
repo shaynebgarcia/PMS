@@ -12,13 +12,34 @@ class PaymentTypeTableSeeder extends Seeder
     public function run()
     {
 		  $types = [
-          [ 'name' => 'Bill Payment'],
-	        [ 'name' => 'Reservation Fee'],
-	        [ 'name' => 'Partial Payment'],
-	        [ 'name' => 'Full Payment'],
-	        [ 'name' => 'Utility Deposit'],
-	        [ 'name' => 'Security Deposit'],
-	        [ 'name' => 'Other'],
+          [ 
+            'category' => 'Payment',
+            'name' => 'Bill Payment'
+          ],
+          [ 
+            'category' => 'Payment',
+            'name' => 'Reservation Fee'
+          ],
+	        [ 
+            'category' => 'Deposit',
+            'name' => 'Advance Payment'
+          ],
+	        [ 
+            'category' => 'Deposit',
+            'name' => 'Utility Deposit'
+          ],
+	        [ 
+            'category' => 'Deposit',
+            'name' => 'Security Deposit'
+          ],
+	        [ 
+            'category' => 'Payment',
+            'name' => 'Other Payment'
+          ],
+          [ 
+            'category' => 'Deposit',
+            'name' => 'Other Deposit'
+          ],
       	];
 
       foreach ($types as $type) {

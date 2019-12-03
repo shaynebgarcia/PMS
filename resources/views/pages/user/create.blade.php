@@ -135,7 +135,7 @@
                                     <option value="#" disabled selected>Select Role</option>
                                     @foreach($roles as $role)
                                         <option value="{{ $role->id }}">
-                                            {{ $role->title }}
+                                            {{ $role->name }}
                                         </option>
                                     @endforeach
                                 </select>

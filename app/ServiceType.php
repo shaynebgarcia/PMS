@@ -10,7 +10,8 @@ class ServiceType extends Model
         'name', 
         'is_subscription',
         'length_month',
-        'amount',
+        'monthly_rate',
+        'daily_rate'
     ];
 
     public function getAmountCurrencySignAttribute()
@@ -34,13 +35,20 @@ class ServiceType extends Model
             $mnt = $this->length_month;
 
             if ($mnt == 1) {
-            	$monthlyPrice = $this->amount;
+            	$monthlyPrice = $this->monthly_amount;
             } else {
-            	$monthlyPrice = $this->amount/$this->length_month;
+            	$monthlyPrice = $this->monthly_amount/$this->length_month;
             }
             $withmonthlyIndicator = config('pms.currency.sign').number_format($monthlyPrice, 2).'/month';
 	        return $withmonthlyIndicator;
         }
     	
+    }
+
+    public function getDailyPriceLengthAttribute()
+    {
+        $dailyPrice = $this->daily_amount;
+        $withdailyIndicator = config('pms.currency.sign').number_format($dailyPrice, 2).'/day';
+        return $withdailyIndicator;
     }
 }

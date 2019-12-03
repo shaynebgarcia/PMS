@@ -18,7 +18,7 @@ class CreateOtherIncomesTable extends Migration
             $table->integer('leasing_agreement_details_id');
             $table->integer('other_income_type_id');
             $table->string('to_bill');
-            $table->double('amount', 8, 2);
+            $table->double('total_amount', 8, 2);
             $table->string('note')->nullable()->default(null);
             $table->timestamps();
         });

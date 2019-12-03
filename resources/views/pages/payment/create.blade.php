@@ -6,8 +6,11 @@
 @endsection
 
 @section('breadcrumbs')
-    <?php   $breadcrumb_title = 'Payment Form';
-            $breadcrumb_subtitle = 'lorem ipsum dolor sit amet, consectetur adipisicing elit'; ?>
+    @php
+        $breadcrumb_icon = config('pms.breadcrumbs.payment.icon');
+        $breadcrumb_title = config('pms.breadcrumbs.payment.payment-create.title');
+        $breadcrumb_subtitle = config('pms.breadcrumbs.payment.payment-create.subtitle');
+    @endphp
     {{ Breadcrumbs::render('payment-create') }}
 @endsection
 

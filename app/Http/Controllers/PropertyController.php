@@ -12,10 +12,16 @@ use App\LeasingAgreement;
 use App\LeasingAgreementDetail;
 
 use Illuminate\Support\Arr;
+use Carbon\Carbon;
 use Alert;
+use DateTime;
 
 class PropertyController extends Controller
 {
+    public function __construct(Request $request)
+    {
+        $this->property = $request->session()->get('property_id');
+    }
     /**
      * Display a listing of the resource.
      *
@@ -37,7 +43,8 @@ class PropertyController extends Controller
      */
     public function create()
     {
-        return view('pages.property.create');
+        $property = Property::findorFail($this->property);
+        return view('pages.property.create', compact('property'));
     }
 
     /**
@@ -50,6 +57,7 @@ class PropertyController extends Controller
     {
         $request->validate([
             'name' => 'required|max:255',
+            'code' => 'required|unique:properties',
             'address' => 'max:255',
             'contact' => 'max:255',
             'floor_total' => 'numeric',
@@ -60,6 +68,7 @@ class PropertyController extends Controller
 
         $store = Property::create([
             'name' => $request->name,
+            'code' => strtoupper($request->code),
             'address' => $request->address,
             'contact' => $request->contact,
             'floor_total' => $request->floor_total,
@@ -79,7 +88,7 @@ class PropertyController extends Controller
                 'lease_price' => 0,
             ]);
             Alert::success('Created a new property '.'"'.$store->name.'"','Success')->autoclose(2500);
-            return redirect()->route('property.show', $store->id);
+            return redirect()->route('property.show', $store->code);
         }
     }
 
@@ -89,10 +98,10 @@ class PropertyController extends Controller
      * @param  \App\Property  $property
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($code)
     {
-        $property = Property::findorFail($id);
-        // $property = Property::where('slug', $slug)->first();
+        // $property = Property::findorFail($id);
+        $property = Property::where('code', $code)->first();
         $units = Unit::where('property_id', $property->id)->get();
         $leases = LeasingAgreement::all();
         $lease_details = LeasingAgreementDetail::all();
@@ -108,10 +117,10 @@ class PropertyController extends Controller
      * @param  \App\Property  $property
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit($code)
     {
-        $property = Property::findorFail($id);
-        // $property = Property::where('slug', $slug)->first();
+        // $property = Property::findorFail($id);
+        $property = Property::where('code', $code)->first();
         return view('pages.property.edit', compact('property'));
     }
 
@@ -122,7 +131,7 @@ class PropertyController extends Controller
      * @param  \App\Property  $property
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $code)
     {
         $request->validate([
             'name' => 'max:255',
@@ -134,8 +143,8 @@ class PropertyController extends Controller
             'date_start_leasing' => 'date',
         ]);
 
-        $property = Property::findorFail($id);
-        // $property = Property::where('slug', $slug)->first();
+        // $property = Property::findorFail($id);
+        $property = Property::where('code', $code)->first();
         $update = $property->update([
             'name' => $request->name,
             'address' => $request->address,
@@ -154,7 +163,7 @@ class PropertyController extends Controller
             return redirect()->route('property.show', $property->id);
         }
 
-        return redirect()->route('property.show', $property->id);
+        return redirect()->route('property.show', $property->code);
     }
 
     /**
@@ -163,9 +172,9 @@ class PropertyController extends Controller
      * @param  \App\Property  $property
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($code)
     {
-        $property = Property::findorFail($id);
-        // $property = Property::where('slug', $slug)->first();
+        // $property = Property::findorFail($id);
+        $property = Property::where('code', $code)->first();
     }
 }

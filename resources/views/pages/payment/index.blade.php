@@ -2,11 +2,102 @@
 
 @section('css-plugin')
     @include('includes.plugins.datatable-css')
+    <style>
+
+        #payment_file {
+          border-radius: 5px;
+          cursor: pointer;
+          transition: 0.3s;
+        }
+
+        #payment_file:hover {opacity: 0.7;}
+
+        /* The Modal (background) */
+        .modal {
+          display: none; /* Hidden by default */
+          position: fixed; /* Stay in place */
+          z-index: 1; /* Sit on top */
+          padding-top: 100px; /* Location of the box */
+          left: 0;
+          top: 0;
+          width: 100%; /* Full width */
+          height: 100%; /* Full height */
+          overflow: auto; /* Enable scroll if needed */
+          background-color: rgb(0,0,0); /* Fallback color */
+          background-color: rgba(0,0,0,0.9); /* Black w/ opacity */
+        }
+
+        /* Modal Content (image) */
+        .modal-content {
+          margin: auto;
+          display: block;
+          width: 80%;
+          max-width: 700px;
+        }
+
+        /* Caption of Modal Image */
+        #caption {
+          margin: auto;
+          display: block;
+          width: 80%;
+          max-width: 700px;
+          text-align: center;
+          color: #ccc;
+          padding: 10px 0;
+          height: 150px;
+        }
+
+        /* Add Animation */
+        .modal-content, #caption {  
+          -webkit-animation-name: zoom;
+          -webkit-animation-duration: 0.6s;
+          animation-name: zoom;
+          animation-duration: 0.6s;
+        }
+
+        @-webkit-keyframes zoom {
+          from {-webkit-transform:scale(0)} 
+          to {-webkit-transform:scale(1)}
+        }
+
+        @keyframes zoom {
+          from {transform:scale(0)} 
+          to {transform:scale(1)}
+        }
+
+        /* The Close Button */
+        .close {
+          position: absolute;
+          top: 15px;
+          right: 35px;
+          color: #f1f1f1;
+          font-size: 40px;
+          font-weight: bold;
+          transition: 0.3s;
+        }
+
+        .close:hover,
+        .close:focus {
+          color: #bbb;
+          text-decoration: none;
+          cursor: pointer;
+        }
+
+        /* 100% Image Width on Smaller Screens */
+        @media only screen and (max-width: 700px){
+          .modal-content {
+            width: 100%;
+          }
+        }
+        </style>
 @endsection
 
 @section('breadcrumbs')
-    <?php   $breadcrumb_title = 'Payments';
-            $breadcrumb_subtitle = 'lorem ipsum dolor sit amet, consectetur adipisicing elit'; ?>
+    @php
+        $breadcrumb_icon = config('pms.breadcrumbs.payment.icon');
+        $breadcrumb_title = config('pms.breadcrumbs.payment.payment-index.title');
+        $breadcrumb_subtitle = config('pms.breadcrumbs.payment.payment-index.subtitle');
+    @endphp
     {{ Breadcrumbs::render('payment') }}
 @endsection
 
@@ -78,7 +169,7 @@
                                 @endif
                                 <tr @if($payment->leasing_agreement_details_id == null) style="background-color: #f9e596" @endif>
                                     <td style="font-size: 13px; font-weight: bold">
-                                        <a href="{{ route('payment.show', $payment->slug) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="View Details">
+                                        <a href="#" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="View Details">
                                                 {{ $payment->slug }}
                                             </a>
                                         </td>
@@ -104,13 +195,18 @@
                                         {{ $payment->amount_paid_currency_sign }}
                                         <span class="{{ $color }} f-w-700 m-l-10" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="%">{{ $text }}</span>
                                     </td>
-                                    <td class="f-12"><img src="{{ Storage::url($payment->file) }}" height="30px" width="30px" /></td>
+                                    <td class="f-12">
+                                        @php
+                                            $file_db = $files->where('id', $payment->file_id)->first();
+                                        @endphp
+                                        <img id="payment_file" alt="Deposit Slip" src="http://localhost:8000/storage/payments/blank_deposit_slip1_1574840631.png" onclick="if (!window.__cfRLUnblockHandlers) return false; javascript:toggleFullScreen();" height="30px" width="30px" />
+                                    </td>
                                     <td class="f-12">{{ $payment->created_at }}</td>
                                     <td class="f-12">
                                         <a href="{{ route('payment.edit', $payment->slug) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Edit">
                                             <i class="icon feather icon-edit f-w-600 f-16 m-r-15 text-c-green"></i>
                                         </a>
-                                        <a href="{{ route('payment.destroy', $payment->slug) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Delete">
+                                        <a href="#" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Delete">
                                             <i class="feather icon-trash-2 f-w-600 f-16 text-c-red"></i>
                                         </a>
                                     </td>
@@ -129,4 +225,35 @@
 
 @section('js-plugin')
     @include('includes.plugins.datatable-js')
+
+    <!-- The Modal -->
+    <div id="payment_modal" class="modal">
+        <span class="close">&times;</span>
+        <img class="modal-content" id="img01">
+        <div id="caption"></div>
+    </div>
+
+    <script>
+        // Get the modal
+        var modal = document.getElementById("payment_modal");
+
+        // Get the image and insert it inside the modal - use its "alt" text as a caption
+        var img = document.getElementById("payment_file");
+        var modalImg = document.getElementById("img01");
+        var captionText = document.getElementById("caption");
+        img.onclick = function(){
+
+          modal.style.display = "block";
+          modalImg.src = this.src;
+          captionText.innerHTML = this.alt;
+        }
+
+        // Get the <span> element that closes the modal
+        var span = document.getElementsByClassName("close")[0];
+
+        // When the user clicks on <span> (x), close the modal
+        span.onclick = function() { 
+          modal.style.display = "none";
+        }
+    </script>
 @endsection

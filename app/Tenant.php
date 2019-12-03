@@ -6,10 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Tenant extends Model
 {
-    protected $fillable = [
-    	'user_id',
-        'contact', 'address',
-    ];
+    protected $guarded = ['id'];
+
+    public function property()
+    {
+        return $this->belongsTo(Property::class, 'property_id');
+    }
 
     public function user()
     {

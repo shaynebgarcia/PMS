@@ -2,11 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\ServiceType;
 use Illuminate\Http\Request;
+use App\Property;
+use App\ServiceType;
+
+use Alert;
 
 class ServiceTypeController extends Controller
 {
+    public function __construct(Request $request)
+    {
+        $this->property = $request->session()->get('property_id');
+    }
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +21,10 @@ class ServiceTypeController extends Controller
      */
     public function index()
     {
-        //
+        $property = Property::findorFail($this->property);
+        $service_types = ServiceType::all();
+
+        return view('pages.service.index', compact('property', 'service_types'));
     }
 
     /**

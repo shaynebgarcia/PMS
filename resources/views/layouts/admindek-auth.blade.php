@@ -81,34 +81,10 @@
             @yield('content')
         </section>
 
-
-        <!--[if lt IE 10]>
-        <div class="ie-warning"        </div>
-        <![endif]-->
-
-
-        <script type="ec8a0c072e78dedf8000e4fb-text/javascript" src="{{ asset('laravel-admindek/bower_components/jquery/js/jquery.min.js') }}"></script>
-        <script type="ec8a0c072e78dedf8000e4fb-text/javascript" src="{{ asset('laravel-admindek/bower_components/jquery-ui/js/jquery-ui.min.js') }}"></script>
-        <script type="ec8a0c072e78dedf8000e4fb-text/javascript" src="{{ asset('laravel-admindek/bower_components/popper.js/js/popper.min.js') }}"></script>
-        <script type="ec8a0c072e78dedf8000e4fb-text/javascript" src="{{ asset('laravel-admindek/bower_components/bootstrap/js/bootstrap.min.js') }}"></script>
-
-        <script src="{{ asset('laravel-admindek/assets/pages/waves/js/waves.min.js') }}" type="ec8a0c072e78dedf8000e4fb-text/javascript"></script>
-
-        <script type="ec8a0c072e78dedf8000e4fb-text/javascript" src="{{ asset('laravel-admindek/bower_components/jquery-slimscroll/js/jquery.slimscroll.js') }}"></script>
-
-        <script type="ec8a0c072e78dedf8000e4fb-text/javascript" src="{{ asset('laravel-admindek/bower_components/modernizr/js/modernizr.js') }}"></script>
-        <script type="ec8a0c072e78dedf8000e4fb-text/javascript" src="{{ asset('laravel-admindek/bower_components/modernizr/js/css-scrollbars.js') }}"></script>
-        <script type="ec8a0c072e78dedf8000e4fb-text/javascript" src="{{ asset('laravel-admindek/assets/js/common-pages.js') }}"></script>
-
-        <script async src="https://www.googletagmanager.com/gtag/js?id=UA-23581568-13" type="ec8a0c072e78dedf8000e4fb-text/javascript"></script>
-        <script type="ec8a0c072e78dedf8000e4fb-text/javascript">
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-
-          gtag('config', 'UA-23581568-13');
-        </script>
-        <script src="{{ asset('laravel-admindek/cloudflare-static/rocket-loader.min.js') }}" data-cf-settings="ec8a0c072e78dedf8000e4fb-|49" defer=""></script>
+        @include('layouts.js')
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+        @include('sweet::alert')
+        @yield('js-plugin')
     </body>
 
 </html>

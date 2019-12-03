@@ -24,6 +24,11 @@ class Unit extends Model
     	return $this->belongsTo(UnitType::class, 'unit_type_id');
     }
 
+    public function utilities()
+    {
+    	return $this->hasMany(Utility::class);
+    }
+
     public function leasing_agreement()
     {
     	return $this->belongsTo(LeasingAgreement::class, 'leasing_agreement_id');

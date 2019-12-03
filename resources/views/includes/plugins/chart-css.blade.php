@@ -1,0 +1,2 @@
+    <link rel="stylesheet" type="text/css" href="{{ asset('laravel-admindek/bower_components/chartist/css/chartist.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('laravel-admindek/assets/pages/chart/radial/css/radial.css') }}">

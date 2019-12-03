@@ -17,8 +17,9 @@ class CreateServiceTypesTable extends Migration
             $table->bigIncrements('id');
             $table->string('name');
             $table->boolean('is_subscription')->default(0);
-            $table->integer('length_month')->nullable()->default(0);
-            $table->double('amount', 8, 2)->nullable();
+            $table->integer('length_month')->nullable()->default(null);
+            $table->double('monthly_rate', 8, 2)->nullable();
+            $table->double('daily_rate', 8, 2)->nullable();
             $table->timestamps();
         });
     }

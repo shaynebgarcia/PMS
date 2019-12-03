@@ -13,10 +13,13 @@ class LeasingAgreementDetail extends Model
     protected $fillable = [
     	'leasing_agreement_id',
         'agreement_no',
+
     	'description',
         'agreed_lease_price',
-        'term_start', 'term_end', 'monthly_due', 'first_day',
-        'status',
+
+        'term_start', 'term_end', 'term_duration', 'monthly_due', 'first_day',
+        'status', 'full_payment',
+        'expired', 'renewed'
     ];
 
     protected static $logAttributes = true;
@@ -97,6 +100,11 @@ class LeasingAgreementDetail extends Model
     {
         $subtotal_utilitybill = $utility_bill->sum('amount');
         return $subtotal_utilitybill;
+    }
+    public function subtotal_incomebill($income_bill)
+    {
+        $subtotal_incomebill = $income_bill->sum('total_amount');
+        return $subtotal_incomebill;
     }
     public function subtotal($array)
     {

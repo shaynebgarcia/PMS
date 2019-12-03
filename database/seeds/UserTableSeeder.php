@@ -16,7 +16,6 @@ class UserTableSeeder extends Seeder
     	$faker = Faker::create();
 
     	DB::table('users')->insert([
-	        	'role_id' => 4,
 	            'lastname' => $faker->lastName,
 	            'firstname' => $faker->firstName,
 	            'middlename' => $faker->lastName,
@@ -31,7 +30,6 @@ class UserTableSeeder extends Seeder
 
 	      for ($i = 3; $i < 10; $i++) {
 	        DB::table('users')->insert([
-	        	'role_id' => 7,
 	            'lastname' => $faker->lastName,
 	            'firstname' => $faker->firstName,
 	            'middlename' => $faker->lastName,
@@ -44,6 +42,7 @@ class UserTableSeeder extends Seeder
             	'updated_at' => $faker->dateTime($max = 'now'),
 	        ]);
 	        DB::table('tenants')->insert([
+	        	'property_id' => 5,
 	        	'user_id' => $i,
 	        	'contact' => $faker->phoneNumber,
 	        	'address' => $faker->address,

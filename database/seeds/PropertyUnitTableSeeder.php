@@ -19,6 +19,7 @@ class PropertyUnitTableSeeder extends Seeder
       $faker = Faker::create();
       for ($i = 1; $i < 5; $i++) {
         DB::table('properties')->insert([
+            'code' => strtoupper($faker->unique()->randomLetter),
             'name' => $faker->company,
             'address' => $faker->address,
             'floor_total' => rand(5, 12),
@@ -35,6 +36,7 @@ class PropertyUnitTableSeeder extends Seeder
 
       DB::table('properties')->insert([
             'name' => 'Southgate Building',
+            'code' => 'X',
             'address' => 'Ayala Alabang Muntinlupa City',
             'floor_total' => 6,
             'unit_total' => 18,

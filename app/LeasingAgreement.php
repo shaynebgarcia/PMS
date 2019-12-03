@@ -26,6 +26,10 @@ class LeasingAgreement extends Model
     {
         return $this->belongsTo(Tenant::class, 'tenant_id');
     }
+    // public function tenant_list()
+    // {
+    //     return $this->hasMany(TenantList::class, 'tenant_list_id');
+    // }
     public function status()
     {
         return $this->belongsTo(LeasingAgreementStatus::class, 'agreement_status_id');

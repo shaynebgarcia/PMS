@@ -10,7 +10,7 @@
         $breadcrumb_title = config('pms.breadcrumbs.user.tenant-index.title');
         $breadcrumb_subtitle = config('pms.breadcrumbs.user.tenant-show.subtitle');
     @endphp
-    {{ Breadcrumbs::render('tenant') }}
+    {{ Breadcrumbs::render('tenant', $property) }}
 @endsection
 
 @section('content')
@@ -49,7 +49,7 @@
                                         {{ $tenant->contact }}
                                     </td>
                                     <td style="font-size: 13px;">
-                                        {{ $tenant->user->role->title }}
+                                        {{-- {{ $tenant->user->role->title }} --}}
                                     </td>
                                     <td style="font-size: 13px;">
                                         <a href="#!" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Edit">
@@ -66,7 +66,7 @@
                 </div>
             @else
                 <button class="btn waves-effect waves-light btn-warning btn-icon" type="button" style="height: 30px;width: 30px; padding: 0;line-height: 0;padding-left: 4px;"><i class="fa fa-warning"></i></button>
-                <small>No users detected <a href="#" title="" style="color:#4099ff;font-size: 12px;">Add here.</a></small>
+                <small>No tenants found <a href="#" title="" style="color:#4099ff;font-size: 12px;">Add here.</a></small>
             @endif
         </div>
     </div>
