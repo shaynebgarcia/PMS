@@ -6,13 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ServiceType extends Model
 {
-    protected $fillable = [
-        'name', 
-        'is_subscription',
-        'length_month',
-        'monthly_rate',
-        'daily_rate'
-    ];
+    protected $guarded = ['id'];
 
     public function getAmountCurrencySignAttribute()
     {

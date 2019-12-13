@@ -15,6 +15,11 @@ class CreateJobOrderLinesTable extends Migration
     {
         Schema::create('job_order_lines', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->integer('job_order_id');
+            $table->integer('inventory_id');
+            $table->integer('qty')->default(0);
+            $table->double('price', 8, 2)->default(0);
+            $table->double('total_price', 8, 2)->default(0);
             $table->timestamps();
         });
     }

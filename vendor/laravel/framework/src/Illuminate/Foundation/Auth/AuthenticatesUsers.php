@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 
 use Alert;
+use Carbon\Carbon;
 
 trait AuthenticatesUsers
 {
@@ -77,7 +78,8 @@ trait AuthenticatesUsers
         // user surpasses their maximum number of attempts they will get locked out.
         $this->incrementLoginAttempts($request);
 
-        return $this->sendFailedLoginResponse($request);
+        Alert::message('Robots are working!');
+        return $this->sendFailedLoginResponse($request)->with('error', 'Failed Login Attempt');
     }
 
     /**
@@ -145,7 +147,11 @@ trait AuthenticatesUsers
      */
     protected function authenticated(Request $request, $user)
     {
-        //
+        $user->update([
+            'access_property_id' => $request->selected_property_id,
+            'last_login' => Carbon::now(),
+            'online' => 1,
+        ]);
     }
 
     /**
@@ -181,6 +187,12 @@ trait AuthenticatesUsers
      */
     public function logout(Request $request)
     {
+        
+        $user = User::findorFail(Auth::user()->id);
+        $user->update([
+            'online' => 0,
+        ]);
+
         $this->guard()->logout();
 
         $request->session()->invalidate();
@@ -196,7 +208,8 @@ trait AuthenticatesUsers
      */
     protected function loggedOut(Request $request)
     {
-        //
+        
+        
     }
 
     /**

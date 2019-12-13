@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class OtherIncomeType extends Model
 {
-    //
+    protected $guarded = ['id'];
 
     public function getAmountCurrencySignAttribute()
     {

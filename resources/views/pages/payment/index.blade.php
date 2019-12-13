@@ -1,22 +1,19 @@
-@extends('layouts.admindek')
+@extends('layouts.admindek', ['pageSlug' => 'payment-index'])
 
 @section('css-plugin')
     @include('includes.plugins.datatable-css')
     <style>
-
         #payment_file {
           border-radius: 5px;
           cursor: pointer;
           transition: 0.3s;
         }
-
         #payment_file:hover {opacity: 0.7;}
-
         /* The Modal (background) */
         .modal {
           display: none; /* Hidden by default */
           position: fixed; /* Stay in place */
-          z-index: 1; /* Sit on top */
+          /*z-index: 0;*/ /* Sit on top */
           padding-top: 100px; /* Location of the box */
           left: 0;
           top: 0;
@@ -106,11 +103,13 @@
         <div class="card-header">
             <h5>Payments</h5>
             <div class="card-header-right">
-            <a href="{{ route('payment.create') }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Add Payment">
-                <button class="btn waves-effect waves-light btn-success btn-icon" style="height: 30px;width: 30px; padding: 0;line-height: 0;padding-left: 2px;">
-                    <i class="fa fa-plus fa-sm" style="color: white;"></i>
-                </button>
-            </a>
+              @can('Create Property')
+                <a href="{{ route('payment.create') }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Add Payment">
+                    <button class="btn waves-effect waves-light btn-success btn-icon" style="height: 30px;width: 30px; padding: 0;line-height: 0;padding-left: 2px;">
+                        <i class="fa fa-plus fa-sm" style="color: white;"></i>
+                    </button>
+                </a>
+              @endcan
             </div>
         </div>
         <div class="card-block">
@@ -119,19 +118,20 @@
                     <table id="order-table" class="table table-bordered table-responsive wrap">
                         <thead>
                             <tr>
-                                <th>ID</th>
-                                <th>Agreement</th>
-                                <th>Tenant</th>
-                                <th>REF NO</th>
-                                <th>Payment Type</th>
+                                <th class="{{ config('pms.table.th.font-size') }}">NO</th>
+                                <th class="{{ config('pms.table.th.font-size') }}">Agreement</th>
+                                <th class="{{ config('pms.table.th.font-size') }}">Tenant</th>
+                                <th class="{{ config('pms.table.th.font-size') }}">REF NO</th>
+                                <th class="{{ config('pms.table.th.font-size') }}">Payment Type</th>
+                                <th class="{{ config('pms.table.th.font-size') }}">Invoice</th>
                                 {{-- <th>Tenant</th>
                                 <th>Unit</th> --}}
-                                <th>Date Paid</th>
-                                <th>Amount Due</th>
-                                <th>Amount Paid</th>
-                                <th>File</th>
-                                <th>Date Created</th>
-                                <th>Action</th>
+                                <th class="{{ config('pms.table.th.font-size') }}">Date Paid</th>
+                                <th class="{{ config('pms.table.th.font-size') }}">Amount Due</th>
+                                <th class="{{ config('pms.table.th.font-size') }}">Amount Paid</th>
+                                <th class="{{ config('pms.table.th.font-size') }}">File</th>
+                                <th class="{{ config('pms.table.th.font-size') }}">Date Created</th>
+                                <th class="{{ config('pms.table.th.font-size') }}">Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -168,47 +168,64 @@
                                     @endif
                                 @endif
                                 <tr @if($payment->leasing_agreement_details_id == null) style="background-color: #f9e596" @endif>
-                                    <td style="font-size: 13px; font-weight: bold">
-                                        <a href="#" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="View Details">
-                                                {{ $payment->slug }}
-                                            </a>
-                                        </td>
-                                    <td class="f-12">
+                                    <td class="{{ config('pms.table.td.font-size') }}">
+                                      <a class="f-12 f-w-700" href="#" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="View Details">
+                                        {{ $payment->payment_no }}
+                                      </a>
+                                    </td>
+                                    <td class="{{ config('pms.table.td.font-size') }}" @if($payment->leasing_agreement_details_id != null) data-toggle="tooltip" data-placement="right" data-trigger="hover" title="" data-original-title="Unit: {{ $payment->agreement_detail->agreement->unit->number }}" @endif>
                                         @if($payment->leasing_agreement_details_id == null)
                                             <span class="text-danger f-w-700 f-10">PAYMENT <br>NOT ATTACHED</span>
                                         @else
                                         {{ $payment->agreement_detail->agreement_no }}
                                         @endif
                                     </td>
-                                    <td class="f-12">{{ $payment->tenant->user->fullnamewm   }}</td>
-                                    <td class="f-12">{{ $payment->reference_no }}</td>
-                                    <td class="f-12">
-                                        {{ $payment->payment_type->name }}
-                                        @if($payment->billing_id != null)
-                                            <br>
-                                            <a href="">{{ $payment->bill->invoice_no }}</a>
-                                        @endif
+                                    <td class="{{ config('pms.table.td.font-size') }}">
+                                      {{ $payment->tenant->user->fullnamewm }}
                                     </td>
-                                    <td class="f-12">{{ $payment->date_paid }}</td>
-                                    <td class="f-12">{{ $payment->amount_due_currency_sign }}</td>
-                                    <td class="f-12">
+                                    <td class="{{ config('pms.table.td.font-size') }}">
+                                      {{ $payment->reference_no }}
+                                    </td>
+                                    <td class="{{ config('pms.table.td.font-size') }}">
+                                        {{ $payment->payment_type->name }}
+                                    </td>
+                                    <td class="{{ config('pms.table.td.font-size') }}">
+                                      @if($payment->billing_id != null)
+                                        <a href=""><label class="badge badge-md badge-inverse-info">{{ $payment->bill->invoice_no }}</label></a>
+                                      @else
+                                        NA
+                                      @endif
+                                    </td>
+                                    <td class="{{ config('pms.table.td.font-size') }}">
+                                      {{ dMY($payment->date_paid) }}
+                                    </td>
+                                    <td class="{{ config('pms.table.td.font-size') }}">
+                                      {{ $payment->amount_due_currency_sign }}
+                                    </td>
+                                    <td class="{{ config('pms.table.td.font-size') }}">
                                         {{ $payment->amount_paid_currency_sign }}
                                         <span class="{{ $color }} f-w-700 m-l-10" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="%">{{ $text }}</span>
                                     </td>
-                                    <td class="f-12">
+                                    <td class="{{ config('pms.table.td.font-size') }}">
                                         @php
                                             $file_db = $files->where('id', $payment->file_id)->first();
                                         @endphp
                                         <img id="payment_file" alt="Deposit Slip" src="http://localhost:8000/storage/payments/blank_deposit_slip1_1574840631.png" onclick="if (!window.__cfRLUnblockHandlers) return false; javascript:toggleFullScreen();" height="30px" width="30px" />
                                     </td>
-                                    <td class="f-12">{{ $payment->created_at }}</td>
-                                    <td class="f-12">
-                                        <a href="{{ route('payment.edit', $payment->slug) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Edit">
-                                            <i class="icon feather icon-edit f-w-600 f-16 m-r-15 text-c-green"></i>
-                                        </a>
-                                        <a href="#" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Delete">
-                                            <i class="feather icon-trash-2 f-w-600 f-16 text-c-red"></i>
-                                        </a>
+                                    <td class="{{ config('pms.table.td.font-size') }}">
+                                      {{ $payment->created_at }}
+                                    </td>
+                                    <td class="{{ config('pms.table.td.font-size') }}">
+                                        @can('Update Payment')
+                                            <a href="{{ route('payment.edit', $payment->id) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="{{ config('pms.action.edit.tool-tip-text') }}">
+                                                <i class="{{ config('pms.action.edit.icon') }} {{ config('pms.action.weight') }} {{config('pms.action.size') }} {{ config('pms.action.margin') }} {{ config('pms.action.edit.color') }}"></i>
+                                            </a>
+                                        @endcan
+                                         @can('Delete Payment')
+                                            <a href="{{ route('payment.destroy', $payment->id) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="{{ config('pms.action.delete.tool-tip-text') }}">
+                                                <i class="{{ config('pms.action.delete.icon') }} {{ config('pms.action.weight') }} {{config('pms.action.size') }} {{ config('pms.action.margin') }} {{ config('pms.action.delete.color') }}"></i>
+                                            </a>
+                                        @endcan
                                     </td>
                                 </tr>
                             @endforeach

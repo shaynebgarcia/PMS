@@ -16,7 +16,11 @@ class CreateFileListsTable extends Migration
         Schema::create('file_lists', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->integer('file_id');
-            $table->integer('user_id');
+            $table->integer('user_id')->nullable();
+            $table->integer('tenant_id')->nullable();
+            $table->integer('payment_id')->nullable();
+            $table->integer('order_id')->nullable();
+            $table->string('description')->default('System');
             $table->timestamps();
         });
     }

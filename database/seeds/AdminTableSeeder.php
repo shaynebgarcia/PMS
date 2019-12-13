@@ -12,11 +12,13 @@ class AdminTableSeeder extends Seeder
     public function run()
     {
     	User::create([
+        'is_employee' => 1,
     		'lastname' => 'Support',
     		'firstname' => 'Bitverse',
     		'middlename' => 'Admin',
     		'username' => 'admin',
     		'email' => 'itsupport@bitversecorp.com',
+        'birthdate' => '1997-10-30',
     		'password' => bcrypt('pass'),
     		'remember_token' => Str::random(60),
         'slug' => 'admin',

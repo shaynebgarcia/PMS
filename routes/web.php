@@ -29,6 +29,12 @@ Route::group(['middleware' => ['has_access']], function () {
 
 			// AJAX
 			Route::get('/getUtilities', 'UtilityController@getUtilities');
+			Route::get('/getTerm', 'LeasingAgreementController@getTerm');
+			Route::get('/getInventory', 'InventoryController@getInventory');
+			Route::get('/getStock', 'InventoryController@getStock');
+			Route::get('/processList', 'JobOrderProcessingController@processList');
+			Route::post('/process', 'JobOrderProcessingController@process');
+			Route::delete('/process/destroy', 'JobOrderProcessingController@destroy');
 
 			// User Routes
 			Route::group(['middleware' => ['permission:List User']], function () {
@@ -91,11 +97,20 @@ Route::group(['middleware' => ['has_access']], function () {
 		    });
 		    Route::group(['middleware' => ['permission:Update Payment']], function () {
 		        Route::get('/payment/{payment}/edit', 'PaymentController@edit')->name('payment.edit');
-				Route::patch('/payment/{payment}/', 'PaymentController@update')->name('payment.update');
+				Route::patch('/payment/{payment}', 'PaymentController@update')->name('payment.update');
+		    });
+		    Route::group(['middleware' => ['permission:Delete Payment']], function () {
+				Route::delete('/payment/{payment}', 'PaymentController@destroy')->name('payment.destroy');
 		    });
 		    Route::group(['middleware' => ['permission:List Payment']], function () {
 		        Route::get('/payment/{payment}', 'PaymentController@show')->name('payment.show');
 		    });
+
+		    // Inventory Routes
+			Route::resource('/inventory', 'InventoryController');
+
+			// Inventory Routes
+			Route::resource('/orders', 'JobOrderController');
 
 			// Route::middleware(['has_access'])->group(function () {
 
@@ -202,6 +217,7 @@ Route::group(['middleware' => ['has_access']], function () {
 
 					// Utility Billing Routes
 					Route::get('/utility-bill', 'UtilityBillController@index')->name('utility-bill.index');
+					Route::post('/utility-bill', 'UtilityBillController@store')->name('utility-bill.store');
 					Route::get('/lease/{link}/{lease}/utility-bill', 'UtilityBillController@group')->name('utility-bill.group.lease');
 
 				// Services Routes

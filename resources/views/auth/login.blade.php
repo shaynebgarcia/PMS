@@ -19,30 +19,19 @@
                             </div>
                             <div class="row m-b-20">
                                 <div class="col-md-12">
-                                     @if ($errors->any())
-                                         @foreach ($errors->all() as $error)
-                                             <h6 class="text-center txt-primary">{{$error}}</h6>
-                                         @endforeach
-                                     @endif
+                                    @php
+                                        print_r(Session::all());
+                                    @endphp
                                  </div>
                              </div>
-                            {{-- <div class="row m-b-20">
-                                <div class="col-md-6">
-                                    <button class="btn btn-facebook m-b-20 btn-block"><i class="icofont icofont-social-facebook"></i>facebook</button>
-                                </div>
-                                <div class="col-md-6">
-                                    <button class="btn btn-twitter m-b-20 btn-block"><i class="icofont icofont-social-twitter"></i>twitter</button>
-                                </div>
-                            </div> --}}
-                            {{-- <p class="text-muted text-center p-b-5">Sign In</p> --}}
 
                             <div class="form-group form-primary">
-                                <input type="text" name="email" id="email" class="form-control" value="{{ old('email') }}" required autocomplete="email">
+                                <input type="text" name="email" id="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email') }}" required autocomplete="email" autofocus>
                                 <span class="form-bar"></span>
                                 <label class="float-label">Email Address/Username</label>
                             </div>
                             <div class="form-group form-primary">
-                                <input id="password" type="password" name="password" class="form-control" required autocomplete="current-password">
+                                <input id="password" type="password" name="password" class="form-control @error('password') is-invalid @enderror" required autocomplete="current-password">
                                 <span class="form-bar"></span>
                                 <label class="float-label">Password</label>
                             </div>
@@ -95,9 +84,15 @@
     </div>
 @endsection
 
+@include('sweet::alert')
+
 @section('js-plugin')
     <script type="text/javascript">
       $(document).ready(function(){
+
+        swal("Good job!", "You clicked the button!", "success", {
+          button: "Aww yiss!",
+        });
 
         $("#property").hide();
 

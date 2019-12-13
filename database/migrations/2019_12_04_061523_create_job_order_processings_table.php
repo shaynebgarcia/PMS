@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateLeasingAgreementStatusesTable extends Migration
+class CreateJobOrderProcessingsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,10 @@ class CreateLeasingAgreementStatusesTable extends Migration
      */
     public function up()
     {
-        Schema::create('leasing_agreement_statuses', function (Blueprint $table) {
+        Schema::create('job_order_processings', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('name');
+            $table->integer('inventory_id');
+            $table->integer('qty');
             $table->timestamps();
         });
     }
@@ -27,6 +28,6 @@ class CreateLeasingAgreementStatusesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('leasing_agreement_statuses');
+        Schema::dropIfExists('job_order_processings');
     }
 }

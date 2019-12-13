@@ -1,4 +1,4 @@
-@extends('layouts.admindek')
+@extends('layouts.admindek', ['pageSlug' => 'unit-type-create'])
 
 @section('breadcrumbs')
     @php

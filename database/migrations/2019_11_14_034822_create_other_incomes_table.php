@@ -17,6 +17,7 @@ class CreateOtherIncomesTable extends Migration
             $table->bigIncrements('id');
             $table->integer('leasing_agreement_details_id');
             $table->integer('other_income_type_id');
+            $table->integer('order_id')->nullable()->default(null);
             $table->string('to_bill');
             $table->double('total_amount', 8, 2);
             $table->string('note')->nullable()->default(null);

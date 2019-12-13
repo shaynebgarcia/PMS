@@ -1,4 +1,4 @@
-@extends('layouts.admindek')
+@extends('layouts.admindek', ['pageSlug' => 'lease-show'])
 
 @section('css-plugin')
     @include('includes.plugins.widget-css')

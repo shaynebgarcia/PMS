@@ -1,4 +1,4 @@
-@extends('layouts.admindek')
+@extends('layouts.admindek', ['pageSlug' => 'property-show'])
 
 @section('css-plugin')
     @include('includes.plugins.datatable-css')
@@ -20,16 +20,20 @@
                 <div class="card-header">
                     <h4>{{ $property->name }}</h4>
                     <div class="card-header-right">
-                        <a href="{{ route('property.edit', $property->code) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Edit Property Details">
-                            <button class="btn waves-effect waves-light btn-primary btn-icon" style="height: 30px;width: 30px; padding: 0;line-height: 0;padding-left: 2px;">
-                                <i class="fa fa-pencil fa-sm" style="color: white;"></i>
-                            </button>
-                        </a>
-                        <a href="{{ route('property.destroy', $property->code) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Delete Property">
-                            <button class="btn waves-effect waves-light btn-danger btn-icon" style="height: 30px;width: 30px; padding: 0;line-height: 0;padding-left: 2px;">
-                                <i class="fa fa-trash fa-sm" style="color: white;"></i>
-                            </button>
-                        </a>
+                        @can('Update Property')
+                            <a href="{{ route('property.edit', $property->code) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Edit Property Details">
+                                <button class="btn waves-effect waves-light btn-primary btn-icon" style="height: 30px;width: 30px; padding: 0;line-height: 0;padding-left: 2px;">
+                                    <i class="fa fa-pencil fa-sm" style="color: white;"></i>
+                                </button>
+                            </a>
+                        @endcan
+                        @can('Delete Property')
+                            <a href="{{ route('property.destroy', $property->code) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Delete Property">
+                                <button class="btn waves-effect waves-light btn-danger btn-icon" style="height: 30px;width: 30px; padding: 0;line-height: 0;padding-left: 2px;">
+                                    <i class="fa fa-trash fa-sm" style="color: white;"></i>
+                                </button>
+                            </a>
+                        @endcan
                     </div>
                 </div>
                 <div class="row card-block">
@@ -55,11 +59,11 @@
                         <ul class="basic-list">
                             <li>
                                 <h6>Date Finished</h6>
-                                <p>{{ date('M d, Y', strtotime($property->date_finish)) }}</p>
+                                <p>{{ MdY($property->date_finish) }}</p>
                             </li>
                             <li>
                                 <h6>Start Date for Leasing</h6>
-                                <p>{{ date('M d, Y', strtotime($property->date_start_leasing)) }}</p>
+                                <p>{{ MdY($property->date_start_leasing) }}</p>
                             </li>
                         </ul>
                     </div>

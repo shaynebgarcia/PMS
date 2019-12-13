@@ -1,4 +1,4 @@
-@extends('layouts.admindek')
+@extends('layouts.admindek', ['pageSlug' => 'payment-edit'])
 
 @section('css-plugin')
     @include('includes.plugins.select-css')
@@ -16,7 +16,7 @@
 
 @section('content')
     <form id="edit-payment" method="POST" action="{{ route('payment.update', $payment->slug) }}" enctype="multipart/form-data">
-        @CSRF
+        @CSRF @METHOD('PATCH')
         <div class="row">
             <div class="col-lg-12 col-md-12 col-sm-12">
                 <div class="card">
@@ -58,7 +58,7 @@
                                         <span class="input-group-prepend">
                                             <label class="input-group-text">{{ config('pms.currency.sign') }}</label>
                                         </span>
-                                        <input type="number" class="form-control" name="amount_due" value="{{ $payment->amount_due }}">
+                                        <input type="number" step="0.01" class="form-control" name="amount_due" value="{{ $payment->amount_due }}">
                                     </div>
                                     @error('amount_due')
                                         <span class="messages">
@@ -72,7 +72,7 @@
                                         <span class="input-group-prepend">
                                             <label class="input-group-text">{{ config('pms.currency.sign') }}</label>
                                         </span>
-                                        <input type="number" class="form-control" name="amount_paid" value="{{ $payment->amount_paid }}">
+                                        <input type="number" step="0.01" class="form-control" name="amount_paid" value="{{ $payment->amount_paid }}">
                                     </div>
                                     @error('amount_paid')
                                         <span class="messages">
@@ -106,7 +106,7 @@
                         <div class="form-group row">
                             <label class="col-lg-2 col-md-2 col-sm-2 col-form-label">Supporting File</label>
                                 <div class="col-lg-10 col-md-10 col-sm-10">
-                                    <input type="file" class="form-control" name="payment_file">
+                                    <input type="file" class="form-control" name="payment_file" value="{{ $payment->file->path ?? ''}}">
                                     @error('payment_file')
                                         <span class="messages">
                                             <p class="text-danger error">{{ $message }}</p>
@@ -137,8 +137,8 @@
                                 <div class="col-lg-10 col-md-10 col-sm-10">
                                     <select class="select2" name="agreement" style="width: 100%">
                                         <option value="#" disabled selected>Select an Agreement</option>
-                                        @foreach($leases as $lease)
-                                            <option value="{{ $lease->id }}">{{ $lease->id }} | {{ $lease->unit->property->name }} - {{ $lease->unit->number }} | {{ $lease->tenant->user->fullnamewm }}</option>
+                                        @foreach($lease_details as $lease)
+                                            <option value="{{ $lease->id }}" @if($lease->id == $payment->leasing_agreement_details_id) selected @endif>{{ $lease->agreement_no }} | {{ $lease->agreement->unit->property->name }} - {{ $lease->agreement->unit->number }} | {{ $lease->agreement->tenant->user->fullnamewm }} | {{ $lease->term_start}} ({{ $lease->status}})</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -149,7 +149,7 @@
                                     <select class="select2" name="bill" id="bill" style="width: 100%">
                                         <option value="#" disabled selected>Select a Billing Invoice</option>
                                         @foreach($bills as $bill)
-                                            <option value="{{ $bill->id }}">{{ $bill->invoice_no }} | {{ $bill->monthyear }}</option>
+                                            <option value="{{ $bill->id }}" @if($bill->id == $payment->billing_id) selected @endif>INVOICE#: {{ $bill->invoice_no }} | {{ $bill->monthyear }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -184,6 +184,13 @@
     <script type='text/javascript'>
         $(document).ready(function() {
             // $('#bill').attr('disabled','disabled'); 
+            var p_type = $('select[name="payment_type"]').val();
+            if (p_type == 1) {
+                $('#bill').removeAttr('disabled');          
+            } else {
+                $('#bill').attr('disabled','disabled'); 
+            }  
+            
             $('select[name="payment_type"]').on('change',function(){
             var bill = $(this).val();
                 if(bill == 1){           

@@ -1,4 +1,4 @@
-@extends('layouts.admindek')
+@extends('layouts.admindek', ['pageSlug' => 'otherincome-group'])
 
 @section('css-plugin')
 	@include('includes.plugins.select-css')
@@ -17,14 +17,14 @@
 @section('content')
 <div class="row">
     <div class="col-lg-12 col-md-12 col-sm-12">
-    	<form id="oincome-store" method="POST" action="{{ route('oincome.store', [$property->code, $lease->id, $lease_detail->id]) }}">
+    	<form id="oincome-store" method="POST" action="{{ route('oincome.store', [$lease->id, $lease_detail->id]) }}">
 	    @CSRF
     	<div class="card">
     		<div class="card-header">
-    			Add new Other Income
+    			<h5>Add New Other Income</h5>
     		</div>
     		<div class="card-block">
-                <form id="create-otherincome" method="POST" action="{{ route('oincome.store', [$property->code, $lease->id, $lease_detail->id]) }}" enctype="multipart/form-data">
+                <form id="create-otherincome" method="POST" action="{{ route('oincome.store', [$lease->id, $lease_detail->id]) }}" enctype="multipart/form-data">
                     @CSRF
         			<div class="form-group row">
                 		<label class="col-lg-3 col-md-3 col-sm-3 col-form-label">Income Type</label>
@@ -88,10 +88,58 @@
     		</div>
     	</div>
     	</form>
-
+        <div class="card">
+            <div class="card-header">
+                <h5>Attach Job Order</h5>
+            </div>
+            <div class="card-block">
+                <form id="attach-order" method="POST" action="#" enctype="multipart/form-data">
+                    @CSRF @METHOD('PATCH')
+                    <div class="form-group row">
+                        <label class="col-lg-3 col-md-3 col-sm-3 col-form-label">Job Order to Attach</label>
+                            <div class="col-lg-7 col-md-7 col-sm-7">
+                                <select class="select2" name="order_attach" style="width: 100%" required>
+                                    <option value="#" disabled selected>Select a Job Order</option>
+                                        @foreach($orders as $order)
+                                            <option value="{{ $order->id }}">
+                                                {{ $order->id }}
+                                            </option>
+                                        @endforeach
+                                </select>
+                                @error('order_attach')
+                                    <span class="messages">
+                                        <p class="text-danger error">{{ $message }}</p>
+                                    </span>
+                                @enderror
+                            </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-lg-3 col-md-3 col-sm-3 col-form-label">Month to Bill</label>
+                            <div class="col-lg-7 col-md-7 col-sm-7">
+                                <select class="select2" name="to_bill" style="width: 100%" required>
+                                    <option value="#" disabled selected>Select Month</option>
+                                        @foreach($period as $dt)
+                                            <option value="{{ $dt->format("MY") }}">
+                                                {{ $dt->format("F Y") }}
+                                            </option>
+                                        @endforeach
+                                </select>
+                                @error('to_bill')
+                                    <span class="messages">
+                                        <p class="text-danger error">{{ $message }}</p>
+                                    </span>
+                                @enderror
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                <button type="submit" class="btn btn-primary btn-sm">Attach</button>
+                            </div>
+                    </div>
+                </form>
+            </div>
+        </div>
     	<div class="card">
     		<div class="card-header">
-                <h5>Other Income</h5>
+                <h5>Job Orders & Other Income</h5>
             </div>
             <div class="card-block">
 	            @if(count($otherincome->where('leasing_agreement_details_id', $lease_detail->id)) > 0)
@@ -122,6 +170,12 @@
 	                                	{{ $oi->note }}
 	                                </td>
 	                                <td class="f-12">
+                                        <a href="#" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Edit">
+                                            <i class="icon feather icon-edit f-w-600 f-16 m-r-15 text-c-green"></i>
+                                        </a>
+                                        <a href="#" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Delete">
+                                            <i class="feather icon-trash-2 f-w-600 f-16 text-c-red"></i>
+                                        </a>
 	                                </td>
 	                            </tr>
 	                        @endforeach

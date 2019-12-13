@@ -6,11 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Utility extends Model
 {
-    protected $fillable = [
-        'unit_id', 
-        'type',
-        'no',
-    ];
+    protected $guarded = ['id'];
 
     public function unit()
     {

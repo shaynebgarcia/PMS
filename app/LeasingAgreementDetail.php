@@ -10,19 +10,9 @@ class LeasingAgreementDetail extends Model
 {
     use LogsActivity;
 
-    protected $fillable = [
-    	'leasing_agreement_id',
-        'agreement_no',
+    protected $guarded = ['id'];
 
-    	'description',
-        'agreed_lease_price',
-
-        'term_start', 'term_end', 'term_duration', 'monthly_due', 'first_day',
-        'status', 'full_payment',
-        'expired', 'renewed'
-    ];
-
-    protected static $logAttributes = true;
+    protected static $logUnguarded = true;
 
     public function agreement()
     {
@@ -37,7 +27,7 @@ class LeasingAgreementDetail extends Model
     {
         return $this->hasMany(Payment::class);
     }
-    
+
     public function MdY($m, $d, $y, $string)
     {
         $mdy = date($m.' '.$d.', '.$y, strtotime($string));
@@ -93,7 +83,7 @@ class LeasingAgreementDetail extends Model
     }
     public function subtotal_subservices($latest_sub_services)
     {
-        $subtotal_subservices = $latest_sub_services->sum('agreed_amount');
+        $subtotal_subservices = $latest_sub_services->sum('agreed_monthly_rate');
         return $subtotal_subservices;
     }
     public function subtotal_utilitybill($utility_bill)

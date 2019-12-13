@@ -26,6 +26,8 @@ class PermissionRolesTableSeeder extends Seeder
             ['name' => 'Create User'],
             ['name' => 'Update User'],
             ['name' => 'Delete User'],
+            ['name' => 'Update User Credentials'],
+            ['name' => 'Update User Roles'],
 
             // Tenant
             ['name' => 'List Tenant'],
@@ -38,6 +40,18 @@ class PermissionRolesTableSeeder extends Seeder
             ['name' => 'Create Property'],
             ['name' => 'Update Property'],
             ['name' => 'Delete Property'],
+
+            // Unit
+            ['name' => 'List Unit'],
+            ['name' => 'Create Unit'],
+            ['name' => 'Update Unit'],
+            ['name' => 'Delete Unit'],
+
+            // Unit
+            ['name' => 'List Unit Type'],
+            ['name' => 'Create Unit Type'],
+            ['name' => 'Update Unit Type'],
+            ['name' => 'Delete Unit Type'],
 
             // Payment
             ['name' => 'List Payment'],
@@ -62,24 +76,24 @@ class PermissionRolesTableSeeder extends Seeder
         Permission::insert($permissions);
 
         $roles_array = [
-            'Admin', 'Owner', 'Manager', 'Care Taker', 'Pre-tenant', 'Tenant',
+            'Super Admin', 'Admin LV1', 'Admin LV2', 'Care Taker', 'Pre-tenant', 'Tenant',
         ];
 
             foreach($roles_array as $role) {
                 $role = Role::firstOrCreate(['name' => trim($role)]);
 
-                if( $role->name == 'Admin' ) {
+                if( $role->name == 'Super Admin' ) {
                     // assign all permissions
                     $role->syncPermissions(Permission::all());
-                    $this->command->info('Admin granted all the permissions');
-                } elseif ( $role->name == 'Owner' ) {
+                    $this->command->info('Super Admin granted all the permissions');
+                } elseif ( $role->name == 'Admin LV1' ) {
                     // assign all permissions
                     $role->syncPermissions(Permission::all());
-                    $this->command->info('Owner granted all the permissions');
-                } elseif ( $role->name == 'Manager' ) {
+                    $this->command->info('Admin LV1 granted all the permissions');
+                } elseif ( $role->name == 'Admin LV2' ) {
                     // assign all permissions
                     $role->syncPermissions(Permission::all());
-                    $this->command->info('Manager granted all the permissions');
+                    $this->command->info('Admin LV2 granted all the permissions');
                 } elseif ( $role->name == 'Care Taker' ) {
                     $role->syncPermissions(['List Property', 'List Tenant', 'List Payment',]);
                     $this->command->info('Care Taker granted listing only permission');
@@ -90,12 +104,14 @@ class PermissionRolesTableSeeder extends Seeder
             }
 
         $adminuser = User::all()->first();
-        $adminuser->assignRole('Admin');
+        $adminuser->assignRole('Super Admin');
 
-        $caretaker = User::where('username', 'employee_1')->first();
-        $caretaker->assignRole('Care Taker');
+        $caretaker = User::whereIn('username', ['caretaker_1', 'caretaker_2', 'caretaker_3', 'caretaker_4', 'caretaker_5'])->get();
+        foreach ($caretaker as $ct) {
+            $ct->assignRole('Care Taker');
+        }
 
-        $tenants = User::whereNotIn('username', ['admin', 'employee_1'])->get();
+        $tenants = User::whereNotIn('username', ['admin', 'caretaker_1', 'caretaker_2', 'caretaker_3', 'caretaker_4', 'caretaker_5'])->get();
         foreach ($tenants as $tenant) {
             $tenant->assignRole('Pre-tenant');
         }

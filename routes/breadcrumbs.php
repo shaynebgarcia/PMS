@@ -28,6 +28,42 @@ Breadcrumbs::for('payment', function ($trail) {
         $trail->push('Update Payment', route('payment.edit', $payment->slug));
     });
 
+// INVENTORY
+Breadcrumbs::for('inventory', function ($trail) {
+    $trail->parent('dashboard');
+    $trail->push('Inventory', route('inventory.index'));
+});
+    Breadcrumbs::for('inventory-create', function ($trail) {
+        $trail->parent('inventory');
+        $trail->push('Create Item', route('inventory.create'));
+    });
+    Breadcrumbs::for('inventory-show', function ($trail, $inventory) {
+        $trail->parent('inventory');
+        $trail->push($inventory->code, route('inventory.show', $inventory->id));
+    });
+    Breadcrumbs::for('inventory-edit', function ($trail, $inventory) {
+        $trail->parent('inventory-show', $inventory);
+        $trail->push('Update Item', route('inventory.edit', $inventory->id));
+    });
+
+// INVENTORY
+Breadcrumbs::for('order', function ($trail) {
+    $trail->parent('dashboard');
+    $trail->push('Job Orders', route('orders.index'));
+});
+    Breadcrumbs::for('order-create', function ($trail) {
+        $trail->parent('order');
+        $trail->push('Create Order', route('orders.create'));
+    });
+    Breadcrumbs::for('order-show', function ($trail, $order) {
+        $trail->parent('order');
+        $trail->push($order->code, route('orders.show', $order->id));
+    });
+    Breadcrumbs::for('order-edit', function ($trail, $order) {
+        $trail->parent('order-show', $order);
+        $trail->push('Update Order', route('orders.edit', $order->id));
+    });
+
 // USER
 Breadcrumbs::for('user', function ($trail) {
     $trail->parent('dashboard');
@@ -63,7 +99,7 @@ Breadcrumbs::for('tenant', function ($trail, $property) {
 // PROPERTY
 Breadcrumbs::for('property', function ($trail) {
     $trail->parent('dashboard');
-    $trail->push('Properties');
+    $trail->push('Properties', route('property.index'));
 });
     Breadcrumbs::for('property-current', function ($trail, $property) {
         $trail->parent('dashboard');

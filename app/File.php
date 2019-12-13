@@ -6,7 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class File extends Model
 {
-    protected $fillable = [
-        'name', 'model', 'path',
-    ];
+    protected $guarded = ['id'];
+
+    public function payment()
+    {
+        return $this->belongsTo(Payment::class);
+    }
 }

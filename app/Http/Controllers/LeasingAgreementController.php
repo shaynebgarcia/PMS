@@ -86,14 +86,11 @@ class LeasingAgreementController extends Controller
         $request->validate([
             'unit' => 'required',
             'tenant' => 'required',
-            // 'agreement_no' => 'required|unique:leasing_agreement_details',
-            'term_start' => 'required|date|after:term_end',
-            'term_end' => 'required|date|before:term_start',
-            'monthly_due' => Rule::requiredIf($request->full_payment, !null),
-            'first_day' => Rule::requiredIf($request->full_payment, !null),
+            // 'term_start' => 'required|date|after:term_end',
+            // 'term_end' => 'required|date|before:term_start',
+            // 'first_day' => Rule::requiredIf($request->full_payment, !null),
             // 'date_of_contract' => 'date',
             // 'move_in' => 'date',
-            
         ]);
 
         $property = Property::findorFail($this->property);
@@ -109,6 +106,7 @@ class LeasingAgreementController extends Controller
 
         // Creating agreement
         $agreement_stored = LeasingAgreement::create([
+            'link_id' => $property->code.$request->unit.$request->tenant,
             'property_id' => $property->id,
             'tenant_id' => $request->tenant,
             'unit_id' => $request->unit,
@@ -123,12 +121,26 @@ class LeasingAgreementController extends Controller
 
             // Creating agreement details
             $agreement_details_stored = LeasingAgreementDetail::create([
+                'property_id' => $property->id,
                 'leasing_agreement_id' => $agreement_stored->id,
+                'agreement_no' => null,
+                'description' => 'Original',
+
                 'agreed_lease_price' => $rental_price,
+                'agreed_lease_price_daily' => null,
+
+                'term_duration' => $request->term_duration,
                 'term_start' => $request->term_start,
                 'term_end' => $request->term_end,
+
                 'first_day' => $request->first_day,
-                'monthly_due' => $request->monthly_due,
+                'last_day' => null,
+                'monthly_due' => date("d", strtotime($request->first_day)),
+                'last_billing_my' => null,
+
+                'status' => 'Active',
+                'expired' => null,
+                'renewed' => null,
             ]);
 
             if ($agreement_details_stored) {
@@ -144,7 +156,7 @@ class LeasingAgreementController extends Controller
                             // Check if service price was overriden
                             if ($request->amounts[$item] == null) {
                                 $service = ServiceType::where('id', $request->subscriptions[$item])->first();
-                                $service_price = $service->amount;
+                                $service_price = $service->monthly_rate;
                             } else {
                                 $service_price = floatval($request->amounts[$item]);
                             }
@@ -152,7 +164,7 @@ class LeasingAgreementController extends Controller
                             $array = array (
                                 'leasing_agreement_details_id' => $agreement_details_stored->id,
                                 'service_type_id' => $request->subscriptions[$item],
-                                'agreed_amount' => $service_price,
+                                'agreed_monthly_rate' => $service_price,
                             );
                             $new_sub_id = Service::create($array)->id;
                         }
@@ -180,7 +192,7 @@ class LeasingAgreementController extends Controller
 
             $unit_stored = Unit::where('id', $agreement_stored->unit_id)->first();
             Alert::success('Leasing complete', 'Success')->persistent('Close');
-            return redirect()->route('lease.index', [$property->code]);
+            return redirect()->route('lease.index');
         } else {
             Alert::error('Encountered an error', 'Oops')->persistent('Close');
             return redirect()->route('lease.create');
@@ -254,6 +266,24 @@ class LeasingAgreementController extends Controller
     {
         //
     }
+
+    public function getTerm(Request $request)
+    {
+        $lease = LeasingAgreement::findorFail($request->id);
+        $lease_detail = LeasingAgreementDetail::where('leasing_agreement_id', $lease->id)->where('status', 'Active')->first();
+
+        $start    = (new DateTime($lease_detail->term_start))->modify('first day of this month');
+        $end      = (new DateTime($lease_detail->term_end))->modify('first day of next month');
+        $interval = DateInterval::createFromDateString('1 month');
+        $period   = new DatePeriod($start, $interval, $end);
+
+        $data = '<option value="#" disabled selected>Select Month</option>';
+        foreach ($period as $dt) {
+            $data .= '<option value="'.$dt->format("MY").'">'.$dt->format("F Y").'</option>';
+        }
+        return response()->json($data);
+    }
+
     public function exportPDF_contract($link, $lease_id)
     {
         $property = Property::findorFail($this->property);

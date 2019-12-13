@@ -1,4 +1,4 @@
-@extends('layouts.admindek')
+@extends('layouts.admindek', ['pageSlug' => 'lease-index'])
 
 @section('css-plugin')
     @include('includes.plugins.datatable-css')
@@ -84,21 +84,21 @@
                                     </a>
                                 </td>
                                 <td class="f-12">
-                                    {{ date('M d, Y', strtotime($detail->last()->term_start)) }}
+                                    {{ MdY($detail->last()->term_start) }}
                                     <label class="badge badge-primary m-l-5" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Times of renewal">
                                         {{ count($detail) }}
                                     </label>
                                 </td>
                                 <td class="f-12">
-                                    {{ date('M d, Y', strtotime($detail->last()->first_day)) }}
+                                    {{ MdY($detail->last()->first_day) }}
                                 </td>
                                 <td class="f-12">
-                                    {{ $detail->last()->agreed_lease_price_currency_sign }}
+                                    {{ currencysign($detail->last()->agreed_lease_price) }}
                                 </td>
                                 <td class="f-12">
                                     @if(count($payments->where('leasing_agreement_details_id', $detail->last()->id)->whereIn('payment_type_id', [2, 6])) > 0)
                                         @foreach($payments->where('leasing_agreement_details_id', $detail->last()->id)->whereIn('payment_type_id', [2, 6]) as $payment)
-                                            {{ $payment->payment_type->name }} ({{ $payment->amount_paid_currency_sign }}) <br>
+                                            {{ $payment->payment_type->name }} ({{ currencysign($payment->amount_paid) }}) <br>
                                         @endforeach
                                     @else
                                         NONE
@@ -108,7 +108,7 @@
                                     {{-- deposits --}}
                                     @if(count($payments->where('leasing_agreement_details_id', $detail->last()->id)->whereIn('payment_type_id', [3, 4, 5, 7])) > 0)
                                         @foreach($payments->where('leasing_agreement_details_id', $detail->last()->id)->whereIn('payment_type_id', [3, 4, 5, 7]) as $payment)
-                                            {{ $payment->payment_type->name }} ({{ $payment->amount_paid_currency_sign }}) <br>
+                                            {{ $payment->payment_type->name }} ({{ currencysign($payment->amount_paid) }}) <br>
                                         @endforeach
                                     @else
                                         NONE
@@ -117,7 +117,7 @@
                                 <td class="f-12">
                                     @if(count($services->where('leasing_agreement_details_id', $detail->last()->id)) >= 1 )
                                         @foreach($services->where('leasing_agreement_details_id', $detail->last()->id) as $service)
-                                            {{ $service->service_type->name }} ({{ $service->agreed_amount_currency_sign }}) <br>
+                                            {{ $service->service_type->name }} ({{ currencysign($service->agreed_monthly_rate) }}) <br>
                                         @endforeach
                                     @else
                                         NONE
@@ -129,16 +129,12 @@
                                     @endforeach
                                 </td>
                                 <td class="f-12">
-                                    @php
-                                        if ($detail->last()->status == 'Active') {
-                                            $color = 'label-success';
-                                        } elseif($detail->last()->status == 'Pre-Terminated') {
-                                            $color = 'label-warning';
-                                        } elseif($detail->last()->status == 'Terminated') {
-                                            $color = 'label-danger';
-                                        }
-                                    @endphp
-                                    <label class="label label-lg {{ $color }}" style="font-size:12px;font-weight:bold">{{ $detail->last()->status }}</label>
+                                    <label class="label label-lg
+                                        @php
+                                            echo label_status($detail->last()->status);
+                                        @endphp" style="font-size:12px;font-weight:bold">
+                                        {{ $detail->last()->status }}
+                                    </label>
                                 </td>
                                 <td class="f-12">
                                     <a href="#" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Edit" id="edit-item" data-item-id="{{ $lease->id}}">
@@ -206,7 +202,7 @@
                             <a id="href-service" href="#">Services</a><br>
                         </li>
                         <li class="waves-effect waves-light">
-                            <a id="href-oincome" href="#">Other Income</a><br>
+                            <a id="href-oincome" href="#">Job Orders & Other Income</a><br>
                         </li>
                         <li class="navigation-header" style="border-top: 0;">
                             <i class="icon-history pull-right"></i> <b class="text-uppercase">Payment</b>

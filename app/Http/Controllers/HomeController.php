@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\User;
 use App\Property;
 use App\PropertyAccess;
 use App\LeasingAgreement;
@@ -12,6 +13,7 @@ use Carbon\Carbon;
 use Alert;
 
 use Illuminate\Http\Request;
+use Spatie\Activitylog\Models\Activity;
 
 class HomeController extends Controller
 {
@@ -33,12 +35,15 @@ class HomeController extends Controller
      */
     public function index()
     {
+        $properties = Property::all();
         $property = Property::findorFail($this->property);
-        $leasing_agreements = LeasingAgreement::all();
-        $leasing_agreement_details = LeasingAgreementDetail::all();
-        $billings = Billing::all();
+        $leasing_agreements = LeasingAgreement::where('property_id', $property->id)->get();
+        $leasing_agreement_details = LeasingAgreementDetail::where('property_id', $property->id)->get();
+        $billings = Billing::where('property_id', $property->id)->get();
+        $activities = Activity::all();
+        $users = User::all();
         $now = Carbon::now();
-        return view('welcome', compact('property', 'leasing_agreements', 'leasing_agreement_details', 'billings', 'now'));
+        return view('welcome', compact('property', 'properties', 'leasing_agreements', 'leasing_agreement_details', 'billings', 'activities', 'users', 'now'));
     }
 
     public function switch()

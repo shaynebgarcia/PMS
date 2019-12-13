@@ -15,13 +15,13 @@ class CreateUnitsTable extends Migration
     {
         Schema::create('units', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->string('unit_no')->nullable()->default(null)->unique();
             $table->integer('property_id');
-            $table->integer('unit_type_id');
-            $table->string('floor_no');
+            $table->integer('unit_type_id')->nullable();
+
+            $table->string('floor_no')->nullable();
             $table->string('number');
             $table->integer('leasing_agreement_id')->nullable()->default(null);
-
-            $table->string('slug')->unique();
             $table->timestamps();
         });
     }

@@ -6,12 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class UnitType extends Model
 {
-    protected $fillable = [
-        'property_id', 
-        'name', 'size',
-        'lease_price',
-        'create_at', 'updated_at',
-    ];
+    protected $guarded = ['id'];
 
     public function unit()
     {

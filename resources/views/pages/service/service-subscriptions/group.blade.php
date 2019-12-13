@@ -1,4 +1,4 @@
-@extends('layouts.admindek')
+@extends('layouts.admindek', ['pageSlug' => 'service-subscriptions-group'])
 
 @section('css-plugin')
     @include('includes.plugins.select-css')

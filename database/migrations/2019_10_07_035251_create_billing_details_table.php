@@ -16,7 +16,10 @@ class CreateBillingDetailsTable extends Migration
         Schema::create('billing_details', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->integer('billing_id');
+            $table->string('type');
             $table->string('description');
+            $table->date('start_date')->nullable();
+            $table->date('end_date')->nullable();
             $table->double('amount', 8, 2);
             $table->timestamps();
         });

@@ -1,4 +1,4 @@
-@extends('layouts.admindek')
+@extends('layouts.admindek', ['pageSlug' => 'user-edit'])
 
 @section('css-plugin')
     @include('includes.plugins.select-css')
@@ -50,10 +50,22 @@
                                 @enderror
                             </div>
                         </div>
+                        <div class="form-group row">
+                            <label class="col-lg-2 col-md-2 col-sm-2 col-form-label">Date of Birth</label>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <input type="date" class="form-control" value="{{ $user->birthdate }}" name="birthdate">
+                                @error('birthdate')
+                                    <span class="messages">
+                                        <p class="text-danger error">{{ $message }}</p>
+                                    </span>
+                                @enderror
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+        @can('Update User Credentials')
         <div class="row">
             <div class="col-lg-12 col-md-12 col-sm-12">
                 <div class="card">
@@ -141,6 +153,7 @@
                 </div>
             </div>
         </div>
+        @endcan
         <div class="row">
             <div class="col-lg-12 col-md-12 col-sm-12">
                 <div class="card">
@@ -154,7 +167,7 @@
                                 <select class="select2" name="role" style="width: 100%" required>
                                     <option value="#" disabled selected>Select Role</option>
                                     @foreach($roles as $role)
-                                        <option @if($user->getRoleNames()->first() == $role->name) value="{{ $user->role_id }}" selected @else value="{{ $role->id }}" @endif>
+                                        <option @if($user->getRoleNames()->first() == $role->name) selected @endif value="{{ $role->name }}">
                                             {{ $role->name }}
                                         </option>
                                     @endforeach
@@ -182,7 +195,7 @@
         </div>
         <div class="form-group row">
             <div class="col-lg-12 col-md-12 col-sm-12 text-right">
-                <button type="submit" class="btn waves-effect waves-light btn-primary btn-block btn-round">Submit</button>
+                <button type="submit" class="btn waves-effect waves-light btn-primary btn-block btn-round" @cannot('Update User') disabled @endcannot>Submit</button>
             </div>
         </div>
     </form>

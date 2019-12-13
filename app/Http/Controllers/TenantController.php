@@ -32,7 +32,7 @@ class TenantController extends Controller
     {
         $property = Property::findorFail($this->property);
         $users = User::all();
-        $tenants = Tenant::where('property_id', $property->id)->get();
+        $tenants = Tenant::all();
 
         return view('pages.user.tenant.index', compact('property', 'users', 'tenants'));
     }
@@ -142,7 +142,7 @@ class TenantController extends Controller
                 return redirect()->route('tenant.create');
             } else {
                 $tenant_store = Tenant::create([
-                    'property_id' => $this->property,
+                    // 'property_id' => $this->property,
                     'user_id' => $user_store->id,
                     'contact' => $request->contact,
                     'address' => $request->address,
@@ -216,6 +216,11 @@ class TenantController extends Controller
                 //                             ]);
                 // }
 
+                if($tenant_store) {
+                    $tenant_store->update([
+                        'tenant_no' => config('pms.unique_prefix.tenant').$tenant_store->id,
+                    ]);
+                }
                 // Handle File Upload
                 if($request->hasFile('user_photo')){
                     // Get filename with the extension

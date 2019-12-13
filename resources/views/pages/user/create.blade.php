@@ -1,4 +1,4 @@
-@extends('layouts.admindek')
+@extends('layouts.admindek', ['pageSlug' => 'user-create'])
 
 @section('css-plugin')
     @include('includes.plugins.select-css')
@@ -50,6 +50,17 @@
                             <div class="col-lg-10 col-md-10 col-sm-10">
                                 <input type="text" class="form-control" name="middlename">
                                 @error('middlename')
+                                    <span class="messages">
+                                        <p class="text-danger error">{{ $message }}</p>
+                                    </span>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-lg-2 col-md-2 col-sm-2 col-form-label">Date of Birth</label>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <input type="date" class="form-control" name="birthdate">
+                                @error('birthdate')
                                     <span class="messages">
                                         <p class="text-danger error">{{ $message }}</p>
                                     </span>
@@ -117,6 +128,24 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="form-group row">
+                            <label class="col-lg-2 col-md-2 col-sm-2 col-form-label">Confirm Password*</label>
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                <div class="input-group">
+                                    <span class="input-group-prepend">
+                                        <label class="input-group-text">
+                                            <i class="icofont icofont-shield"></i>
+                                        </label>
+                                    </span>
+                                    <input type="password" class="form-control" name="password_confirm" required>
+                                    @error('password')
+                                        <span class="messages">
+                                            <p class="text-danger error">{{ $message }}</p>
+                                        </span>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -134,7 +163,7 @@
                                 <select class="select2" name="role" style="width: 100%" required>
                                     <option value="#" disabled selected>Select Role</option>
                                     @foreach($roles as $role)
-                                        <option value="{{ $role->id }}">
+                                        <option value="{{ $role->name }}">
                                             {{ $role->name }}
                                         </option>
                                     @endforeach
@@ -164,7 +193,7 @@
         </div>
         <div class="form-group row">
             <div class="col-lg-12 col-md-12 col-sm-12 text-right">
-                <button type="submit" class="btn waves-effect waves-light btn-primary btn-block btn-round">Submit</button>
+                <button type="submit" class="btn waves-effect waves-light btn-primary btn-block btn-round" @cannot('Create User') disabled @endcannot>Submit</button>
             </div>
         </div>
     </form>

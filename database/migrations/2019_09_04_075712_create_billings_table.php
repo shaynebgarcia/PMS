@@ -15,14 +15,16 @@ class CreateBillingsTable extends Migration
     {
         Schema::create('billings', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->integer('property_id');
             $table->integer('leasing_agreement_details_id');
             $table->string('invoice_no');
+            
             $table->string('monthyear');
             $table->date('billing_from');
             $table->date('billing_to');
             $table->date('billing_date');
             $table->date('due_date');
-            $table->string('prepared_by');
+            $table->string('prepared_by')->nullable();
             $table->integer('published_by')->default(1);
             $table->double('subtotal_amount', 8, 2);
             $table->double('ou_amount', 8, 2)->default(0);

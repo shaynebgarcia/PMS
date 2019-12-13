@@ -15,6 +15,7 @@ class CreatePropertiesTable extends Migration
     {
         Schema::create('properties', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->string('property_no')->nullable()->default(null)->unique();
             $table->string('code')->unique();
             $table->string('name');
             $table->string('address');
@@ -23,8 +24,7 @@ class CreatePropertiesTable extends Migration
             $table->string('contact')->nullable();
             $table->date('date_finish')->nullable();
             $table->date('date_start_leasing')->nullable();
-
-            $table->string('slug')->unique();
+            
             $table->timestamps();
         });
     }

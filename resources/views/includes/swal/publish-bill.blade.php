@@ -7,7 +7,7 @@
         var x = document.getElementsByName('publish-bill');
             swal({
                 title: 'Are you sure?',
-                text: 'Published bills cannot be editted',
+                text: 'If an existing billing invoice has been published, any changes will override the existing published bill.',
                 icon: 'warning',
                 buttons: {
                     delete: {

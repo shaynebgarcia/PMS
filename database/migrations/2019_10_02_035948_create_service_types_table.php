@@ -15,11 +15,11 @@ class CreateServiceTypesTable extends Migration
     {
         Schema::create('service_types', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->integer('property_id');
             $table->string('name');
             $table->boolean('is_subscription')->default(0);
             $table->integer('length_month')->nullable()->default(null);
-            $table->double('monthly_rate', 8, 2)->nullable();
-            $table->double('daily_rate', 8, 2)->nullable();
+            $table->double('amount', 8, 2)->nullable();
             $table->timestamps();
         });
     }

@@ -8,6 +8,7 @@ use App\LeasingAgreement;
 use App\LeasingAgreementDetail;
 use App\OtherIncome;
 use App\OtherIncomeType;
+use App\JobOrder;
 
 use Carbon\Carbon;
 use Alert;
@@ -104,7 +105,7 @@ class OtherIncomeController extends Controller
         $lease_detail = LeasingAgreementDetail::findorFail($id);
         $otherincome_types = OtherIncomeType::all();
         $otherincome = OtherIncome::all();
-
+        $orders = JobOrder::where('leasing_agreement_id', $link)->get();
         $now = Carbon::now();
 
         $start    = (new DateTime($now))->modify('first day of this month');
@@ -112,7 +113,7 @@ class OtherIncomeController extends Controller
         $interval = DateInterval::createFromDateString('1 month');
         $period   = new DatePeriod($start, $interval, $end);
 
-        return view('pages.otherincome.group', compact('property', 'lease', 'lease_detail', 'otherincome_types', 'otherincome', 'period'));
+        return view('pages.otherincome.group', compact('property', 'lease', 'lease_detail', 'otherincome_types', 'otherincome', 'orders', 'period'));
     }
     /**
      * Show the form for editing the specified resource.

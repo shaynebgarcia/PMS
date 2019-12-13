@@ -48,12 +48,13 @@ class PaymentController extends Controller
     public function create()
     {
         $property = Property::findorFail($this->property);
-        $leases = LeasingAgreement::all();
+        $leases = LeasingAgreement::where('property_id', $property->id)->get();
+        $lease_details = LeasingAgreementDetail::where('property_id', $property->id)->get();
         $tenants = Tenant::all();
         $properties = Property::all();
         $types = PaymentType::all();
         $bills = Billing::all();
-        return view('pages.payment.create', compact('property', 'leases', 'properties', 'types', 'tenants', 'bills'));
+        return view('pages.payment.create', compact('property', 'leases', 'lease_details', 'properties', 'types', 'tenants', 'bills'));
     }
 
     /**
@@ -77,9 +78,11 @@ class PaymentController extends Controller
             'bill' => 'required_if:payment_type,1',
         ]);
 
+        $property = Property::findorFail($this->property);
+
         // Creating payment
             $payment_stored = Payment::create([
-                'property_id' => $this->property,
+                'property_id' => $property->id,
                 'leasing_agreement_details_id' => $request->agreement,
                 'billing_id' => $request->bill,
                 'tenant_id' => $request->tenant,
@@ -93,7 +96,7 @@ class PaymentController extends Controller
             ]);
 
             // Updating slug payment
-            $payment_stored->update(['slug' => 'PYM-'.$payment_stored->id]);
+            $payment_stored->update(['slug' => config('pms.unique_prefix.payment').$payment_stored->id]);
 
             // if (request()->hasFile('payment_file')) {
             //     $file_stored = File::create([   'name' => 'Payment',
@@ -155,12 +158,13 @@ class PaymentController extends Controller
     {
         $property = Property::findorFail($this->property);
         $payment = Payment::where('slug', $slug)->first();
-        $leases = LeasingAgreement::all();
+        $leases = LeasingAgreement::where('property_id', $property->id)->get();
+        $lease_details = LeasingAgreementDetail::where('property_id', $property->id)->get();
         $tenants = Tenant::all();
         $properties = Property::all();
         $types = PaymentType::all();
         $bills = Billing::all();
-        return view('pages.payment.edit', compact('property', 'payment', 'leases', 'properties', 'types', 'tenants', 'bills'));
+        return view('pages.payment.edit', compact('property', 'payment', 'leases', 'lease_details', 'properties', 'types', 'tenants', 'bills'));
     }
 
     /**
@@ -184,6 +188,50 @@ class PaymentController extends Controller
             'agreement' => 'nullable',
             'bill' => 'required_if:payment_type,1',
         ]);
+
+        $payment = Payment::where('slug', $slug)->first();
+        // Creating payment
+            $payment_update = $payment->update([
+                'leasing_agreement_details_id' => $request->agreement,
+                'billing_id' => $request->bill,
+                'tenant_id' => $request->tenant,
+                'payment_type_id' => $request->payment_type,
+                'amount_due' => $request->amount_due,
+                'amount_paid' => $request->amount_paid,
+                'reference_no' => $request->reference_no,
+                'note' => $request->note,
+                'processed_by_user' => auth()->user()->id,
+                'date_paid' => $request->date_payment,
+            ]);
+
+            // Handle File Upload
+            if($request->hasFile('payment_file')){
+                // Get filename with the extension
+                $filenameWithExt = $request->file('payment_file')->getClientOriginalName();
+                // Get just filename
+                $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME);
+                // Get just ext
+                $extension = $request->file('payment_file')->getClientOriginalExtension();
+                // Filename to store
+                $fileNameToStore= $filename.'_'.time().'.'.$extension;
+
+                $file = File::where('id', $payment->file_id)->first();
+                // Upload Image
+                $file_update = $file->update([  'name' => 'Payment',
+                                                'model' => 'Payment',
+                                                'path' => $request->file('payment_file')->storeAs('payments', $fileNameToStore)
+                                             ]);
+            } else {
+                $fileNameToStore = 'noimage.jpg';
+            }
+
+            if (!$payment_update) {
+                Alert::error('Encountered an error', 'Oops')->persistent('Close');
+                return redirect()->back();
+            } else {
+                Alert::success('Payment update complete '.$slug, 'Success')->persistent('Close');
+                return redirect()->route('payment.index');
+            }
     }
 
     /**

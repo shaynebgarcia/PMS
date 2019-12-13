@@ -1,4 +1,4 @@
-@extends('layouts.admindek')
+@extends('layouts.admindek', ['pageSlug' => 'user-show'])
 
 @section('breadcrumbs')
     @php

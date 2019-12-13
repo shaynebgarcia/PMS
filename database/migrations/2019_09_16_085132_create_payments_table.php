@@ -15,6 +15,7 @@ class CreatePaymentsTable extends Migration
     {
         Schema::create('payments', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->string('payment_no')->nullable()->default(null)->unique();
             $table->integer('property_id');
             $table->integer('payment_type_id');
 
@@ -30,9 +31,7 @@ class CreatePaymentsTable extends Migration
             $table->string('note')->nullable()->default(null);
             
             $table->integer('processed_by_user')->nullable()->default(null);
-            $table->integer('file_id')->nullable()->default(null);
 
-            $table->string('slug')->nullable()->default(null)->unique();
             $table->date('date_paid')->nullable()->default(null);
             $table->timestamps();
         });

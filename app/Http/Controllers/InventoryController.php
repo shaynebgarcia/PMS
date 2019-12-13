@@ -2,11 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Inventory;
 use Illuminate\Http\Request;
+use App\Property;
+use App\Inventory;
 
 class InventoryController extends Controller
 {
+    public function __construct(Request $request)
+    {
+        $this->property = $request->session()->get('property_id');
+    }
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +19,9 @@ class InventoryController extends Controller
      */
     public function index()
     {
-        //
+        $property = Property::findorFail($this->property);
+        $inventories = Inventory::all();
+        return view('pages.inventory.index', compact('property', 'inventories'));
     }
 
     /**
@@ -81,5 +88,23 @@ class InventoryController extends Controller
     public function destroy(Inventory $inventory)
     {
         //
+    }
+
+    public function getInventory()
+    {
+        $inventory = Inventory::all();
+        $data = '<option disabled selected value>Select an Item</option>';
+        foreach ($inventory as $i) {
+            $data .= '<option value="'.$i->id.'">'.$i->code.' | '.$i->description.'</option>';
+        }
+        return $data;
+    }
+
+    public function getStock(Request $request)
+    {
+        $match = ['id' => $request->id];
+
+        $data = Inventory::where($match)->sum('qty');
+        return response()->json($data);
     }
 }

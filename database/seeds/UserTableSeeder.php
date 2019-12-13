@@ -16,17 +16,90 @@ class UserTableSeeder extends Seeder
     	$faker = Faker::create();
 
     	DB::table('users')->insert([
+    			'is_employee' => 1,
 	            'lastname' => $faker->lastName,
 	            'firstname' => $faker->firstName,
 	            'middlename' => $faker->lastName,
-	            'username' => 'employee_1',
+	            'username' => 'caretaker_1',
 	            'email' => $faker->email,
+	            'birthdate' => $faker->date($format = 'Y-m-d', $max = 'now'),
 	            'password' => bcrypt('pass'),
 	            'slug' => $faker->userName,
-	            // 'slug' => Str::slug($faker->lastName.' '.$faker->firstName, '-'),
 	            'created_at' => $faker->dateTime($max = 'now'),
             	'updated_at' => $faker->dateTime($max = 'now'),
 	    ]);
+	    DB::table('users')->insert([
+    			'is_employee' => 1,
+	            'lastname' => $faker->lastName,
+	            'firstname' => $faker->firstName,
+	            'middlename' => $faker->lastName,
+	            'username' => 'caretaker_2',
+	            'email' => $faker->email,
+	            'birthdate' => $faker->date($format = 'Y-m-d', $max = 'now'),
+	            'password' => bcrypt('pass'),
+	            'slug' => $faker->userName,
+	            'created_at' => $faker->dateTime($max = 'now'),
+            	'updated_at' => $faker->dateTime($max = 'now'),
+	    ]);
+	    DB::table('users')->insert([
+    			'is_employee' => 1,
+	            'lastname' => $faker->lastName,
+	            'firstname' => $faker->firstName,
+	            'middlename' => $faker->lastName,
+	            'username' => 'caretaker_3',
+	            'email' => $faker->email,
+	            'birthdate' => $faker->date($format = 'Y-m-d', $max = 'now'),
+	            'password' => bcrypt('pass'),
+	            'slug' => $faker->userName,
+	            'created_at' => $faker->dateTime($max = 'now'),
+            	'updated_at' => $faker->dateTime($max = 'now'),
+	    ]);
+	    DB::table('users')->insert([
+    			'is_employee' => 1,
+	            'lastname' => $faker->lastName,
+	            'firstname' => $faker->firstName,
+	            'middlename' => $faker->lastName,
+	            'username' => 'caretaker_4',
+	            'email' => $faker->email,
+	            'birthdate' => $faker->date($format = 'Y-m-d', $max = 'now'),
+	            'password' => bcrypt('pass'),
+	            'slug' => $faker->userName,
+	            'created_at' => $faker->dateTime($max = 'now'),
+            	'updated_at' => $faker->dateTime($max = 'now'),
+	    ]);
+	    DB::table('users')->insert([
+    			'is_employee' => 1,
+	            'lastname' => $faker->lastName,
+	            'firstname' => $faker->firstName,
+	            'middlename' => $faker->lastName,
+	            'username' => 'caretaker_5',
+	            'email' => $faker->email,
+	            'birthdate' => $faker->date($format = 'Y-m-d', $max = 'now'),
+	            'password' => bcrypt('pass'),
+	            'slug' => $faker->userName,
+	            'created_at' => $faker->dateTime($max = 'now'),
+            	'updated_at' => $faker->dateTime($max = 'now'),
+	    ]);
+	    \App\PropertyAccess::create([
+          'user_id' => 2,
+          'property_id' => 1,
+        ]);
+        \App\PropertyAccess::create([
+          'user_id' => 3,
+          'property_id' => 2,
+        ]);
+        \App\PropertyAccess::create([
+          'user_id' => 4,
+          'property_id' => 3,
+        ]);
+        \App\PropertyAccess::create([
+          'user_id' => 5,
+          'property_id' => 4,
+        ]);
+        \App\PropertyAccess::create([
+          'user_id' => 6,
+          'property_id' => 5,
+        ]);
 
 	      for ($i = 3; $i < 10; $i++) {
 	        DB::table('users')->insert([
@@ -35,6 +108,7 @@ class UserTableSeeder extends Seeder
 	            'middlename' => $faker->lastName,
 	            'username' => $faker->userName,
 	            'email' => $faker->email,
+	            'birthdate' => $faker->date($format = 'Y-m-d', $max = 'now'),
 	            'password' => bcrypt('pass'),
 	            'slug' => $faker->userName,
 	            // 'slug' => Str::slug($faker->lastName.' '.$faker->firstName.' '.$i, '-'),
@@ -42,7 +116,6 @@ class UserTableSeeder extends Seeder
             	'updated_at' => $faker->dateTime($max = 'now'),
 	        ]);
 	        DB::table('tenants')->insert([
-	        	'property_id' => 5,
 	        	'user_id' => $i,
 	        	'contact' => $faker->phoneNumber,
 	        	'address' => $faker->address,

@@ -28,7 +28,6 @@ class PropertyUnitTableSeeder extends Seeder
             'date_finish' => $faker->date($format = 'Y-m-d', $max = 'now'),
             'date_start_leasing' => $faker->date($format = 'Y-m-d', $max = 'now'),
 
-            'slug' => Str::slug($faker->company.' '.$i, '-'),
             'created_at' => $faker->dateTime($max = 'now'),
             'updated_at' => $faker->dateTime($max = 'now'),
         ]);
@@ -44,7 +43,6 @@ class PropertyUnitTableSeeder extends Seeder
             'date_finish' => $faker->date($format = 'Y-m-d', $max = 'now'),
             'date_start_leasing' => $faker->date($format = 'Y-m-d', $max = 'now'),
 
-            'slug' => Str::slug('Southgate Building'.' '.$i, '-'),
             'created_at' => $faker->dateTime($max = 'now'),
             'updated_at' => $faker->dateTime($max = 'now'),
         ]);
@@ -84,7 +82,6 @@ class PropertyUnitTableSeeder extends Seeder
             'floor_no' => $floor_rand = rand(1, 6),
             'number' => $fa.'-0'.$floor_rand.'-'.$i,
 
-            'slug' => Str::slug($fa.'-0'.$floor_rand.'-'.$i, '-'),
             'created_at' => $faker->dateTime($max = 'now'),
             'updated_at' => $faker->dateTime($max = 'now'),
         ]);

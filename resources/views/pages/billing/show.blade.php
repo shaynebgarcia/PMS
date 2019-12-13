@@ -1,4 +1,4 @@
-@extends('layouts.admindek')
+@extends('layouts.admindek', ['pageSlug' => 'billing-show'])
 
 @section('css-plugin')
     @include('includes.plugins.datatable-css')

@@ -1,4 +1,4 @@
-@extends('layouts.admindek')
+@extends('layouts.admindek', ['pageSlug' => 'tenant-create'])
 
 @section('breadcrumbs')
     @php
@@ -479,7 +479,7 @@
 
         <div class="form-group row">
             <div class="col-lg-12 col-md-12 col-sm-12 text-right">
-                <button type="submit" class="btn waves-effect waves-light btn-primary btn-round btn-block">Submit</button>
+                <button type="submit" class="btn waves-effect waves-light btn-primary btn-round btn-block" @cannot('Create Tenant') disabled @endcannot>Submit</button>
             </div>
         </div>
     </div>

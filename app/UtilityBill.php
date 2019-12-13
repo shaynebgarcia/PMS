@@ -6,12 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class UtilityBill extends Model
 {
-    protected $fillable = [
-    	'leasing_agreement_details_id', 
-        'utility_id', 
-        'to_bill',
-        'amount',
-    ];
+    protected $guarded = ['id'];
 
     public function agreement_detail()
     {

@@ -1,4 +1,4 @@
-@extends('layouts.admindek')
+@extends('layouts.admindek', ['pageSlug' => 'user-index'])
 
 @section('css-plugin')
     @include('includes.plugins.datatable-css')
@@ -18,11 +18,13 @@
         <div class="card-header">
             <h5>Users</h5>
             <div class="card-header-right">
-            <a href="{{ route('user.create') }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Add User">
-                <button class="btn waves-effect waves-light btn-success btn-icon" style="height: 30px;width: 30px; padding: 0;line-height: 0;padding-left: 2px;">
-                    <i class="fa fa-plus fa-sm" style="color: white;"></i>
-                </button>
-            </a>
+                @can('Create User')
+                    <a href="{{ route('user.create') }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Add User">
+                        <button class="btn waves-effect waves-light btn-success btn-icon" style="height: 30px;width: 30px; padding: 0;line-height: 0;padding-left: 2px;">
+                            <i class="fa fa-plus fa-sm" style="color: white;"></i>
+                        </button>
+                    </a>
+                @endcan
             </div>
         </div>
         <div class="card-block">
@@ -31,50 +33,58 @@
                     <table id="order-table" class="table table-responsive table-bordered">
                         <thead>
                             <tr>
-                                <th>Full Name</th>
-                                <th>Role</th>
-                                <th>Username</th>
-                                <th>Email</th>
-                                <th>Assigned Property</th>
-                                <th>Action</th>
+                                <th class="{{ config('pms.table.th.font-size') }}">NO</th>
+                                <th class="{{ config('pms.table.th.font-size') }}" width="50%">Full Name</th>
+                                <th class="{{ config('pms.table.th.font-size') }}">Role</th>
+                                <th class="{{ config('pms.table.th.font-size') }}">Username</th>
+                                <th class="{{ config('pms.table.th.font-size') }}">Email</th>
+                                <th class="{{ config('pms.table.th.font-size') }}">Assigned Property</th>
+                                <th class="{{ config('pms.table.th.font-size') }}">Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($users as $user)
+                            @foreach($users->where('is_employee', 1) as $user)
                                 <tr>
-                                    <td style="font-size: 13px; font-weight: bold">
-                                        <a href="{{ route('user.show', $user->id) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="View Details">
+                                    <td class="{{ config('pms.table.td.font-size') }}">
+                                        {{ $user->user_no ?? '-' }}
+                                    </td>
+                                    <td class="{{ config('pms.table.td.font-size') }}">
+                                        <a class="f-12 f-w-700" href="{{ route('user.show', $user->id) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="View Details">
                                             {{ $user->fullnamewm }}
                                         </a>
                                     </td>
-                                    <td style="font-size: 13px; text-transform: capitalize;">
+                                    <td class="{{ config('pms.table.td.font-size') }}">
                                         @foreach($user->getRoleNames() as $role)
                                             {{ $role }} <br>
                                         @endforeach
                                     </td>
-                                    <td style="font-size: 13px;">
+                                    <td class="{{ config('pms.table.td.font-size') }}">
                                         {{ $user->username }}
                                     </td>
-                                    <td style="font-size: 13px;">
+                                    <td class="{{ config('pms.table.td.font-size') }}">
                                         {{ $user->email }}
                                     </td>
-                                    <td style="font-size: 13px;">
+                                    <td class="{{ config('pms.table.td.font-size') }}">
                                         @if(count($access->where('user_id', $user->id)) > 0)
                                             @foreach($access->where('user_id', $user->id) as $has_access)
-                                                {{ $has_access->property->name }} </br>
+                                                <label class="badge badge-inverse-info">{{ $has_access->property->code }}</label> {{ $has_access->property->name }} </br>
                                             @endforeach
                                         @else
                                             No Assigned
                                         @endif
 
                                     </td>
-                                    <td style="font-size: 13px;">
-                                        <a href="{{ route('user.edit', $user->id) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Edit">
-                                            <i class="icon feather icon-edit f-w-600 f-16 m-r-15 text-c-green"></i>
-                                        </a>
-                                        <a href="{{ route('user.destroy', $user->id) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Delete">
-                                            <i class="feather icon-trash-2 f-w-600 f-16 text-c-red"></i>
-                                        </a>
+                                    <td class="{{ config('pms.table.td.font-size') }}">
+                                        @can('Update User')
+                                            <a href="{{ route('user.edit', $user->id) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="{{ config('pms.action.edit.tool-tip-text') }}">
+                                                <i class="{{ config('pms.action.edit.icon') }} {{ config('pms.action.weight') }} {{config('pms.action.size') }} {{ config('pms.action.margin') }} {{ config('pms.action.edit.color') }}"></i>
+                                            </a>
+                                        @endcan
+                                         @can('Delete User')
+                                            <a href="{{ route('user.destroy', $user->id) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="{{ config('pms.action.delete.tool-tip-text') }}">
+                                                <i class="{{ config('pms.action.delete.icon') }} {{ config('pms.action.weight') }} {{config('pms.action.size') }} {{ config('pms.action.margin') }} {{ config('pms.action.delete.color') }}"></i>
+                                            </a>
+                                        @endcan
                                     </td>
                                 </tr>
                             @endforeach

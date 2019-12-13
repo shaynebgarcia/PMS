@@ -1,4 +1,4 @@
-@extends('layouts.admindek')
+@extends('layouts.admindek', ['pageSlug' => 'billing-group'])
 
 @section('css-plugin')
 	@include('includes.plugins.select-css')
@@ -23,7 +23,7 @@
             		<label class="col-lg-3 col-md-3 col-sm-3 col-form-label">Generate Next Bill</label>
                         <div class="col-lg-9 col-md-9 col-sm-9">
                         	<a href="{{ route('billing.display', [$lease->id, $lease_detail->id, $bill_this])}}">
-			            		<button class="btn btn-primary btn-sm">{{ date('F Y', strtotime($bill_this)) }}</button>
+			            		<button class="btn btn-primary btn-sm">{{ FY($bill_this) }}</button>
 			            	</a>
 			            	<input id="property_id" value="{{ $property->code }}" hidden>
 			            	<input id="lease_id" value="{{ $lease_detail->agreement->id }}" hidden>
@@ -102,23 +102,23 @@
 	                                	{{ $bill->invoice_no }}
 	                                </td>
 	                                <td class="f-12">
-	                                	{{ date('F Y', strtotime($bill->monthyear)) }} <br>
-	                                	<p class="f-10"> {{ date('M d, Y', strtotime($bill->billing_from)) }} - {{ date('M d, Y', strtotime($bill->billing_to)) }} </p>
+	                                	{{ FY($bill->monthyear) }} <br>
+	                                	<p class="f-10"> {{ MdY($bill->billing_from) }} - {{ MdY($bill->billing_to) }} </p>
 	                                </td>
 	                                <td class="f-12">
-	                                	{{ date('M d, Y', strtotime($bill->billing_date)) }}
+	                                	{{ MdY($bill->billing_date) }}
 	                                </td>
 	                                <td class="f-12">
-	                                	{{ date('M d, Y', strtotime($bill->due_date)) }}
+	                                	{{ MdY($bill->due_date) }}
 	                                </td>
 	                                <td class="f-12">
-	                                	{{ $bill->subtotal_currency_sign }}
+	                                	{{ currencysign($bill->subtotal_amount) }}
 	                                </td>
 	                                <td class="f-12">
-	                                	{{ $bill->ou_currency_sign }}
+	                                	{{ currencysign($bill->ou_amount) }}
 	                                </td>
 	                                <td class="f-12">
-	                                	{{ $bill->total_currency_sign  }}
+	                                	{{ currencysign($bill->total_amount_due)  }}
 	                                </td>
 	                                {{-- Payments --}}
 	                                @php
@@ -133,7 +133,7 @@
 	                                </td>
 	                                <td class="f-12">
 	                                	@if($bill_payment != null)
-	                                		{{ config('pms.currency.sign').number_format($bill_payment->amount_paid - $bill->total_amount_due, 2) }}
+	                                		{{ currencysign($bill_payment->amount_paid - $bill->total_amount_due) }}
 	                                	@else
 	                                		No Payment
 	                                	@endif
@@ -141,7 +141,7 @@
 	                                <td class="f-12">
 	                                	@if($bill_payment != null)
 	                                		<a href="#" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="View Payment"> {{ $bill_payment->reference_no }} </a> <br>
-	                                		({{ date('M d, Y', strtotime($bill_payment->date_paid)) }})
+	                                		({{ MdY($bill_payment->date_paid) }})
 	                                	@else
 	                                		No Payment
 	                                	@endif

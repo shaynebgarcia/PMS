@@ -1,4 +1,4 @@
-@extends('layouts.admindek')
+@extends('layouts.admindek', ['pageSlug' => 'billing-index'])
 
 @section('css-plugin')
 	@include('includes.plugins.select-css')
@@ -72,106 +72,116 @@
             <div class="card-block">
 	            @if(count($billings) > 0)
 				<div class="dt-responsive">
-					<table id="cbtn-selectors" class="table table-striped table-bordered table-responsive">
+					<table id="cbtn-selectors" class="table table-bordered table-responsive">
 	                        <thead>
 	                            <tr>
-	                            	<th class="f-12"></th>
-	                            	<th class="f-12">Month</th>
-	                                <th class="f-12">Invoice NO</th>
-	                                <th class="f-12">Billing Date</th>
-	                                <th class="f-12">Rental Due Date</th>
-	                                <th class="f-12">Date Start/End</th>
-	                                <th class="f-12">Unit</th>
-	                                <th class="f-12">Rent</th>
-	                                <th class="f-12">Utilities</th>
-	                                <th class="f-12">Other</th>
-	                                <th class="f-12">Sub-total</th>
-	                                <th class="f-12">Prev. O/U</th>
-	                                <th class="f-12">Total Amount Due</th>
-	                                <th class="f-12">Total Collected</th>
-	                                <th class="f-12">O/U-Payment</th>
-	                                <th class="f-12">PR#</th>
-	                                <th class="f-12">PR# Date</th>
-	                                <th class="f-12">Notice</th>
+	                            	<th class="{{ config('pms.table.th.font-size') }}"></th>
+	                            	<th class="{{ config('pms.table.th.font-size') }}">Tenant</th>
+	                            	<th class="{{ config('pms.table.th.font-size') }}">Unit</th>
+	                            	<th class="{{ config('pms.table.th.font-size') }}">Invoice NO</th>
+	                            	<th class="{{ config('pms.table.th.font-size') }}">Month</th>
+	                                <th class="{{ config('pms.table.th.font-size') }}">Billing Date</th>
+	                                <th class="{{ config('pms.table.th.font-size') }}">Rental Due Date</th>
+	                                <th class="{{ config('pms.table.th.font-size') }}">Date Start/End</th>
+	                                <th class="{{ config('pms.table.th.font-size') }}">Rent</th>
+	                                <th class="{{ config('pms.table.th.font-size') }}">Utilities</th>
+	                                <th class="{{ config('pms.table.th.font-size') }}">Services</th>
+	                                <th class="{{ config('pms.table.th.font-size') }}">Other</th>
+	                                <th class="{{ config('pms.table.th.font-size') }}">Sub-total</th>
+	                                <th class="{{ config('pms.table.th.font-size') }}">Prev. O/U</th>
+	                                <th class="{{ config('pms.table.th.font-size') }}">Total Amount Due</th>
+	                                <th class="{{ config('pms.table.th.font-size') }}">Total Collected</th>
+	                                <th class="{{ config('pms.table.th.font-size') }}">O/U-Payment</th>
+	                                <th class="{{ config('pms.table.th.font-size') }}">PR#</th>
+	                                <th class="{{ config('pms.table.th.font-size') }}">PR# Date</th>
+	                                <th class="{{ config('pms.table.th.font-size') }}">Notice</th>
+	                                <th class="{{ config('pms.table.th.font-size') }}">Action</th>
 	                            </tr>
 	                        </thead>
 	                        <tbody>
 	                        @foreach($billings as $bill)
-	                            <tr>
-	                            	<td class="f-12">
+                        		{{-- Payments --}}
+                                @php
+                            		$bill_payment = $payments->where('billing_id', $bill->id)->first();
+                            	@endphp
+	                            <tr @if($bill_payment == null) style="background-color: #f9e596" data-toggle="tooltip" data-placement="bottom" data-trigger="hover" title="" data-original-title="INVOICE UN-PAID" @endif>
+	                            	<td class="{{ config('pms.table.td.font-size') }}">
 	                                    <a href="{{ route('export.invoice', [$property->code, $bill->leasing_agreement_details_id, $bill->id]) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="View Invoice">
 	                                        <i class="icon feather icon-eye f-w-600 f-18 m-r-15 text-c-blue"></i>
 	                                    </a>
 	                                </td>
-	                                <td class="f-12">
-	                                	{{ date('F Y', strtotime($bill->monthyear)) }}
+	                                <td class="{{ config('pms.table.td.font-size') }}">
+	                                	{{ $bill->leasing_agreement_details->agreement->tenant->user->fullnamewm }}
 	                                </td>
-	                                <td class="f-12">
+	                                <td class="{{ config('pms.table.td.font-size') }}">
+	                                	{{ $bill->leasing_agreement_details->agreement->unit->number }}
+
+	                                </td>
+	                                <td class="{{ config('pms.table.td.font-size') }}">
 	                                	{{ $bill->invoice_no }}
 	                                </td>
-	                                <td class="f-12">
-	                                	{{ date('d-M-Y', strtotime($bill->billing_date)) }}
+	                                <td class="{{ config('pms.table.td.font-size') }}">
+	                                	{{ FY($bill->monthyear) }}
 	                                </td>
-	                                <td class="f-12">
-	                                	{{ date('d-M-Y', strtotime($bill->due_date)) }}
+	                                <td class="{{ config('pms.table.td.font-size') }}">
+	                                	{{ MdY($bill->billing_date) }}
 	                                </td>
-	                                <td class="f-12">
-	                                	{{ date('d-M-Y', strtotime($bill->billing_from)) }} - {{ date('d-M-Y', strtotime($bill->billing_to)) }}
+	                                <td class="{{ config('pms.table.td.font-size') }}">
+	                                	{{ MdY($bill->due_date) }}
 	                                </td>
-	                                <td class="f-12">
-	                                	@php
-	                                		$bill_details = $all_bill->where('id', $bill->id)->first();
-	                                	@endphp
-	                                	{{ $bill_details->leasing_agreement_details->agreement->unit->number }}
+	                                <td class="{{ config('pms.table.td.font-size') }}">
+	                                	{{ MdY($bill->billing_from) }} - {{ MdY($bill->billing_to) }}
 	                                </td>
-	                                <td class="f-12">
+	                                <td class="{{ config('pms.table.td.font-size') }}">
+	                                	{{ currencysign($bill->details->where('type', 'Rental')->sum('amount')) }}
 	                                </td>
-	                                <td class="f-12">
+	                                <td class="{{ config('pms.table.td.font-size') }}">
+	                                	{{ currencysign($bill->details->where('type', 'Utility')->sum('amount')) }}
 	                                </td>
-	                                <td class="f-12">
+	                                <td class="{{ config('pms.table.td.font-size') }}">
+	                                	{{ currencysign($bill->details->where('type', 'Service')->sum('amount')) }}
 	                                </td>
-	                                <td class="f-12">
-	                                	{{ config('pms.currency.sign').number_format($bill->subtotal_amount, 2) }}
+	                                <td class="{{ config('pms.table.td.font-size') }}">
+	                                	{{ currencysign($bill->details->where('type', 'Other')->sum('amount')) }}
 	                                </td>
-	                                <td class="f-12">
-	                                	{{ config('pms.currency.sign').number_format($bill->ou_amount, 2) }}
+	                                <td class="{{ config('pms.table.td.font-size') }}">
+	                                	{{ currencysign($bill->subtotal_amount) }}
 	                                </td>
-	                                <td class="f-12">
-	                                	{{ config('pms.currency.sign').number_format($bill->total_amount_due, 2) }}
+	                                <td class="{{ config('pms.table.td.font-size') }}">
+	                                	{{ currencysign($bill->ou_amount) }}
 	                                </td>
-	                                {{-- Payments --}}
-	                                @php
-                                		$bill_payment = $payments->where('billing_id', $bill->id)->first();
-                                	@endphp
-	                                <td class="f-12">
+	                                <td class="{{ config('pms.table.td.font-size') }}">
+	                                	{{ currencysign($bill->total_amount_due) }}
+	                                </td>
+	                                <td class="{{ config('pms.table.td.font-size') }}">
 	                                	@if($bill_payment != null)
-	                                		{{ config('pms.currency.sign').number_format($bill_payment->amount_paid, 2) }}
+	                                		{{ currencysign($bill_payment->amount_paid) }}
 	                                	@else
 	                                		No Payment
 	                                	@endif
 	                                </td>
-	                                <td class="f-12">
+	                                <td class="{{ config('pms.table.td.font-size') }}">
 	                                	@if($bill_payment != null)
-	                                		{{ config('pms.currency.sign').number_format($bill_payment->amount_paid - $bill->total_amount_due, 2) }}
+	                                		{{ currencysign($bill_payment->amount_paid - $bill->total_amount_due) }}
 	                                	@else
 	                                		No Payment
 	                                	@endif
 	                                </td>
-	                                <td class="f-12">
+	                                <td class="{{ config('pms.table.td.font-size') }}">
 	                                	@if($bill_payment != null)
 	                                		{{ $bill_payment->reference_no }}
 	                                	@else
 	                                		No Payment
 	                                	@endif
 	                                </td>
-	                                <td class="f-12">
+	                                <td class="{{ config('pms.table.td.font-size') }}">
 	                                	@if($bill_payment != null)
-	                                		{{ date('M d, Y', strtotime($bill_payment->date_paid)) }}
+	                                		{{ MdY($bill_payment->date_paid) }}
 	                                	@else
 	                                		No Payment
 	                                	@endif
 	                                </td>
-	                                <td class="f-12">
+	                                <td class="{{ config('pms.table.td.font-size') }}">
 	                                	@if($bill_payment != null)
 		                                    @php
 		                                    	$no_days = \Carbon\Carbon::createFromDate($bill->due_date)->diffInDays($bill_payment->date_paid);
@@ -182,28 +192,16 @@
 		                                    	{{ $no_days }} day(s) advanced
 		                                    @endif
 	                                	@else
-	                                		{{ \Carbon\Carbon::createFromTimeStamp(strtotime($bill->due_date))->diffForHumans() }}
+	                                		{{ \Carbon\Carbon::createFromDate($bill->due_date)->diffInDays(\Carbon\Carbon::now()) }} day(s) overdue
 	                                	@endif
+	                                </td>
+	                                <td class="{{ config('pms.table.td.font-size') }}">
+                                        <a href="#" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="{{ config('pms.action.delete.tool-tip-text') }}">
+                                            <i class="{{ config('pms.action.delete.icon') }} {{ config('pms.action.weight') }} {{config('pms.action.size') }} {{ config('pms.action.margin') }} {{ config('pms.action.delete.color') }}"></i>
+                                        </a>
 	                                </td>
 	                            </tr>
 	                        @endforeach
-	                        {{-- <tr>
-	                        	<td></td>
-	                        	<td></td>
-	                        	<td></td>
-	                        	<td></td>
-	                        	<td></td>
-	                        	<td></td>
-	                        	<td></td>
-	                        	<td></td>
-	                        	<td></td>
-	                        	<td></td>
-	                        	<td></td>
-	                        	<td></td>
-	                        	<td></td>
-	                        	<td></td>
-	                        	<td></td>
-	                        </tr> --}}
 	                        </tbody>
 	                    </table>
 	                </div>

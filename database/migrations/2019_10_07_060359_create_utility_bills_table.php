@@ -18,7 +18,7 @@ class CreateUtilityBillsTable extends Migration
             $table->integer('property_id');
             $table->integer('leasing_agreement_details_id');
             $table->integer('utility_id');
-            $table->string('to_bill');
+            $table->string('to_bill')->nullable();
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();
             $table->double('prev_reading', 8, 2)->nullable();

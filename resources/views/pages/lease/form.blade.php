@@ -1,4 +1,4 @@
-@extends('layouts.admindek')
+@extends('layouts.admindek', ['pageSlug' => 'lease-create'])
 
 @section('css-plugin')
     @include('includes.plugins.select-css')
@@ -18,7 +18,7 @@
 @section('content')
     <div class="row">
         <div class="col-lg-12 col-md-12 col-sm-12">
-        	<form id="lease-store" method="POST" action="{{ route('lease.store', $property->code) }}">
+        	<form id="lease-store" method="POST" action="{{ route('lease.store') }}">
 	        @CSRF
 	            <div class="card">
 	                <div class="card-header">
@@ -29,7 +29,7 @@
 	                    <div class="form-group row">
 	                        <label class="col-lg-2 col-md-2 col-sm-2 col-form-label">Property/Unit*</label>
 	                            <div class="col-lg-10 col-md-10 col-sm-10">
-	                                <select class="select2" name="unit" style="width: 100%">
+	                                <select class="select2" name="unit" style="width: 100%" required>
 	                                    <option value="#" disabled selected>Select an Available Unit</option>
 	                                    @foreach($properties as $property)
 	                                        <optgroup label="{{ $property->name }}">
@@ -158,7 +158,7 @@
                                  <tr>
                                     <th width="40%">Subscriptions</th>
                                     <th width="10%">Monthly Amount</th>
-                                    <th width="10%">Daily Amount</th>
+                                    {{-- <th width="10%">Daily Amount</th> --}}
                                     <th width="10%">
                                     	<a href="#" id="addrow">
                                     		<button class="btn waves-effect waves-light btn-success btn-icon" style="height: 40px;width: 40px; padding: 0;line-height: 0;padding-left: 6px;">
@@ -247,7 +247,7 @@
 	                </div>
 	                <div class="card-block">
 	                	{{-- INPUT Monthly Due/Collection --}}
-	                    <div class="form-group row">
+	                    {{-- <div class="form-group row">
 	                        <label class="col-lg-2 col-md-2 col-sm-2 col-form-label">Pay Period</label>
 	                            <div class="col-lg-4 col-md-4 col-sm-4">
 	                            	<div class="input-group">
@@ -265,12 +265,17 @@
                                         </span>
                                     @enderror
 	                            </div>
-	                    </div>
+	                    </div> --}}
 	                    {{-- INPUT Move-in/First Day --}}
 	                    <div class="form-group row">
 	                        <label class="col-lg-2 col-md-2 col-sm-2 col-form-label">Date Start of Billing</label>
 	                            <div class="col-lg-4 col-md-4 col-sm-4">
 	                                <input type="date" class="form-control" name="first_day">
+	                                @error('first_day')
+                                        <span class="messages">
+                                            <p class="text-danger error">{{ $message }}</p>
+                                        </span>
+                                    @enderror
 	                            </div>
 	                    </div>
 	                </div>

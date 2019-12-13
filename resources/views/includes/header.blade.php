@@ -81,14 +81,163 @@
 										</ul>
 									</div>
 								</li>
-								{{-- <li class="header-notification">
+								<li class="header-notification">
 									<div class="dropdown-primary dropdown">
 										<div class="displayChatbox dropdown-toggle" data-toggle="dropdown">
-											<i class="feather icon-message-square"></i>
-											<span class="badge bg-c-green">3</span>
+										<i class="feather icon-tag"></i>
+										@php
+											$billings = App\Billing::where('property_id', $property->id)->get();
+											$near_due = DB::table('billings')
+								                     ->whereBetween('due_date', array(date('Y-m-d', strtotime('-14 days', strtotime(Carbon\Carbon::now()))), date('Y-m-d', strtotime(Carbon\Carbon::now()))))->get();
+										@endphp
+											<span class="badge bg-c-green">{{ count($near_due) }}</span>
 										</div>
 									</div>
-								</li> --}}
+								</li>
+								<div id="sidebar" class="users p-chat-user showChat" style="display: none;">
+									<div class="had-container">
+										<div class="p-fixed users-main">
+											<div class="user-box">
+												<div class="chat-search-box">
+													<a class="back_friendlist">
+													<i class="feather icon-x"></i>
+													</a>
+													<div class="right-icon-control">
+													<div class="input-group input-group-button">
+													<input type="text" id="search-friends" name="footer-email" class="form-control" placeholder="Search">
+													<div class="input-group-append">
+													<button class="btn btn-primary waves-effect waves-light" type="button"><i class="feather icon-search"></i></button>
+													</div>
+													</div>
+													 </div>
+												</div>
+												<div class="slimScrollDiv" style="position: relative; overflow: hidden; width: auto; height: 587px;">
+												<div class="main-friend-list" style="overflow: hidden; width: auto; height: 587px;">
+													<div class="media userlist-header waves-effect waves-light">
+														<h6>Near Rental Due Date</h6>
+													</div>
+													@php
+														$leasing_agreements = App\LeasingAgreement::where('property_id', $property->id)->get();
+													@endphp
+													@foreach($leasing_agreements as $lease)
+														@php
+															$latest_agreement = App\LeasingAgreementDetail::where('property_id', $property->id)->where('leasing_agreement_id', $lease->id)->where('status_id', 6)->first();
+
+															$billings = App\Billing::where('property_id', $property->id)->get();
+															$payments = App\Payment::where('property_id', $property->id)->where('payment_type_id', 1)->get();
+
+						                                    $last_bill = $billings->where('leasing_agreement_details_id', $latest_agreement->id)->last();
+
+						                                    $bill_month_now = Carbon\Carbon::now()->format('MY');
+						                                    $bill_month_next = date('MY', strtotime('+1 month', strtotime($latest_agreement->first_day)));
+
+						                                    if ($last_bill != null) {
+						                                        $bill_this = date('MY', strtotime('+1 month', strtotime($last_bill->billing_from)));
+						                                        $is_paid = $payments->where('billing_id', $last_bill->id)->first();
+						                                    } else {
+						                                        $bill_this = $bill_month_next;
+						                                        $last_bill = null;
+						                                        $is_paid = null;
+						                                    }
+
+						                                    $billing_my = MY($bill_this);
+
+						                                    $bill_from = $latest_agreement->bill_from($billing_my);
+						                                    $bill_to = $latest_agreement->bill_to($bill_from);
+						                                    $bill_due = $latest_agreement->bill_due($bill_from);
+						                                @endphp
+
+						                                @if((strtotime('-14 days', strtotime($bill_due))) <= strtotime(Carbon\Carbon::now()) || ($is_paid == null))
+							                                <div class="media userlist-box waves-effect waves-light" data-id="1" data-status="online" data-username="{{ $lease->details->last()->agreement_no }}">
+																<div class="bill-status">
+																	@if($last_bill != null)
+																		@if($last_bill->monthyear == date('MY', strtotime(Carbon\Carbon::now())))
+																			@if($is_paid != null)
+																				<a href="{{ route('billing.display', [$lease->id, $latest_agreement->id, $bill_this]) }}" class="waves-effect waves-light" data-toggle="tooltip" data-placement="left" title="Generate Bill: {{ date('F Y', strtotime($bill_this)) }}">
+																					<i class="feather icon-tag text-c-green"></i>
+																				</a>
+																				@php $status = 'Latest invoice published and paid'; @endphp
+																			@else
+																				<a href="{{ route('billing.display', [$lease->id, $latest_agreement->id, $bill_this]) }}" class="waves-effect waves-light" data-toggle="tooltip" data-placement="left" title="Generate Bill: {{ date('F Y', strtotime($bill_this)) }}">
+																					<i class="feather icon-tag text-c-yellow"></i>
+																				</a>
+																				@php $status = 'Latest invoice published and unpaid'; @endphp
+																			@endif
+																		@elseif($last_bill->monthyear != date('MY', strtotime('-1 month', strtotime(Carbon\Carbon::now()))))
+																			<a href="{{ route('billing.display', [$lease->id, $latest_agreement->id, $bill_this]) }}" class="waves-effect waves-light" data-toggle="tooltip" data-placement="left" title="Generate Bill: {{ date('F Y', strtotime($bill_this)) }}">
+																				<i class="feather icon-tag text-c-red"></i>
+																			</a>
+																			@php $status = 'Several invoices have not been published'; @endphp
+																		@else
+																			@if($is_paid != null)
+																				<a href="{{ route('billing.display', [$lease->id, $latest_agreement->id, $bill_this]) }}" class="waves-effect waves-light" data-toggle="tooltip" data-placement="left" title="Generate Bill: {{ date('F Y', strtotime($bill_this)) }}">
+																					<i class="feather icon-tag text-c-green"></i>
+																				</a>
+																				@php $status = 'Last invoice is published and paid'; @endphp
+																			@else
+																				<a href="{{ route('billing.display', [$lease->id, $latest_agreement->id, $bill_this]) }}" class="waves-effect waves-light" data-toggle="tooltip" data-placement="left" title="Generate Bill: {{ date('F Y', strtotime($bill_this)) }}">
+																					<i class="feather icon-tag text-c-red"></i>
+																				</a>
+																				@php $status = 'Last invoice published and unpaid'; @endphp
+																			@endif
+																		@endif
+																		
+																	@else
+																			<a href="{{ route('billing.display', [$lease->id, $latest_agreement->id, $bill_this]) }}" data-toggle="tooltip" data-placement="left" title="Generate Bill: {{ date('F Y', strtotime($bill_this)) }}">
+																				<i class="feather icon-tag text-muted"></i></a>
+																			@php $status = 'Last invoice not found'; @endphp
+																	@endif
+																</div>
+																<div class="media-body" data-toggle="tooltip" data-placement="left"
+																title="{{ $status }}">
+																	<div class="chat-header">
+																		{{ $lease->details->last()->agreement_no }}
+																	</div>
+																	<div class="chat-body">
+																		{{ $lease->unit->number }} - 
+																		@foreach($lease->tenant_list as $tl)
+																			{{ $tl->tenant->user->fullname }},
+																			@if ($loop->last)
+																				{{ $tl->tenant->user->fullname }}
+																			@endif
+																		@endforeach
+																	</div>
+																	<small class="d-block text-muted">
+																		Due Date: {{ $bill_due }} <br>
+																		Billing Date: {{ Carbon\Carbon::createFromTimeStamp(strtotime('-7 days', strtotime($bill_due)))->diffForHumans() }}<br>
+																		@if($last_bill != null)
+																			@if($last_bill->monthyear )
+																			@endif
+																			Last Bill: {{ date('M Y', strtotime($last_bill->monthyear)) }} ({{ $last_bill->invoice_no }}) <br>
+																			@if($is_paid != null)
+																				<label class="label label-success">PAID</label>
+																				{{-- Payment: {{ $payments->where('billing_id', $last_bill->id)->first()->reference_no }} ({{ $payments->where('billing_id', $last_bill->id)->first()->date_paid }}) --}}
+																			@else
+																				<label class="label label-warning">UNPAID</label>
+																			@endif
+																		@endif
+																		
+																	</small>
+																</div>
+															</div>
+						                                @else
+						                                	{{-- <div class="media userlist-box waves-effect waves-light" data-id="1" data-status="online" data-username="">
+																<div class="media-body">
+																	<div class="chat-header">
+																		No unpublished invoice that are due in 14 days
+																	</div>
+																</div>
+															</div> --}}
+						                                @endif
+													@endforeach
+												</div>
+												<div class="slimScrollBar" style="background: rgb(0, 0, 0); width: 7px; position: absolute; top: 0px; opacity: 0.4; display: none; border-radius: 7px; z-index: 99; right: 1px; height: 587px;">
+												</div>
+												<div class="slimScrollRail" style="width: 7px; height: 100%; position: absolute; top: 0px; display: none; border-radius: 7px; background: rgb(51, 51, 51); opacity: 0.2; z-index: 90; right: 1px;"></div></div>
+											</div>
+										</div> 
+									</div>
+								</div>
 								<li class="user-profile header-notification">
 									<div class="dropdown-primary dropdown">
 										<div class="dropdown-toggle" data-toggle="dropdown">
@@ -132,121 +281,3 @@
 						</div>
 					</div>
 				</nav>
-				{{-- <div id="sidebar" class="users p-chat-user showChat">
-					<div class="had-container">
-						<div class="p-fixed users-main">
-							<div class="user-box">
-								<div class="chat-search-box">
-									<a class="back_friendlist">
-										<i class="feather icon-x"></i>
-									</a>
-									<div class="right-icon-control">
-										<div class="input-group input-group-button">
-											<input type="text" id="search-friends" name="footer-email" class="form-control" placeholder="Search Friend">
-											<div class="input-group-append">
-												<button class="btn btn-primary waves-effect waves-light" type="button"><i class="feather icon-search"></i></button>
-											</div>
-										</div>
-									</div>
-								</div>
-								<div class="main-friend-list">
-									<div class="media userlist-box waves-effect waves-light" data-id="1" data-status="online" data-username="Josephin Doe">
-										<a class="media-left" href="#!">
-											<img class="media-object img-radius img-radius" src="{{ asset('admindek/files/assets/images/avatar-3.jpg') }}" alt="Generic placeholder image ">
-											<div class="live-status bg-success"></div>
-										</a>
-										<div class="media-body">
-											<div class="chat-header">Josephin Doe</div>
-										</div>
-									</div>
-									<div class="media userlist-box waves-effect waves-light" data-id="2" data-status="online" data-username="Lary Doe">
-										<a class="media-left" href="#!">
-											<img class="media-object img-radius" src="{{ asset('admindek/files/assets/images/avatar-2.jpg') }}" alt="Generic placeholder image">
-											<div class="live-status bg-success"></div>
-										</a>
-										<div class="media-body">
-											<div class="f-13 chat-header">Lary Doe</div>
-										</div>
-									</div>
-									<div class="media userlist-box waves-effect waves-light" data-id="3" data-status="online" data-username="Alice">
-										<a class="media-left" href="#!">
-											<img class="media-object img-radius" src="{{ asset('admindek/files/assets/images/avatar-4.jpg') }}" alt="Generic placeholder image">
-											<div class="live-status bg-success"></div>
-										</a>
-										<div class="media-body">
-											<div class="f-13 chat-header">Alice</div>
-										</div>
-									</div>
-									<div class="media userlist-box waves-effect waves-light" data-id="4" data-status="offline" data-username="Alia">
-										<a class="media-left" href="#!">
-											<img class="media-object img-radius" src="{{ asset('admindek/files/assets/images/avatar-3.jpg') }}" alt="Generic placeholder image">
-											<div class="live-status bg-default"></div>
-										</a>
-										<div class="media-body">
-											<div class="f-13 chat-header">Alia<small class="d-block text-muted">10 min ago</small></div>
-										</div>
-									</div>
-									<div class="media userlist-box waves-effect waves-light" data-id="5" data-status="offline" data-username="Suzen">
-										<a class="media-left" href="#!">
-											<img class="media-object img-radius" src="{{ asset('admindek/files/assets/images/avatar-2.jpg') }}" alt="Generic placeholder image">
-											<div class="live-status bg-default"></div>
-										</a>
-										<div class="media-body">
-											<div class="f-13 chat-header">Suzen<small class="d-block text-muted">15 min ago</small></div>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div> --}}
-
-				<!-- <div class="showChat_inner">
-					<div class="media chat-inner-header">
-					<a class="back_chatBox">
-					<i class="feather icon-x"></i> Josephin Doe
-					</a>
-					</div>
-					<div class="main-friend-chat">
-					<div class="media chat-messages">
-					<a class="media-left photo-table" href="#!">
-					<img class="media-object img-radius img-radius m-t-5" src="{{ asset('admindek/files/assets/images/avatar-2.jpg') }}" alt="Generic placeholder image">
-					</a>
-					<div class="media-body chat-menu-content">
-					<div class="">
-					<p class="chat-cont">I'm just looking around. Will you tell me something about yourself?</p>
-					</div>
-					<p class="chat-time">8:20 a.m.</p>
-					</div>
-					</div>
-					<div class="media chat-messages">
-					<div class="media-body chat-menu-reply">
-					<div class="">
-					<p class="chat-cont">Ohh! very nice</p>
-					</div>
-					<p class="chat-time">8:22 a.m.</p>
-					</div>
-					</div>
-					<div class="media chat-messages">
-					<a class="media-left photo-table" href="#!">
-					<img class="media-object img-radius img-radius m-t-5" src="{{ asset('admindek/files/assets/images/avatar-2.jpg') }}" alt="Generic placeholder image">
-					</a>
-					<div class="media-body chat-menu-content">
-					<div class="">
-					<p class="chat-cont">can you come with me?</p>
-					</div>
-					<p class="chat-time">8:20 a.m.</p>
-					</div>
-					</div>
-					</div>
-					<div class="chat-reply-box">
-					<div class="right-icon-control">
-					<div class="input-group input-group-button">
-					<input type="text" class="form-control" placeholder="Write hear . . ">
-					<div class="input-group-append">
-					<button class="btn btn-primary waves-effect waves-light" type="button"><i class="feather icon-message-circle"></i></button>
-					</div>
-					</div>
-					</div>
-					</div>
-				</div> -->

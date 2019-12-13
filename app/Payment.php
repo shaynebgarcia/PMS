@@ -6,15 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Payment extends Model
 {
-    protected $fillable = [
-        'payment_type_id', 'leasing_agreement_id', 'leasing_agreement_details_id', 'tenant_id', 'billing_id',
-        'amount_due', 'amount_paid',
-        'reference_no',
-        'note', 'processed_by_user',
-        'slug',
-        'file_id',
-        'date_paid'
-    ];
+    protected $guarded = ['id'];
 
     public function payment_type()
     {
@@ -32,9 +24,9 @@ class Payment extends Model
     {
         return $this->belongsTo(Billing::class, 'billing_id');
     }
-    public function supporting_file()
+    public function file()
     {
-        return $this->belongsTo(File::class);
+        return $this->belongsTo(File::class, 'file_id');
     }
     public function getAmountDueCurrencySignAttribute()
     {

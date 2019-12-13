@@ -6,9 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class PropertyAccess extends Model
 {
-    protected $fillable = [
-        'user_id', 'property_id'
-    ];
+    protected $guarded = ['id'];
 
     public function user()
     {

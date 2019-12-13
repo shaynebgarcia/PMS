@@ -1,4 +1,4 @@
-@extends('layouts.admindek')
+@extends('layouts.admindek', ['pageSlug' => 'tenant-index'])
 
 @section('css-plugin')
     @include('includes.plugins.datatable-css')
@@ -18,46 +18,62 @@
         <div class="card-header">
             <h5>Tenants</h5>
             <div class="card-header-right">
-            <a href="{{ route('tenant.create') }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Add Tenant">
-                <button class="btn waves-effect waves-light btn-success btn-icon" style="height: 30px;width: 30px; padding: 0;line-height: 0;padding-left: 2px;">
-                    <i class="fa fa-plus fa-sm" style="color: white;"></i>
-                </button>
-            </a>
+                @can('Create Tenant')
+                    <a href="{{ route('tenant.create') }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Add Tenant">
+                        <button class="btn waves-effect waves-light btn-success btn-icon" style="height: 30px;width: 30px; padding: 0;line-height: 0;padding-left: 2px;">
+                            <i class="fa fa-plus fa-sm" style="color: white;"></i>
+                        </button>
+                    </a>
+                @endcan
             </div>
         </div>
         <div class="card-block">
             @if(count($tenants) > 0)
                 <div>
-                    <table id="order-table" class="table table-bordered">
+                    <table id="order-table" class="table table-bordered table-responsive">
                         <thead>
                             <tr>
-                                <th>Full Name</th>
-                                <th>Contact</th>
-                                <th>Status</th>
-                                <th>Action</th>
+                                <th class="{{ config('pms.table.th.font-size') }}">NO</th>
+                                <th class="{{ config('pms.table.th.font-size') }}">Full Name</th>
+                                <th class="{{ config('pms.table.th.font-size') }}">Role</th>
+                                <th class="{{ config('pms.table.th.font-size') }}">Contact</th>
+                                <th class="{{ config('pms.table.th.font-size') }}">Status</th>
+                                <th class="{{ config('pms.table.th.font-size') }}">Action</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($tenants as $tenant)
                                 <tr>
-                                    <td style="font-size: 13px; font-weight: bold">
-                                        <a href="{{ route('tenant.show', $tenant->user->slug) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="View Details">
+                                    <td class="{{ config('pms.table.td.font-size') }}">
+                                        {{ $tenant->tenant_no ?? '-' }}
+                                    </td>
+                                    <td class="{{ config('pms.table.td.font-size') }}">
+                                        <a class="f-12 f-w-700" href="{{ route('tenant.show', $tenant->user->slug) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="View Details">
                                             {{ $tenant->user->fullnamewm }}
                                         </a>
                                     </td>
-                                    <td style="font-size: 13px;">
+                                    <td class="{{ config('pms.table.td.font-size') }}">
+                                        @foreach($tenant->user->getRoleNames() as $role)
+                                            {{ $role }} <br>
+                                        @endforeach
+                                    </td>
+                                    <td class="{{ config('pms.table.td.font-size') }}">
                                         {{ $tenant->contact }}
                                     </td>
-                                    <td style="font-size: 13px;">
+                                    <td class="{{ config('pms.table.td.font-size') }}">
                                         {{-- {{ $tenant->user->role->title }} --}}
                                     </td>
-                                    <td style="font-size: 13px;">
-                                        <a href="#!" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Edit">
-                                            <i class="icon feather icon-edit f-w-600 f-16 m-r-15 text-c-green"></i>
-                                        </a>
-                                        <a href="#!" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Delete">
-                                            <i class="feather icon-trash-2 f-w-600 f-16 text-c-red"></i>
-                                        </a>
+                                    <td class="{{ config('pms.table.td.font-size') }}">
+                                        @can('Update Tenant')
+                                            <a href="{{ route('tenant.edit', $tenant->id) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="{{ config('pms.action.edit.tool-tip-text') }}">
+                                                <i class="{{ config('pms.action.edit.icon') }} {{ config('pms.action.weight') }} {{config('pms.action.size') }} {{ config('pms.action.margin') }} {{ config('pms.action.edit.color') }}"></i>
+                                            </a>
+                                        @endcan
+                                         @can('Delete Tenant')
+                                            <a href="{{ route('tenant.destroy', $tenant->id) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="{{ config('pms.action.delete.tool-tip-text') }}">
+                                                <i class="{{ config('pms.action.delete.icon') }} {{ config('pms.action.weight') }} {{config('pms.action.size') }} {{ config('pms.action.margin') }} {{ config('pms.action.delete.color') }}"></i>
+                                            </a>
+                                        @endcan
                                     </td>
                                 </tr>
                             @endforeach

@@ -1,9 +1,9 @@
-@extends('layouts.admindek')
+@extends('layouts.admindek', ['pageSlug' => 'billing-display'])
 
 @section('breadcrumbs')
     @php
         $breadcrumb_icon = config('pms.breadcrumbs.bill.icon');
-        $breadcrumb_title = config('pms.breadcrumbs.bill.bill-display.title').date('F Y', strtotime($billing_my));
+        $breadcrumb_title = config('pms.breadcrumbs.bill.bill-display.title').FY($billing_my);
         $breadcrumb_subtitle = config('pms.breadcrumbs.bill.bill-display.subtitle');
     @endphp
     {{ Breadcrumbs::render('lease-bill-display', $property, $lease, $lease_detail, $billing_my) }}
@@ -66,7 +66,7 @@
 							<h6>Month:</h6>
 						</div>
 						<div class="col-2 f-14 p-r-0">
-							<h6>{{ date('F Y', strtotime($billing_my)) }}</h6>
+							<h6>{{ FY($billing_my) }}</h6>
 						</div>
 					</div>
 					<div class="row">
@@ -91,16 +91,16 @@
 								<tbody>
 									<tr>
 										<th style="width: 100%; padding: 0.5rem;">Previous Billing Amount Due
-											@if($last_bill != null) ({{ date('F Y', strtotime($last_bill->monthyear)) }}) @endif </th>
-										<td style="padding: 0.5rem;">{{ $last_bill->total_currency_code ?? '0.00 PHP' }}</td>
+											@if($last_bill != null) ({{ FY($last_bill->monthyear) }}) @endif </th>
+										<td style="padding: 0.5rem;">@if($last_bill != null) {{ currencycode($last_bill->total_amount_due) }} @else 0.00 PHP @endif</td>
 									</tr>
 									<tr>
 										<th style="padding: 0.5rem;">Previous Billing Amount Paid</th>
-										<td style="padding: 0.5rem;">@if($prev_billing_payment != null) {{ number_format($prev_billing_payment->amount_paid, 2)." ".config('pms.currency.code') ?? 0 }} @else 0.00 PHP @endif </td>
+										<td style="padding: 0.5rem;">@if($prev_billing_payment != null) {{ currencycode($prev_billing_payment->amount_paid) ?? 0 }} @else 0.00 PHP @endif </td>
 									</tr>
 									<tr>
 										<th style="padding: 0.5rem;">Over/Under-payment</th>
-										<td style="padding: 0.5rem;">{{ number_format($OUpayment, 2)." ".config('pms.currency.code') ?? 0 }}</td>
+										<td style="padding: 0.5rem;">{{ currencycode($OUpayment, 2) ?? 0 }}</td>
 									</tr>
 								</tbody>
 							</table>
@@ -127,7 +127,7 @@
 										</td>
 										<td style="width: 10%; padding: 0.5rem;">
 											@if($rental_price != 0)
-												{{ $lease_detail->agreed_lease_price_currency_code }}
+												{{ currencycode($lease_detail->agreed_lease_price) }}
 											@else
 												<span class="text-danger">FOR TERMINATION</span>
 											@endif
@@ -139,8 +139,18 @@
 									<tr>
 										<th style="width: 20%; padding: 0.5rem;">{{ $sub_service->service_type->name }}</th>
 										<td style="width: 40%; padding: 0.5rem;"></td>
-										<td style="width: 40%; padding: 0.5rem;">{{ $sub_service->agreed_amount_currency_code }}</td>
+										<td style="width: 40%; padding: 0.5rem;">{{ currencycode($sub_service->agreed_monthly_rate) }}</td>
 									</tr>
+									{{-- <tr>
+										<th style="width: 20%; padding: 0.5rem;">{{ $sub_service->service_type->name }}</th>
+										<td style="width: 40%; padding: 0.5rem;">
+											{{ FdY($sub_service->start_date) }} to {{ $bill_to }}
+											
+										@php
+											$excess_date = date_diff(date_create(Ymd($sub_service->start_date)), date_create(Ymd($bill_from)))->format("%a");
+										@endphp</td>
+										<td style="width: 40%; padding: 0.5rem;">{{ currencycode($sub_service->agreed_monthly_rate + $sub_service->agreed_daily_rate * $excess_date) }}</td>
+									</tr> --}}
 									@endforeach
 
 									{{-- FOREACH Utilities --}}
@@ -152,8 +162,8 @@
 									@foreach($utility_bill as $ubill)
 									<tr>
 										<th style="padding: 0.5rem 2rem;">{{ $ubill->utility->type }}</th>
-										<td style="width: 40%; padding: 0.5rem;">September 01 to August 02, 2019</td>
-										<td style="padding: 0.5rem;">{{ $ubill->amount_currency_code }}</td>
+										<td style="width: 40%; padding: 0.5rem;">{{ FdY($ubill->start_date) }} to {{ FdY($ubill->end_date) }}</td>
+										<td style="padding: 0.5rem;">{{ currencycode($ubill->amount) }}</td>
 									</tr>
 									@endforeach
 
@@ -166,8 +176,8 @@
 									@foreach($other_bill as $obill)
 									<tr>
 										<th style="padding: 0.5rem 2rem;">{{ $obill->income_type->name }}</th>
-										<td style="width: 40%; padding: 0.5rem;">September 01 to August 02, 2019</td>
-										<td style="padding: 0.5rem;">{{ $obill->total_amount_currency_code }}</td>
+										<td style="width: 40%; padding: 0.5rem;"></td>
+										<td style="padding: 0.5rem;">{{ currencycode($obill->total_amount) }}</td>
 									</tr>
 									@endforeach
 
@@ -188,27 +198,27 @@
 				          <p class="text-muted well well-sm no-shadow" style="margin-top: 10px;">
 				            Please pay directly to BDO Bank Direct Deposit of CITYDORMS CORP. SA#6860054688. <br>
 				            Always bring this notice with you when making payments. Kindly give copy of deposit slip to Bldg Caretaker. <br><br>
-				            Please pay on or before the following date to avoid disconnection: <br> {{ date('M d, Y', strtotime(config('pms.billing.invoice.after_due_date'), strtotime($bill_from))) }}<br>
+				            Please pay on or before the following date to avoid disconnection: <br> {{ MdY(config('pms.billing.invoice.after_due_date'), strtotime($bill_from)) }}<br>
 				            Reconnection fee for cut-off facilities is P300.00 and service fee for cash payment pick-up is P300.00.
 				          </p>
 				        </div>
 				        <!-- /.col -->
 				        <div class="col-6">
-				          <p class="lead">Amount Due {{ date('m/d/Y', strtotime($bill_from)) }}</p>
+				          <p class="lead">Amount Due {{ mdY_bslash($bill_from) }}</p>
 
 				          <div class="table-responsive">
 				            <table class="table">
 				              <tbody><tr>
 				                <th style="width: 80%">Subtotal:</th>
-				                <td>{{ number_format($subtotal, 2)." ".config('pms.currency.code') }}</td>
+				                <td>{{ currencycode($subtotal) }}</td>
 				              </tr>
 				              <tr>
 				                <th>Over/Under-payment (+/-)</th>
-				                <td>{{ number_format($OUpayment, 2)." ".config('pms.currency.code') }}</td>
+				                <td>{{ currencycode($OUpayment) }}</td>
 				              </tr>
 				              <tr>
 				                <th>Total:</th>
-				                <td>{{ number_format($total, 2)." ".config('pms.currency.code') }}</td>
+				                <td>{{ currencycode($total) }}</td>
 				              </tr>
 				            </tbody></table>
 				          </div>
@@ -222,7 +232,7 @@
 				    	</div>
 				    	<div class="col-4 f-14 p-r-0 p-l-0">
 				    		<div class="form-group form-primary">
-	                            <input type="text" name="prepared_by" class="form-control fill" required="" style="height: 20px;width: 80%;">
+	                            <input type="text" name="prepared_by" class="form-control fill" required="" style="height: 20px;width: 80%;" required>
 	                            <span class="form-bar"></span>
 		                    </div>
 				    	</div>

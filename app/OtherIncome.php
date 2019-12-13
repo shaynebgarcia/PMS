@@ -6,13 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class OtherIncome extends Model
 {
-    protected $fillable = [
-        'leasing_agreement_details_id',
-        'other_income_type_id',
-        'to_bill',
-        'total_amount',
-        'note',
-    ];
+    protected $guarded = ['id'];
 
     public function income_type()
     {

@@ -19,7 +19,7 @@ class CreateServicesTable extends Migration
             $table->integer('service_type_id');
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();
-            $table->double('agreed_amount', 8, 2);
+            $table->double('amount', 8, 2)->nullable();
             $table->timestamps();
         });
     }

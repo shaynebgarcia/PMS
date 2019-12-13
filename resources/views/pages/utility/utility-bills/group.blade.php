@@ -1,4 +1,4 @@
-@extends('layouts.admindek')
+@extends('layouts.admindek', ['pageSlug' => 'utility-bills-group'])
 
 @section('css-plugin')
     @include('includes.plugins.select-css')
@@ -18,14 +18,14 @@
 @section('content')
 <div class="row">
     <div class="col-lg-12 col-md-12 col-sm-12">
-        <div class="card sale-card">
+        {{-- <div class="card sale-card">
             <div class="card-header">
                 <h5>Analytics</h5>
             </div>
             <div class="card-block">
                 <canvas id="barChart" width="400" height="400"></canvas>
             </div>
-        </div>
+        </div> --}}
         <div class="card">
             <div class="card-header">
                 <h5>Utility Bill</h5>

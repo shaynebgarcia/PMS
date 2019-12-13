@@ -30,7 +30,7 @@ class UtilityBillController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index($code)
+    public function index()
     {
 
         $property = Property::findorFail($this->property);
@@ -66,7 +66,7 @@ class UtilityBillController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request, $code)
+    public function store(Request $request)
     {
         $request->validate([
             'agreement' => 'required',
@@ -79,6 +79,39 @@ class UtilityBillController extends Controller
             'amount' => 'required',
             'to_bill' => 'required',
         ]);
+
+        $property = Property::findorFail($this->property);
+
+        $utility_store = UtilityBill::create([
+            'property_id' => $property->id,
+            'leasing_agreement_details_id' => $request->agreement,
+            'utility_id' =>  $request->meter,
+            'to_bill' => $request->to_bill,
+            'start_date' => $request->start_date,
+            'end_date' => $request->end_date,
+            'prev_reading' => $request->prev_reading,
+            'pres_reading' => $request->pres_reading,
+            'end_date' => $request->end_date,
+            'amount' => $request->amount,
+        ]);
+
+        if (!$utility_store) {
+            Alert::error('Encountered an error', 'Oops')->persistent('Close');
+            return redirect()->back();
+        } else {
+            $utility = Utility::where('id', $request->meter)->first();
+            if ($utility->type == 'Electricity') {
+                $utility_update = $utility_store->update([
+                    'kw_used' => $request->unit_used,
+                ]);
+            } elseif ($utility->type == 'Water') {
+                $utility_update = $utility_store->update([
+                    'cubic_meter' => $request->unit_used,
+                ]);
+            }
+            Alert::success('Created a new utility bill','Success')->autoclose(2500);
+            return redirect()->route('utility-bill.index');
+        }
 
     }
 

@@ -11,6 +11,7 @@ use App\Payment;
 use App\UtilityBill;
 use App\Billing;
 use App\BillingDetail;
+use App\TenantList;
 use Faker\Factory as Faker;
 
 class Faker2TableSeeder extends Seeder
@@ -26,17 +27,30 @@ class Faker2TableSeeder extends Seeder
 
     	// Agreement
     	$lease = LeasingAgreement::create([
-            'link_id' => '11-1',
+            'link_id' => 'LNK-1',
             'property_id' => 5,
     		'unit_id' => 1,
-    		'tenant_id' => 1,
-    		'agreement_status_id' => 1,
+    		// 'tenant_id' => 1,
+            // 'tenant_list_id' => 2,
+    		'status_id' => 3,
 
     		'created_at' => Carbon\Carbon::now(),
     	]);
+
+        TenantList::create([
+            'leasing_agreement_id' => $lease->id,
+            'tenant_id' => 1,
+        ]);
+
+        TenantList::create([
+            'leasing_agreement_id' => $lease->id,
+            'tenant_id' => 2,
+        ]);
+
 	    	// Agreement Details
 	    	$lease_detail = LeasingAgreementDetail::create([
-                'agreement_no' => 'AGR-0002',
+                'property_id' => 5,
+                'agreement_no' => 'AGR-3',
 	    		'leasing_agreement_id' => $lease->id,
 	    		'description' => 'Original',
 	    		'agreed_lease_price' =>  14500.00,
@@ -44,7 +58,7 @@ class Faker2TableSeeder extends Seeder
 	    		'term_end' => '2020-08-29',
 	    		'first_day' => '2019-08-30',
 	    		'monthly_due' => 30,
-	    		'status' => 'Active',
+	    		'status_id' => 6,
                 'last_billing_my' => date('MY', strtotime('2020-08-29')),
 
 	    		'created_at' => Carbon\Carbon::now(),
@@ -66,6 +80,7 @@ class Faker2TableSeeder extends Seeder
     	// Reservation
     	Payment::create([
             'property_id' => 5,
+            'payment_no' => 'PYM-3',
 	        'payment_type_id' => 2,
 			'leasing_agreement_details_id' => $lease_detail->id,
 			'billing_id' => null,
@@ -76,7 +91,6 @@ class Faker2TableSeeder extends Seeder
 			'reference_no' => 'OR#09521',
 			'note' => null,
 			'processed_by_user' => 1,
-	        'slug' => 'PYM-0003',
 	        'date_paid' => '2019-08-28',
 	        'created_at' => Carbon\Carbon::now(),
     	]);
@@ -84,6 +98,7 @@ class Faker2TableSeeder extends Seeder
     	// Full Payment
     	Payment::create([
             'property_id' => 5,
+            'payment_no' => 'PYM-4',
 	        'payment_type_id' => 3,
 			'leasing_agreement_details_id' => $lease_detail->id,
 			'billing_id' => null,
@@ -94,7 +109,6 @@ class Faker2TableSeeder extends Seeder
 			'reference_no' => 'OR#09056',
 			'note' => 'Deposit slip was handed by '.$faker->name,
 			'processed_by_user' => 1,
-	        'slug' => 'PYM-0004',
 	        'date_paid' => '2019-08-28',
 	        'created_at' => Carbon\Carbon::now(),
     	]);
@@ -103,13 +117,17 @@ class Faker2TableSeeder extends Seeder
     	Service::create([
     		'leasing_agreement_details_id' => $lease_detail->id,
     		'service_type_id' => 1,
-    		'agreed_amount' => 1000,
+            'start_date' => '2019-10-20',
+            'end_date' => '2020-02-20',
+    		'amount' => 1000,
     		'created_at' => Carbon\Carbon::now(),
     	]);
     	Service::create([
     		'leasing_agreement_details_id' => $lease_detail->id,
     		'service_type_id' => 2,
-    		'agreed_amount' => 1000,
+            'start_date' => '2019-10-20',
+            'end_date' => '2020-02-20',
+    		'amount' => 1000,
     		'created_at' => Carbon\Carbon::now(),
     	]);
 
@@ -143,6 +161,7 @@ class Faker2TableSeeder extends Seeder
 
     	//Billing
     	$bill = Billing::create([
+            'property_id' => 5,
     		'leasing_agreement_details_id' => $lease_detail->id,
     		'invoice_no' => '19X-001',
     		'monthyear' => 'Oct2019',
@@ -160,30 +179,35 @@ class Faker2TableSeeder extends Seeder
 
 	    	BillingDetail::create([
 	    		'billing_id' => $bill->id,
+                'type' => 'Rental',
 	    		'description' => 'Rental',
 	    		'amount' => $lease_detail->agreed_lease_price,
 	    		'created_at' => Carbon\Carbon::now(),
 	    	]);
 	    	BillingDetail::create([
 	    		'billing_id' => $bill->id,
+                'type' => 'Service',
 	    		'description' => 'Parking Rental',
 	    		'amount' => 1000,
 	    		'created_at' => Carbon\Carbon::now(),
 	    	]);
 	    	BillingDetail::create([
 	    		'billing_id' => $bill->id,
+                'type' => 'Service',
 	    		'description' => 'Elevator Use',
 	    		'amount' => 1000,
 	    		'created_at' => Carbon\Carbon::now(),
 	    	]);
             BillingDetail::create([
                 'billing_id' => $bill->id,
+                'type' => 'Utility',
                 'description' => 'Electricity',
                 'amount' => 3076.25,
                 'created_at' => Carbon\Carbon::now(),
             ]);
             BillingDetail::create([
                 'billing_id' => $bill->id,
+                'type' => 'Utility',
                 'description' => 'Water',
                 'amount' => 550.00,
                 'created_at' => Carbon\Carbon::now(),
@@ -192,6 +216,7 @@ class Faker2TableSeeder extends Seeder
         // Bill Payment
         Payment::create([
             'property_id' => 5,
+            'payment_no' => 'PYM-5',
             'payment_type_id' => 1,
             'leasing_agreement_details_id' => $lease_detail->id,
             'billing_id' => $bill->id,
@@ -202,7 +227,6 @@ class Faker2TableSeeder extends Seeder
             'reference_no' => 'OR#09088',
             'note' => 'Deposit slip was handed by '.$faker->name,
             'processed_by_user' => 1,
-            'slug' => 'PYM-0005',
             'date_paid' => '2019-10-01',
             'created_at' => Carbon\Carbon::now(),
         ]);

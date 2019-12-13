@@ -15,7 +15,6 @@
         "laravel/framework": "5.8.*",
         "laravel/tinker": "^1.0",
         "moontoast/math": "^1.1",
-        "spatie/laravel-activitylog": "^3.9",
         "spatie/laravel-permission": "^3.2",
         "uxweb/sweet-alert": "^2.0"
     },
@@ -44,6 +43,9 @@
         "classmap": [
             "database/seeds",
             "database/factories"
+        ],
+        "files": [
+            "app/Helpers/functions.php"
         ]
     },
     "autoload-dev": {

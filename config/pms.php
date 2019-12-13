@@ -9,7 +9,6 @@ return [
     'company' => [
         'name' => 'SMART MAIL',
     ],
-
     // Default currency to use
     'currency' => [
         'title' => 'Philippine Peso',
@@ -18,8 +17,59 @@ return [
     ],
 
     'unique_prefix' => [
+        'user' => 'USR-',
+        'tenant' => 'TNT-',
         'leasing_agreement' => '',
         'leasing_agreement_details' => 'AGR-',
+        'payment' => 'PYM-',
+        'inventory' => 'INV-',
+        'order' => 'ORD-',
+    ],
+
+    'table' => [
+        'th' => [
+            'font-size' => 'f-14',
+        ],
+        'td' => [
+            'font-size' => 'f-12',
+        ],
+    ],
+
+    'action' => [
+        'weight' => 'f-w-600',
+        'size' => 'f-16',
+        'margin' => 'm-r-5',
+        'edit' => [
+            'icon' => 'icon feather icon-edit',
+            'color' => 'text-c-blue',
+            'tool-tip-text' => 'Edit',
+        ],
+        'delete' => [
+            'icon' => 'icon feather icon-trash-2',
+            'color' => 'text-c-red',
+            'tool-tip-text' => 'Delete',
+        ],
+        'add-stock' => [
+            'icon' => 'icon feather icon-plus-circle',
+            'color' => 'text-c-green',
+            'tool-tip-text' => 'Add Stocks',
+        ],
+        'reduce-stock' => [
+            'icon' => 'icon feather icon-minus-circle',
+            'color' => 'text-c-yellow',
+            'tool-tip-text' => 'Reduce Stocks',
+        ],
+    ],
+
+    'utility' => [
+        'electricity' => [
+            'icon' => 'icon-zap',
+            'color' => 'warning',
+        ],
+        'water' => [
+            'icon' => 'icon-droplet',
+            'color' => 'primary',
+        ],
     ],
 
     'billing' => [
@@ -165,7 +215,6 @@ return [
                 'title' => 'Update Service Type Details - ',
                 'subtitle' => "Form to update an existing service type details",
             ],
-
         ],
         'lease' => [
             'icon' => 'icon-feather',
@@ -251,6 +300,36 @@ return [
             'tenant-edit' => [
                 'title' => 'Update Tenant Details - ',
                 'subtitle' => 'Form to update existing tenant',
+            ],
+        ],
+        'inventory' => [
+            'icon' => 'icon-package',
+            'inventory-index' => [
+                'title' => 'Inventory Items',
+                'subtitle' => 'List of all inventory items',
+            ],
+            'inventory-create' => [
+                'title' => 'Create New Item',
+                'subtitle' => 'Form to create a new inventory item',
+            ],
+            'inventory-edit' => [
+                'title' => 'Update Item Details - ',
+                'subtitle' => "Form to update an existing item's detail",
+            ],
+        ],
+        'order' => [
+            'icon' => 'icon-shopping-cart',
+            'order-index' => [
+                'title' => 'Job Orders',
+                'subtitle' => 'List of all published job/work orders',
+            ],
+            'order-create' => [
+                'title' => 'Create New Order',
+                'subtitle' => 'Form to create a new job/work order',
+            ],
+            'order-edit' => [
+                'title' => 'Update Order Details - ',
+                'subtitle' => "Form to update an existing order's detail",
             ],
         ],
     ],

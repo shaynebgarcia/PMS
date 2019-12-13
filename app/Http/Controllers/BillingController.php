@@ -39,19 +39,10 @@ class BillingController extends Controller
     public function index()
     {
         $property = Property::findorFail($this->property);
-        $payments = Payment::all();
+        $payments = Payment::where('property_id', $property->id)->get();
+        $billings = Billing::where('property_id', $property->id)->get();
 
-        $all_bill = Billing::all();
-        $billings = DB::table('billings')
-            ->join('leasing_agreement_details', 'billings.leasing_agreement_details_id', '=', 'leasing_agreement_details.id')
-            ->join('leasing_agreements', 'leasing_agreement_details.leasing_agreement_id', '=', 'leasing_agreements.id')
-            ->join('units', 'leasing_agreements.unit_id', '=', 'units.id')
-            ->join('properties', 'units.property_id', '=', 'properties.id')
-            ->select('billings.*')
-            ->where('properties.code', $property->code)
-            ->get();
-
-        return view('pages.billing.index', compact('property', 'billings', 'all_bill', 'payments'));
+        return view('pages.billing.index', compact('property', 'billings', 'payments'));
     }
 
     /**
@@ -126,24 +117,15 @@ class BillingController extends Controller
         $now = Carbon::now();
 
         //GET last bill under this property to get INVOICE NO
-        $all_leases = LeasingAgreement::where('property_id', $property->id)->get();
-        $all_leases_id = Arr::pluck($all_leases->toArray(), 'id');
-        $all_details = LeasingAgreementDetail::whereIn('leasing_agreement_id', $all_leases_id)->get();
-        $all_details_id = Arr::pluck($all_details->toArray(), 'id');
-        $last_bill_property = Billing::whereIn('leasing_agreement_details_id', $all_details_id)->latest()->first();
+        $last_bill_property = Billing::where('property_id', $property->id)->where('leasing_agreement_details_id', $lease_detail->id)->latest()->first();
         if ($last_bill_property != null) {
             $invoice_no = date('y', strtotime($now)).$property->code.'-'.sprintf(config('pms.billing.invoice.num_filter'), $last_bill_property->id + 1);
         } else {
             $invoice_no = date('y', strtotime($now)).$property->code.'-'.sprintf(config('pms.billing.invoice.num_filter'), 1);
         }
-
-        //GET Services and Utility Bill
-        $latest_sub_services = Service::where('leasing_agreement_details_id', $lease_detail->id)->get();
-        $utility_bill = UtilityBill::where(['leasing_agreement_details_id' => $lease_detail->id, 'to_bill' => $billing_my])->get();
-        $other_bill = OtherIncome::where(['leasing_agreement_details_id' => $lease_detail->id, 'to_bill' => $billing_my])->get();
         
         //CHECK if this is first billing invoice
-        $last_bill = Billing::where(['leasing_agreement_details_id' => $lease_detail->id, 'monthyear'=> date('MY', strtotime('-1 month', strtotime($billing_my)))])->first();
+        $last_bill = Billing::where(['leasing_agreement_details_id' => $lease_detail->id, 'monthyear'=> MY('-1 month', strtotime($billing_my))])->first();
         if ($last_bill != null) {
             $prev_billing_payment = Payment::where('billing_id', $last_bill->id)->first();
             if ($prev_billing_payment != null) {
@@ -158,12 +140,21 @@ class BillingController extends Controller
         
         $bill_month_now = $now->format('MY');
         // $bill_month_next = date('MY', strtotime('+1 month', strtotime($now)));
-        $bill_month_next = date('MY', strtotime('+1 month', strtotime($lease_detail->first_day)));
+        $bill_month_next = MY('+1 month', strtotime($lease_detail->first_day));
 
         $bill_from = $lease_detail->bill_from($billing_my);
         $bill_to = $lease_detail->bill_to($bill_from);
         $bill_due = $lease_detail->bill_due($bill_from);
         $bill_date = $lease_detail->bill_date($now);
+
+        //GET Services and Utility Bill
+        $latest_sub_services = Service::where('leasing_agreement_details_id', $lease_detail->id)->get();
+        // ->whereBetween('start_date', [Ymd($bill_from), Ymd($bill_to)])->orWhereBetween('end_date', [Ymd($bill_from), Ymd($bill_to)])->get();
+
+        // dd($latest_sub_services);
+        $utility_bill = UtilityBill::where(['leasing_agreement_details_id' => $lease_detail->id, 'to_bill' => $billing_my])->get();
+        $other_bill = OtherIncome::where(['leasing_agreement_details_id' => $lease_detail->id, 'to_bill' => $billing_my])->get();
+
         //CHECK if agreement term will expire this month
         if (strtotime($lease_detail->last_billing_my) > strtotime($billing_my)) {
             $rental_price = $lease_detail->rental_price();
@@ -207,24 +198,17 @@ class BillingController extends Controller
         $lease_details = LeasingAgreementDetail::findorFail($lease_id);
 
         $now = Carbon::now();
+
         //GET last bill under this property to get INVOICE NO
-        $all_leases = LeasingAgreement::where('property_id', $property->id)->get();
-        $all_leases_id = Arr::pluck($all_leases->toArray(), 'id');
-        $all_details = LeasingAgreementDetail::whereIn('leasing_agreement_id', $all_leases_id)->get();
-        $all_details_id = Arr::pluck($all_details->toArray(), 'id');
-        $last_bill_property = Billing::whereIn('leasing_agreement_details_id', $all_details_id)->latest()->first();
+        $last_bill_property = Billing::where('property_id', $property->id)->where('leasing_agreement_details_id', $lease_details->id)->latest()->first();
         if ($last_bill_property != null) {
             $invoice_no = date('y', strtotime($now)).$property->code.'-'.sprintf(config('pms.billing.invoice.num_filter'), $last_bill_property->id + 1);
         } else {
             $invoice_no = date('y', strtotime($now)).$property->code.'-'.sprintf(config('pms.billing.invoice.num_filter'), 1);
         }
 
-        $latest_sub_services = Service::where('leasing_agreement_details_id', $lease_details->id)->get();
-        $utility_bill = UtilityBill::where(['leasing_agreement_details_id' => $lease_details->id, 'to_bill' => $billing_my])->get();
-        $other_bill = OtherIncome::where(['leasing_agreement_details_id' => $lease_details->id, 'to_bill' => $billing_my])->get();
-
+        //GET Last Bill and Pyament Details
         $last_bill = Billing::where(['leasing_agreement_details_id' => $lease_details->id, 'monthyear'=> date('MY', strtotime('-1 month', strtotime($billing_my)))])->first();
-
         if ($last_bill != null) {
             $prev_billing_payment = Payment::where('billing_id', $last_bill->id)->first();
             if ($prev_billing_payment != null) {
@@ -243,6 +227,11 @@ class BillingController extends Controller
         $bill_to = $lease_details->bill_to($bill_from);
         $bill_due = $lease_details->bill_due($bill_from);
         $bill_date = $lease_details->bill_date($now);
+
+        $latest_sub_services = Service::where('leasing_agreement_details_id', $lease_details->id)->whereBetween('start_date', [date($bill_from), date($bill_to)])->get();
+        $utility_bill = UtilityBill::where(['leasing_agreement_details_id' => $lease_details->id, 'to_bill' => $billing_my])->get();
+        $other_bill = OtherIncome::where(['leasing_agreement_details_id' => $lease_details->id, 'to_bill' => $billing_my])->get();
+
         $rental_price = $lease_details->rental_price();
         $subtotal_subservices = $lease_details->subtotal_subservices($latest_sub_services);
         $subtotal_utilitybill = $lease_details->subtotal_utilitybill($utility_bill);
@@ -251,9 +240,12 @@ class BillingController extends Controller
         $OUpayment = $lease_details->oupayment($ou);
         $total = $lease_details->total($subtotal, $ou);
 
+
+
         // Publishing bill
             $bill_published = Billing::updateOrCreate(
                 [
+                    'property_id' => $property->id,
                     'leasing_agreement_details_id' => $lease_id,
                     'monthyear' => $billing_my
                 ],
@@ -262,10 +254,12 @@ class BillingController extends Controller
                     'invoice_no' => $invoice_no,
                     'prepared_by' => $request->prepared_by,
                     'monthyear' => $billing_my,
-                    'billing_to' => date('Y-m-d', strtotime($bill_to)),
-                    'billing_from' => date('Y-m-d', strtotime($bill_from)),
+                    'billing_to' => Ymd($bill_to),
+                    'billing_from' => Ymd($bill_from),
                     'billing_date' => $now,
-                    'due_date' => date('Y-m-d', strtotime($bill_due)),
+                    //Billing $bill_due will deduct (7) days from the $billing_to
+                    // 'due_date' => Ymd($bill_due),
+                    'due_date' => Ymd($bill_from),
                     'subtotal_amount' => $subtotal,
                     'ou_amount' => $OUpayment,
                     'total_amount_due' => $total,
@@ -276,10 +270,12 @@ class BillingController extends Controller
                 BillingDetail::updateOrCreate(
                     [
                         'billing_id' => $bill_published->id,
+                        'type' => 'Rental',
                         'description' => 'Rental',
                     ],
                     [
                         'billing_id' => $bill_published->id,
+                        'type' => 'Rental',
                         'description' => 'Rental',
                         'amount' => $rental_price,
                     ]
@@ -289,10 +285,12 @@ class BillingController extends Controller
                     BillingDetail::updateOrCreate(
                         [
                             'billing_id' => $bill_published->id,
+                            'type' => 'Service',
                             'description' => $bill->service_type->name,
                         ],
                         [
                             'billing_id' => $bill_published->id,
+                            'type' => 'Service',
                             'description' => $bill->service_type->name,
                             'amount' => $bill->agreed_amount,
                             'created_at' => $now,
@@ -304,10 +302,12 @@ class BillingController extends Controller
                     BillingDetail::updateOrCreate(
                         [
                             'billing_id' => $bill_published->id,
+                            'type' => 'Utility',
                             'description' => $bill->utility->type,
                         ],
                         [
                             'billing_id' => $bill_published->id,
+                            'type' => 'Utility',
                             'description' => $bill->utility->type,
                             'amount' => $bill->amount,
                             'created_at' => $now,
@@ -319,6 +319,7 @@ class BillingController extends Controller
                     BillingDetail::updateOrCreate(
                         [
                             'billing_id' => $bill_published->id,
+                            'type' => 'Other',
                             'description' => $bill->income_type->type,
                         ],
                         [

@@ -28,6 +28,7 @@ class UserController extends Controller
             'lastname' => 'required|max:255',
             'firstname' => 'required|max:255',
             'middlename' => 'max:255',
+            'birthdate' => 'date',
             'username' => 'required|unique:users,username',
             'email' => 'required|string|email|max:255|unique:users,email' ,
             'password' => 'required|string|min:6',
@@ -73,17 +74,23 @@ class UserController extends Controller
         $request->validate($this->rules());
         // Creating user
         $user_stored = User::create([
+            'is_employee' => 1,
             'lastname' => $request->lastname,
             'firstname' => $request->firstname,
             'middlename' => $request->middlename,
+            'birthdate' => $request->birthdate,
             'username' => $request->username,
             'email' => $request->email,
             'password' => bcrypt($request->password),
-            'role_id' => $request->role,
-            'slug' => $request->username,
         ]);
 
         if ($user_stored) {
+
+            $user_stored->update([
+                'user_no' => config('pms.unique_prefix.user').$user_stored->id,
+            ]);
+            $user_stored->assignRole($request->role);
+
             if(count($request->properties)>0) {
                 foreach($request->properties as $item => $v) {
                     // Create each property assignment
@@ -91,7 +98,7 @@ class UserController extends Controller
                         'user_id' => $user_stored->id,
                         'property_id' => $request->properties[$item],
                     );
-                    $assigned_to = PropertyAccess::insert($array)->id;
+                    $assigned_to = PropertyAccess::insert($array);
                 }
             }
             Alert::success('User account creation complete', 'Success')->persistent('Close');
@@ -130,7 +137,7 @@ class UserController extends Controller
         $properties = Property::all();
         $access = PropertyAccess::all();
         $access_properties_id = PropertyAccess::select('property_id')->where('user_id', $user->id)->get();
-        return view('pages.user.edit', compact('Property', 'user', 'properties', 'roles', 'access', 'access_properties_id'));
+        return view('pages.user.edit', compact('property', 'user', 'properties', 'roles', 'access', 'access_properties_id'));
     }
 
     /**
@@ -148,6 +155,7 @@ class UserController extends Controller
             'lastname' => 'required|max:255',
             'firstname' => 'required|max:255',
             'middlename' => 'max:255',
+            'birthdate' => 'date',
             'username' => [
                         'required',
                         Rule::unique('users')->ignore($user->id),
@@ -167,10 +175,9 @@ class UserController extends Controller
             'lastname' => $request->lastname,
             'firstname' => $request->firstname,
             'middlename' => $request->middlename,
+            'birthdate' => $request->birthdate,
             'username' => $request->username,
             'email' => $request->email,
-            'role_id' => $request->role,
-            'slug' => $request->username,
         ]);
 
         // Check if password is being changed
@@ -183,6 +190,7 @@ class UserController extends Controller
         }
 
         if ($user_updated) {
+            $user->syncRoles([$request->role]);
             // Reset all assignments
             $assigned_destory = PropertyAccess::where('user_id', $user->id)->delete();
             if ($request->properties != null) {

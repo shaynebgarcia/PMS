@@ -1,4 +1,4 @@
-@extends('layouts.admindek')
+@extends('layouts.admindek', ['pageSlug' => 'utility-bill-index'])
 
 @section('css-plugin')
     @include('includes.plugins.select-css')
@@ -19,76 +19,78 @@
 <div class="row">
     <div class="col-lg-12 col-md-12 col-sm-12">
         <div class="card">
-            <div class="card-header">
-                <h5>Publish New Utility Bill</h5>
-                <div class="card-header-right">
-                    <ul class="list-unstyled card-option">
-                        <li class="first-opt"><i class="feather icon-chevron-left open-card-option"></i></li>
-                        <li><i class="feather icon-maximize full-card"></i></li>
-                        <li><i class="feather icon-minus minimize-card"></i></li>
-                        <li><i class="feather icon-refresh-cw reload-card"></i></li>
-                        <li><i class="feather icon-trash close-card"></i></li>
-                        <li><i class="feather icon-chevron-left open-card-option"></i></li>
-                    </ul>
+            <form name="utility-bill-store" method="POST" action="{{ route('utility-bill.store') }}">
+                @CSRF
+                <div class="card-header">
+                    <h5>Publish New Utility Bill</h5>
+                    <div class="card-header-right">
+                        <ul class="list-unstyled card-option">
+                            <li class="first-opt"><i class="feather icon-chevron-left open-card-option"></i></li>
+                            <li><i class="feather icon-maximize full-card"></i></li>
+                            <li><i class="feather icon-minus minimize-card"></i></li>
+                            <li><i class="feather icon-refresh-cw reload-card"></i></li>
+                            <li><i class="feather icon-trash close-card"></i></li>
+                            <li><i class="feather icon-chevron-left open-card-option"></i></li>
+                        </ul>
+                    </div>
                 </div>
-            </div>
-            <div class="card-block">
-                <div class="form-group row">
-                    <label class="col-lg-3 col-md-3 col-sm-3 col-form-label">Leasing Agreement</label>
-                        <div class="col-lg-9 col-md-9 col-sm-9">
-                            <select class="select2" name="agreement" id="agreement_id" style="width: 100%">
-                                <option value="#" disabled selected>Select an agreement</option>
-                                    @foreach($leases as $lease)
-                                        <option value="{{ $lease->details->last()->id }}">
-                                            {{ $lease->details->last()->agreement_no }} | {{ $lease->unit->number }} | {{ $lease->tenant->user->fullnamewm }}
-                                        </option>
-                                    @endforeach
-                            </select>
-                        </div>
-                </div>
-                <div class="form-group row">
-                    <label class="col-lg-3 col-md-3 col-sm-3 col-form-label">Meter NO</label>
-                        <div class="col-lg-9 col-md-9 col-sm-9">
-                            <select class="select2" name="meter" id="meter" style="width: 100%">
-                                <option value="#" disabled selected>Select an agreement first</option>
-                            </select>
-                        </div>
-                </div>
-                <div class="form-group row">
-                    <label class="col-lg-3 col-md-3 col-sm-3 col-form-label">Period</label>
-                        <div class="col-lg-4 col-md-4 col-sm-4">
-                            <input type="date" class="form-control" name="start_date" value="">
-                        </div>
-                        <label class="col-lg-1 col-md-1 col-sm-1 col-form-label">to</label>
-                        <div class="col-lg-4 col-md-4 col-sm-4">
-                            <input type="date" class="form-control" name="end_date" value="">
-                        </div>
-                </div>
-                <div class="form-group row">
-                    <label class="col-lg-3 col-md-3 col-sm-3 col-form-label">Previous Reading</label>
-                        <div class="col-lg-4 col-md-4 col-sm-4">
-                            <input type="number" class="form-control" name="prev_reading" value="">
-                        </div>
-                </div>
-                <div class="form-group row">
-                    <label class="col-lg-3 col-md-3 col-sm-3 col-form-label">Present Reading</label>
-                        <div class="col-lg-4 col-md-4 col-sm-4">
-                            <input type="number" class="form-control" name="pres_reading" value="">
-                        </div>
-                </div>
-                <div class="form-group row">
-                    <label class="col-lg-3 col-md-3 col-sm-3 col-form-label">Unit Consumption</label>
-                        <div class="col-lg-4 col-md-4 col-sm-4">
-                            <input type="number" class="form-control" name="unit_used" value="">
-                        </div>
-                </div>
-                <div class="form-group row">
-                    <label class="col-lg-3 col-md-3 col-sm-3 col-form-label">Amount</label>
-                        <div class="col-lg-4 col-md-4 col-sm-4">
-                            <input type="number" class="form-control" name="amount" value="">
-                        </div>
-                </div>
-                <div class="form-group row">
+                <div class="card-block" {{-- style="display: none;" --}}>
+                    <div class="form-group row">
+                        <label class="col-lg-3 col-md-3 col-sm-3 col-form-label">Leasing Agreement</label>
+                            <div class="col-lg-9 col-md-9 col-sm-9">
+                                <select class="select2" name="agreement" id="agreement_id" style="width: 100%">
+                                    <option value="#" disabled selected>Select an agreement</option>
+                                        @foreach($leases as $lease)
+                                            <option value="{{ $lease->details->last()->id }}">
+                                                {{ $lease->details->last()->agreement_no }} | {{ $lease->unit->number }} | {{ $lease->tenant->user->fullnamewm }}
+                                            </option>
+                                        @endforeach
+                                </select>
+                            </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-lg-3 col-md-3 col-sm-3 col-form-label">Meter NO</label>
+                            <div class="col-lg-9 col-md-9 col-sm-9">
+                                <select class="select2" name="meter" id="meter" style="width: 100%">
+                                    <option value="#" disabled selected>Select an agreement first</option>
+                                </select>
+                            </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-lg-3 col-md-3 col-sm-3 col-form-label">Period</label>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <input type="date" class="form-control" name="start_date">
+                            </div>
+                            <label class="col-lg-1 col-md-1 col-sm-1 col-form-label">to</label>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <input type="date" class="form-control" name="end_date">
+                            </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-lg-3 col-md-3 col-sm-3 col-form-label">Previous Reading</label>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <input type="number" step="0.1" class="form-control" name="prev_reading">
+                            </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-lg-3 col-md-3 col-sm-3 col-form-label">Present Reading</label>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <input type="number" step="0.1" class="form-control" name="pres_reading">
+                            </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-lg-3 col-md-3 col-sm-3 col-form-label">Unit Consumption</label>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <input type="number" step="0.1" class="form-control" name="unit_used">
+                            </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-lg-3 col-md-3 col-sm-3 col-form-label">Amount</label>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <input type="number" step="0.1" class="form-control" name="amount">
+                            </div>
+                    </div>
+                    <div class="form-group row">
                         <label class="col-lg-3 col-md-3 col-sm-3 col-form-label">Month to Bill</label>
                             <div class="col-lg-4 col-md-4 col-sm-4">
                                 <select class="select2" name="to_bill" style="width: 100%" required>
@@ -108,8 +110,9 @@
                             <div class="col-lg-4 col-md-4 col-sm-4">
                                 <button type="submit" class="btn btn-primary btn-sm">Create</button>
                             </div>
+                    </div>
                 </div>
-            </div>
+            </form>
         </div>
         <div class="card">
             <div class="card-header">
@@ -123,8 +126,8 @@
                                 <tr>
                                     <th class="f-12">Unit</th>
                                     <th class="f-12">Tenant</th>
-                                    <th class="f-12">Meter NO</th>
                                     <th class="f-12">Description</th>
+                                    <th class="f-12">Meter NO</th>
                                     <th class="f-12">To Bill</th>
                                     <th class="f-12">Date From</th>
                                     <th class="f-12">Date To</th>
@@ -145,20 +148,20 @@
                                 <td class="f-12">
                                     {{ $bill->agreement_detail->agreement->tenant->user->fullnamewm }}
                                 </td>
+                                <td class="f-12 text-uppercase">
+                                    {{ $bill->utility->type }}
+                                </td>
                                 <td class="f-12">
                                     {{ $bill->utility->no }}
                                 </td>
                                 <td class="f-12">
-                                    {{ $bill->utility->type }}
+                                    {{ FY($bill->to_bill) }}
                                 </td>
                                 <td class="f-12">
-                                    {{ $bill->to_bill }}
+                                    {{ dMY($bill->start_date) }}
                                 </td>
                                 <td class="f-12">
-                                    {{ $bill->start_date }}
-                                </td>
-                                <td class="f-12">
-                                    {{ $bill->end_date }}
+                                    {{ dMY($bill->end_date) }}
                                 </td>
                                 <td class="f-12">
                                     {{ $bill->prev_reading }}
@@ -174,7 +177,7 @@
                                     @endif
                                 </td>
                                 <td class="f-12">
-                                    {{ $bill->amount }}
+                                    {{ currencysign($bill->amount) }}
                                 </td>
                                 <td class="f-12">
                                     {{ $bill->created_at }}

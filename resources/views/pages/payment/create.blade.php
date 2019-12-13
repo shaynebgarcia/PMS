@@ -1,4 +1,4 @@
-@extends('layouts.admindek')
+@extends('layouts.admindek', ['pageSlug' => 'payment-create'])
 
 @section('css-plugin')
     @include('includes.plugins.select-css')
@@ -58,7 +58,7 @@
                                         <span class="input-group-prepend">
                                             <label class="input-group-text">{{ config('pms.currency.sign') }}</label>
                                         </span>
-                                        <input type="number" class="form-control" name="amount_due" value="">
+                                        <input type="number" step="0.01" class="form-control" name="amount_due" value="">
                                     </div>
                                     @error('amount_due')
                                         <span class="messages">
@@ -72,7 +72,7 @@
                                         <span class="input-group-prepend">
                                             <label class="input-group-text">{{ config('pms.currency.sign') }}</label>
                                         </span>
-                                        <input type="number" class="form-control" name="amount_paid" value="">
+                                        <input type="number" step="0.01" class="form-control" name="amount_paid" value="">
                                     </div>
                                     @error('amount_paid')
                                         <span class="messages">
@@ -137,8 +137,8 @@
                                 <div class="col-lg-10 col-md-10 col-sm-10">
                                     <select class="select2" name="agreement" style="width: 100%">
                                         <option value="#" disabled selected>Select an Agreement</option>
-                                        @foreach($leases as $lease)
-                                            <option value="{{ $lease->id }}">{{ $lease->id }} | {{ $lease->unit->property->name }} - {{ $lease->unit->number }} | {{ $lease->tenant->user->fullnamewm }}</option>
+                                        @foreach($lease_details as $lease)
+                                            <option value="{{ $lease->id }}">{{ $lease->agreement_no }} | {{ $lease->agreement->unit->property->name }} - {{ $lease->agreement->unit->number }} | {{ $lease->agreement->tenant->user->fullnamewm }} | {{ $lease->term_start}} ({{ $lease->status}})</option>
                                         @endforeach
                                     </select>
                                 </div>

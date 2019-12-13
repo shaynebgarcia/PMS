@@ -16,13 +16,7 @@ class User extends Authenticatable
      *
      * @var array
      */
-    protected $fillable = [
-        'lastname', 'firstname', 'middlename',
-        'username', 'email', 'password',
-        'image_file_id', 'file_list_id',
-        'slug', 'access_property_id'
-
-    ];
+    protected $guarded = ['id'];
 
     /**
      * The attributes that should be hidden for arrays.
@@ -50,6 +44,11 @@ class User extends Authenticatable
     public function avatar()
     {
         return $this->belongsTo(File::class, 'image_file_id');
+    }
+
+    public function access_property()
+    {
+        return $this->belongsTo(Property::class, 'access_property_id');
     }
 
     public function getFullNamewMAttribute()

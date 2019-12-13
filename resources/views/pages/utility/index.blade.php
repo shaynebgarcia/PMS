@@ -1,4 +1,4 @@
-@extends('layouts.admindek')
+@extends('layouts.admindek', ['pageSlug' => 'utility-index'])
 
 @section('css-plugin')
     @include('includes.plugins.datatable-css')
