@@ -74,7 +74,9 @@
 							<h6>Name of Tenant:</h6>
 						</div>
 						<div class="col-10 f-14 p-r-0">
-							<h6>{{ $lease->tenant->user->fullnamewm }}</h6>
+							@foreach($lease->tenant_list as $tl)
+	                            <h6>{{ $tl->tenant->user->fullnamewm }}</h6>
+	                        @endforeach 
 						</div>
 					</div>
 					<div class="row">
@@ -138,8 +140,8 @@
 									@foreach($latest_sub_services as $sub_service)
 									<tr>
 										<th style="width: 20%; padding: 0.5rem;">{{ $sub_service->service_type->name }}</th>
-										<td style="width: 40%; padding: 0.5rem;"></td>
-										<td style="width: 40%; padding: 0.5rem;">{{ currencycode($sub_service->agreed_monthly_rate) }}</td>
+										<td style="width: 40%; padding: 0.5rem;">{{ FdY($sub_service->start_date) }} to {{ FdY($sub_service->end_date) }}</td>
+										<td style="width: 40%; padding: 0.5rem;">{{ currencycode($sub_service->amount) }}</td>
 									</tr>
 									{{-- <tr>
 										<th style="width: 20%; padding: 0.5rem;">{{ $sub_service->service_type->name }}</th>

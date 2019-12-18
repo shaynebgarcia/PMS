@@ -19,7 +19,7 @@ return [
     'unique_prefix' => [
         'user' => 'USR-',
         'tenant' => 'TNT-',
-        'leasing_agreement' => '',
+        'leasing_agreement' => 'LNK-',
         'leasing_agreement_details' => 'AGR-',
         'payment' => 'PYM-',
         'inventory' => 'INV-',
@@ -83,8 +83,10 @@ return [
             'after_due_date' => '+3 day',
             'after_due_date_limit' => '+1 day',
             'terms' => [
-                
             ],
+        ],
+        'services' => [
+            'days_to_get_daily_rate' => 30,
         ],
     ],
 

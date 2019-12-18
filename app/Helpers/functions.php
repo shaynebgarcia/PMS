@@ -12,6 +12,23 @@ function currencycode($amount)
     return $num_format;
 }
 
+function no_days($start, $end) {
+
+    if ($start == $end) {
+        $num_days = 1;
+    } elseif($start > $end) {
+        $num_days = 0;
+    }else {
+        $start_date = date_create($start);
+        $end_date = date_create($end);
+        //difference between two dates
+        $diff = date_diff($start_date,$end_date);
+        $num_days = $diff->format("%a");
+    }
+
+    return $num_days;
+}
+
 function label_status($str)
 {
     if ($str == 'Active') {

@@ -116,6 +116,7 @@ class UserTableSeeder extends Seeder
             	'updated_at' => $faker->dateTime($max = 'now'),
 	        ]);
 	        DB::table('tenants')->insert([
+	        	'property_id' => 5,
 	        	'user_id' => $i,
 	        	'contact' => $faker->phoneNumber,
 	        	'address' => $faker->address,

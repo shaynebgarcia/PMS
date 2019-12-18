@@ -110,6 +110,7 @@ class BillingController extends Controller
      */
     public function display($link, $lease_id, Billing $billing, $billing_my)
     {
+
         $property = Property::findorFail($this->property);
         $lease = LeasingAgreement::findorFail($link);
         $lease_detail = LeasingAgreementDetail::findorFail($lease_id);
@@ -148,23 +149,26 @@ class BillingController extends Controller
         $bill_date = $lease_detail->bill_date($now);
 
         //GET Services and Utility Bill
-        $latest_sub_services = Service::where('leasing_agreement_details_id', $lease_detail->id)->get();
+        // $latest_sub_services = Service::where('leasing_agreement_details_id', $lease_detail->id)->get();
+        $latest_sub_services = Service::where(['leasing_agreement_details_id' => $lease_detail->id, 'to_bill' => $billing_my])->get();
         // ->whereBetween('start_date', [Ymd($bill_from), Ymd($bill_to)])->orWhereBetween('end_date', [Ymd($bill_from), Ymd($bill_to)])->get();
 
         // dd($latest_sub_services);
         $utility_bill = UtilityBill::where(['leasing_agreement_details_id' => $lease_detail->id, 'to_bill' => $billing_my])->get();
         $other_bill = OtherIncome::where(['leasing_agreement_details_id' => $lease_detail->id, 'to_bill' => $billing_my])->get();
 
-        //CHECK if agreement term will expire this month
-        if (strtotime($lease_detail->last_billing_my) > strtotime($billing_my)) {
-            $rental_price = $lease_detail->rental_price();
-        } else {
-            $rental_price = 0;
-        }
+
         $subtotal_subservices = $lease_detail->subtotal_subservices($latest_sub_services);
         $subtotal_utilitybill = $lease_detail->subtotal_utilitybill($utility_bill);
         $subtotal_incomebill = $lease_detail->subtotal_incomebill($other_bill);
-        $subtotal_array = [$rental_price, $subtotal_subservices, $subtotal_utilitybill, $subtotal_incomebill];
+        //CHECK if agreement term will expire this month
+        if (strtotime($lease_detail->last_billing_my) <= strtotime($billing_my)) {
+            $rental_price = 0;
+            $subtotal_array = [$subtotal_subservices, $subtotal_utilitybill, $subtotal_incomebill];
+        } else {
+            $rental_price = $lease_detail->rental_price();
+            $subtotal_array = [$rental_price, $subtotal_subservices, $subtotal_utilitybill, $subtotal_incomebill];
+        }
         $subtotal = $lease_detail->subtotal($subtotal_array);
         $OUpayment = $lease_detail->oupayment($ou);
         $total = $lease_detail->total($subtotal, $ou);

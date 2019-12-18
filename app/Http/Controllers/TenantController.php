@@ -253,15 +253,15 @@ class TenantController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($slug)
+    public function show($id)
     {
         $property = Property::findorFail($this->property);
-        $user = User::where('slug', $slug)->first();
+        $user = User::where('id', $id)->first();
         $tenant = Tenant::where('user_id', $user->id)->first();
-        $leases = LeasingAgreement::where('tenant_id', $tenant->id)->get();
+        // $leases = LeasingAgreement::where('tenant_id', $tenant->id)->get();
         $bills = Billing::all();
         $avatar = File::where('id', $user->image_file_id)->first();
-        return view('pages.user.tenant.show', compact('property', 'tenant', 'leases', 'bills', 'avatar'));
+        return view('pages.user.tenant.show', compact('property', 'tenant', 'bills', 'avatar'));
     }
 
     /**

@@ -74,9 +74,9 @@ class TypeTableSeeder extends Seeder
 	        [ 	
 	        	'property_id' => 5,
 	        	'name' => 'Parking Rental',
-	    		'is_subscription' => 0,
+	    		'is_subscription' => 1,
 	    		'length_month' => 1,
-	    		'amount' => 1000,
+	    		'amount' => 1500,
 	    	],
 	        [ 	
 	        	'property_id' => 5,

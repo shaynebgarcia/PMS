@@ -52,8 +52,7 @@
 	                    <div class="form-group row">
 	                        <label class="col-lg-2 col-md-2 col-sm-2 col-form-label">Tenant*</label>
 	                            <div class="col-lg-9 col-md-9 col-sm-9">
-	                                <select class="select2" name="tenant" style="width: 100%">
-	                                    <option value="#" disabled selected>Select Tenant</option>
+	                                <select class="select2" name="tenants[]" multiple="multiple" style="width: 100%">
 	                                    @foreach($tenants as $tenant)
 	                                        <option value="{{ $tenant->id }}">{{ $tenant->user->fullnamewm }}</option>
 	                                    @endforeach
@@ -156,10 +155,12 @@
 	                	<table class="table table-sm" id="itemtable">
                              <thead>
                                  <tr>
-                                    <th width="40%">Subscriptions</th>
-                                    <th width="10%">Monthly Amount</th>
+                                    <th width="40%" style="padding: 0.6rem 1rem">Subscriptions</th>
+                                    <th width="5%" style="padding: 0.6rem 1rem">Start Date</th>
+                                    <th width="5%" style="padding: 0.6rem 1rem">End Date</th>
+                                    <th width="10%" style="padding: 0.6rem 1rem">Monthly Amount</th>
                                     {{-- <th width="10%">Daily Amount</th> --}}
-                                    <th width="10%">
+                                    <th width="5%" style="padding: 0.6rem 1rem">
                                     	<a href="#" id="addrow">
                                     		<button class="btn waves-effect waves-light btn-success btn-icon" style="height: 40px;width: 40px; padding: 0;line-height: 0;padding-left: 6px;">
 	                                        <i class="fa fa-plus"></i>
@@ -170,15 +171,25 @@
                              </thead>
                              <tbody>
                                <tr>
-                                <td>
+                                <td style="padding: 0.6rem 1rem">
                                   <select name="subscriptions[]" class="js-example-basic-single" style="width:100%;">
                                     <option disabled selected value>Select Service(s)</option>
                                       @foreach ($services->where('is_subscription', true) as $subscription)
-                                        <option value="{{ $subscription->id }}">{{ $subscription->name }} ({{ $subscription->monthly_price_length }}) ({{ $subscription->daily_price_length }})</option>
+                                        <option value="{{ $subscription->id }}">{{ $subscription->name }} ({{ currencysign($subscription->amount) }})</option>
                                       @endforeach
                                   </select>
                                 </td>
-                                <td>
+                                <td style="padding: 0.6rem 1rem">
+                                	<div class="input-group">
+	                                    <input type="date" name="start[]" class="form-control">
+	                                </div>
+                                </td>
+                                <td style="padding: 0.6rem 1rem">
+                                	<div class="input-group">
+	                                    <input type="date" name="end[]" class="form-control">
+	                                </div>
+                                </td>
+                                <td style="padding: 0.6rem 1rem">
                                 	<div class="input-group">
 	                                    <span class="input-group-prepend">
 	                                        <label class="input-group-text">{{ config('pms.currency.sign') }}</label>
@@ -186,7 +197,7 @@
 	                                    <input type="number" min="1" step="any" name="amounts[]" class="form-control {{-- autonumber fill --}}" data-a-sign="{{ config('pms.currency.sign') }}">
 	                                </div>
                                 </td>
-                                <td>
+                                <td style="padding: 0.6rem 1rem">
                                 	<a href="#" id="btnDel">
                                 		<button class="btn waves-effect waves-light btn-danger btn-icon" style="height: 40px;width: 40px; padding: 0;line-height: 0;padding-left: 6px;">
 	                                        <i class="fa fa-minus"></i>
@@ -225,11 +236,25 @@
 	                            </div>
 	                    </div>
 	                    <div class="form-group row">
-	                        <label class="col-lg-2 col-md-2 col-sm-2 col-form-label">Full Payment/ Advance Payment Deposit</label>
+	                        <label class="col-lg-2 col-md-2 col-sm-2 col-form-label">Full/Advance Payment Deposit</label>
 	                            <div class="col-lg-9 col-md-9 col-sm-9">
 	                                <select class="select2" name="full_payment" style="width: 100%">
 	                                    <option value="#" disabled selected>Select Payment</option>
 	                                    @foreach($payments->where('payment_type_id', 3) as $payment)
+                                            <option value="{{ $payment->id }}">
+                                                {{ $payment->payment_type->name }} - {{ $payment->reference_no }} ({{ $payment->date_paid }}) | {{ $payment->tenant->user->fullnamewm }} ({{ $payment->amount_paid_currency_sign }})
+                                            </option>
+	                                    @endforeach
+	                                    <option value="null">None</option>
+	                                </select>
+	                            </div>
+	                    </div>
+	                    <div class="form-group row">
+	                        <label class="col-lg-2 col-md-2 col-sm-2 col-form-label">Utility Deposit</label>
+	                            <div class="col-lg-9 col-md-9 col-sm-9">
+	                                <select class="select2" name="utility_deposit" style="width: 100%">
+	                                    <option value="#" disabled selected>Select Payment</option>
+	                                    @foreach($payments->where('payment_type_id', 4) as $payment)
                                             <option value="{{ $payment->id }}">
                                                 {{ $payment->payment_type->name }} - {{ $payment->reference_no }} ({{ $payment->date_paid }}) | {{ $payment->tenant->user->fullnamewm }} ({{ $payment->amount_paid_currency_sign }})
                                             </option>

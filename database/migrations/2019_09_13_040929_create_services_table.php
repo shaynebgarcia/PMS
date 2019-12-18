@@ -17,6 +17,8 @@ class CreateServicesTable extends Migration
             $table->bigIncrements('id');
             $table->integer('leasing_agreement_details_id');
             $table->integer('service_type_id');
+            $table->string('to_bill')->nullable();
+            $table->boolean('first_bill')->default(0);
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();
             $table->double('amount', 8, 2)->nullable();

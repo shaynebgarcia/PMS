@@ -29,15 +29,15 @@ class StatusTableSeeder extends Seeder
     	// LEASING AGREEMENT
 		$leasing_status = [
 	        [	
-	        	'model' => 'Leasing Agreement'
+	        	'model' => 'Leasing Agreement',
 	        	'title' => 'Active' //3
 	        ],
 	        [	
-	        	'model' => 'Leasing Agreement'
+	        	'model' => 'Leasing Agreement',
 	        	'title' => 'Pre-terminated' //4
 	        ],
 	        [	
-	        	'model' => 'Leasing Agreement'
+	        	'model' => 'Leasing Agreement',
 	        	'title' => 'Terminated' //5
 	        ],
       	];
@@ -48,11 +48,11 @@ class StatusTableSeeder extends Seeder
     	// LEASING AGREEMENT DETAILS
 		$leasing_details_status = [
 	        [	
-	        	'model' => 'Leasing Agreement Details'
+	        	'model' => 'Leasing Agreement Details',
 	        	'title' => 'Active' //6
 	        ],
 	        [	
-	        	'model' => 'Leasing Agreement Details'
+	        	'model' => 'Leasing Agreement Details',
 	        	'title' => 'Expired' //7
 	        ],
       	];

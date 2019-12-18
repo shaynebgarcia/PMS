@@ -32,7 +32,7 @@ class LeasingAgreement extends Model
     }
     public function status()
     {
-        return $this->belongsTo(LeasingAgreementStatus::class, 'agreement_status_id');
+        return $this->belongsTo(Status::class, 'status_id');
     }
 
 }

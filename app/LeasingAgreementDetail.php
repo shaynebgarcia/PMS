@@ -27,7 +27,11 @@ class LeasingAgreementDetail extends Model
     {
         return $this->hasMany(Payment::class);
     }
-
+    public function status()
+    {
+        return $this->belongsTo(Status::class, 'status_id');
+    }
+    
     public function MdY($m, $d, $y, $string)
     {
         $mdy = date($m.' '.$d.', '.$y, strtotime($string));
@@ -83,7 +87,7 @@ class LeasingAgreementDetail extends Model
     }
     public function subtotal_subservices($latest_sub_services)
     {
-        $subtotal_subservices = $latest_sub_services->sum('agreed_monthly_rate');
+        $subtotal_subservices = $latest_sub_services->sum('amount');
         return $subtotal_subservices;
     }
     public function subtotal_utilitybill($utility_bill)

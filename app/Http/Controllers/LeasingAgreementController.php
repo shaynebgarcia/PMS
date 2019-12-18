@@ -18,6 +18,7 @@ use App\Property;
 use App\Unit;
 use App\UnitType;
 use App\Tenant;
+use App\TenantList;
 use App\User;
 
 use Carbon\Carbon;
@@ -69,7 +70,7 @@ class LeasingAgreementController extends Controller
                                         ['date_start_leasing', '<', Carbon::now()],
                                     ])->get();
         $units = Unit::where('leasing_agreement_id', null)->get();
-        $tenants = Tenant::all();
+        $tenants = Tenant::where('property_id', $property->id)->get();
         $payments = Payment::where('leasing_agreement_details_id', null)->where('billing_id', null)->get();
         $services = ServiceType::all();
         return view('pages.lease.form', compact('property', 'properties', 'units', 'tenants', 'payments', 'services'));
@@ -85,7 +86,7 @@ class LeasingAgreementController extends Controller
     {
         $request->validate([
             'unit' => 'required',
-            'tenant' => 'required',
+            'tenants' => 'required',
             // 'term_start' => 'required|date|after:term_end',
             // 'term_end' => 'required|date|before:term_start',
             // 'first_day' => Rule::requiredIf($request->full_payment, !null),
@@ -106,18 +107,27 @@ class LeasingAgreementController extends Controller
 
         // Creating agreement
         $agreement_stored = LeasingAgreement::create([
-            'link_id' => $property->code.$request->unit.$request->tenant,
             'property_id' => $property->id,
-            'tenant_id' => $request->tenant,
             'unit_id' => $request->unit,
-            'agreement_status_id' => 1,
+            'status_id' => 3,
         ]);
-
         if ($agreement_stored) {
 
             $agreement_stored->update([
-                'link_id' => $agreement_stored->unit_id.$agreement_stored->tenant_id.'-'.$agreement_stored->id,
+                'link_id' => config('pms.unique_prefix.leasing_agreement').$agreement_stored->id,
             ]);
+
+            //Check total tenant list
+            if(count($request->tenants) > 0) {
+                foreach($request->tenants as $item => $v) {
+                    // Create each tenant list
+                    $array = array (
+                        'leasing_agreement_id' => $agreement_stored->id,
+                        'tenant_id' => $request->tenants[$item],
+                    );
+                    $list_to = TenantList::insert($array);
+                }
+            }
 
             // Creating agreement details
             $agreement_details_stored = LeasingAgreementDetail::create([
@@ -138,7 +148,7 @@ class LeasingAgreementController extends Controller
                 'monthly_due' => date("d", strtotime($request->first_day)),
                 'last_billing_my' => null,
 
-                'status' => 'Active',
+                'status_id' => 6,
                 'expired' => null,
                 'renewed' => null,
             ]);
@@ -156,34 +166,100 @@ class LeasingAgreementController extends Controller
                             // Check if service price was overriden
                             if ($request->amounts[$item] == null) {
                                 $service = ServiceType::where('id', $request->subscriptions[$item])->first();
-                                $service_price = $service->monthly_rate;
+                                $service_price = $service->amount;
                             } else {
                                 $service_price = floatval($request->amounts[$item]);
                             }
-                            // Create each service subscription
-                            $array = array (
-                                'leasing_agreement_details_id' => $agreement_details_stored->id,
-                                'service_type_id' => $request->subscriptions[$item],
-                                'agreed_monthly_rate' => $service_price,
-                            );
-                            $new_sub_id = Service::create($array)->id;
+
+                            if ($request->first_day == $request->start[$item]) {
+                                $start    = (new DateTime($request->start[$item]))->modify('next month');
+                            } else {
+                                $start    = (new DateTime($request->start[$item]));
+                            }
+                            $end      = (new DateTime($request->end[$item]));
+                            $interval = DateInterval::createFromDateString('1 month');
+                            $period   = new DatePeriod($start, $interval, $end);
+                            $period_count = 0;
+
+                            foreach ($period as $dt) {
+
+                                $service_bill_from = $agreement_details_stored->bill_from($dt->format("MY"));
+                                $service_bill_to = $agreement_details_stored->bill_to($service_bill_from);
+
+                                // Create each service bill
+                                $array = array (
+                                    'leasing_agreement_details_id' => $agreement_details_stored->id,
+                                    'service_type_id' => $request->subscriptions[$item],
+                                    'to_bill' => $dt->format("MY"),
+                                    'start_date' => Ymd($service_bill_from),
+                                    'end_date' => Ymd($service_bill_to),
+                                    'amount' => $service_price,
+                                );
+                                $new_sub_id = Service::create($array)->id;
+                                $period_count++;
+                            }
+                            
+                            //GET first service bill
+                            $service_bill_first = Service::where('leasing_agreement_details_id', $agreement_details_stored->id)->first();
+                            $service_bill_last = Service::where('leasing_agreement_details_id', $agreement_details_stored->id)->orderBy('id', 'desc')->first();
+
+                            //UPDATE service bill
+                            $service_bill_first->update([
+                                'first_bill' => 1,
+                                'start_date' => $request->start[$item],
+                                'amount' => ($service_bill_first->amount / config('pms.billing.services.days_to_get_daily_rate')) * no_days($request->start[$item], $service_bill_first->end_date),
+                            ]);
+                            if ($request->first_day != $request->start[$item]) {
+                                $service_bill_last->update([
+                                    'end_date' => $request->end[$item],
+                                    'amount' => ($service_bill_last->amount / config('pms.billing.services.days_to_get_daily_rate')) * no_days($service_bill_last->start_date, $request->end[$item]),
+                                ]);
+                            }
+                            //UPDATE end_date if subscription is less than 1/month
+                            if (($period_count) == 1) {
+                                $service_bill_first->update([
+                                    'end_date' => $request->end[$item],
+                                    'amount' => ($service_bill_first->amount / config('pms.billing.services.days_to_get_daily_rate') ) * no_days($request->start[$item], $request->end[$item]),
+                                ]);
+                            }
+                             //Check if start of subscription is not the same with billing date
+                            // if ($request->first_day != $request->start[$item]) {
+                            // }
+                            //Check if end of subscription is the same with last start_date of the billing service
+                            // if ($service_bill_last->start_date == $request->end[$item]) {
+                            //     $service_bill_last->update([
+                            //         'end_date' => $request->end[$item],
+                            //         'amount' => ($service_bill_last->amount / 30) * no_days($service_bill_last->start_date, $request->end[$item]),
+                            //     ]);
+                            // }
+
+                            //DELETE service without amount
+                            $zero_amount = Service::where('amount', 0)->get();
+                            foreach ($zero_amount as $zero) {
+                                $zero->delete();
+                            }
                         }
+                    
                     }
                 }
+
+                
+
                 // Check and update if there is payments applied
                 if ($request->reservation != null) {
                     $payment = Payment::where('id', $request->reservation)->first();
-                    $payment_updated = $payment->update(['leasing_agreement_details_id' => $agreement_stored->id]);
+                    $payment->update(['leasing_agreement_details_id' => $agreement_stored->id]);
+                }
+                if ($request->full_payment != null) {
+                    $payment = Payment::where('id', $request->full_payment)->first();
+                    $payment->update(['leasing_agreement_details_id' => $agreement_stored->id]);
+                }
+                if ($request->utility_deposit != null) {
+                    $payment = Payment::where('id', $request->utility_deposit)->first();
+                    $payment->update(['leasing_agreement_details_id' => $agreement_stored->id]);
                 }
             }
                 
-            // Updating tenant role
-            $tenant = Tenant::where('id', $agreement_stored->tenant_id)->first();
-            $user = User::where('id', $tenant->user_id)->first();
-            $user_updated = $user->update([
-                'role_id' => 8,
-            ]);
-
             // Updating unit status
             $unit = Unit::where('id', $agreement_stored->unit_id)->first();
             $unit_updated = $unit->update([
@@ -197,7 +273,6 @@ class LeasingAgreementController extends Controller
             Alert::error('Encountered an error', 'Oops')->persistent('Close');
             return redirect()->route('lease.create');
         }
-
     }
 
     public function renewform($link)

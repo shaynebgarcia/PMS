@@ -402,67 +402,6 @@
 				</div>
 			</div>
 		</div>
-		<div class="col-sm-12">
-			<div class="card-transparent">
-				<div class="page-header-title">
-					<div class="d-inline">
-						<h4>Units</h4>
-					</div>
-				</div>
-			</div>
-			@if(count($leases) > 0)
-				@foreach($leases as $lease)
-				<div class="card m-t-10">
-					<div class="card-header">
-						<h5><a class="f-16" data-toggle="tooltip" data-placement="left" title="" data-original-title="View Unit Details" href="#" title="">{{ $lease->unit->property->name }} {{ $lease->unit->number }}</a></h5>
-						<div class="card-header-right">
-		                    <label class="label label-lg @if($lease->status->name == 'Active') label-success @else label-danger @endif" style="font-size: 14px;font-weight: bold;">{{ $lease->status->name }}</label>
-			            </div>
-					</div>
-					<div class="card-block">
-						<div class="col">
-							<div class="row mt-3">
-			                	<p class="col-sm-3 f-12 p-r-0">Term</p>
-			                    <p class="col-sm-9 f-12">
-			                    	{{ date('M d, Y', strtotime($lease->details->last()->term_start)) }} - {{ date('M d, Y', strtotime($lease->details->last()->term_end)) }}
-			                    </p>
-			                </div>
-			                <div class="row">
-			                	<p class="col-sm-3 f-12 p-r-0">Move-in Date</p>
-			                    <p class="col-sm-9 f-12">
-			                    	{{ date('M d, Y', strtotime($lease->details->last()->first_day)) }}
-			                    </p>
-			                </div>
-			                <div class="row">
-			                	<p class="col-sm-3 f-12 p-r-0">Lease Price</p>
-			                    <p class="col-sm-9 f-12">
-			                    	{{ $lease->details->last()->agreed_lease_price_currency_sign }}
-			                    </p>
-			                </div>
-
-			                <div class="row">
-			                	<p class="col-sm-3 f-12 p-r-0">Last Billing Status</p>
-			                    <p class="col-sm-9 f-12">
-			                    	{{ $bills->where('leasing_agreement_details_id', $lease->details->last()->id)->last()->id ?? 'No billing found' }}
-			                    </p>
-			                </div>
-						</div>
-					</div>
-					<div class="card-footer">
-						<a href="{{ route('lease.show', [$lease->unit->property->id, $lease->id]) }}" title="">
-							<button type="button" class="btn btn-md btn-primary btn-round btn-block waves-effect waves-light">View</button>
-						</a>
-					</div>
-				</div>
-				@endforeach
-			@else
-				<div class="card m-t-10">
-					<div class="card-block">
-						<p>No units</p>
-					</div>
-				</div>
-			@endif
-		</div>
 	</div>
 </div>
 @endsection

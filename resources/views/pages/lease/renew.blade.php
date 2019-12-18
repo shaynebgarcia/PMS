@@ -17,11 +17,21 @@
 
 @section('content')
     <div class="row">
+    	<div class="col-lg-12 col-md-12 col-sm-12">
+	    	<div class="alert alert-warning icons-alert">
+				<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+					<i class="icofont icofont-close-line-circled"></i>
+				</button>
+				<p><strong>Renewing will mark the current/previous agreement as EXPIRED.</strong></p>
+			</div>
+		</div>
+	</div>
+	<div class="row">
         <div class="col-lg-12 col-md-12 col-sm-12">
         	<form id="lease-renew" method="POST" action="{{ route('lease.renew', [$property->code, $lease->id]) }}">
 	        @CSRF
 		        <div class="row">
-		        	<div class="col-lg-6 col-md-6 col-sm-6">
+		        	<div class="col-lg-12 col-md-12 col-sm-12">
 			            <div class="card">
 			                <div class="card-header">
 			                    <h5>Property/Unit</h5>
@@ -38,24 +48,56 @@
 			                    <div class="form-group row">
 			                        <label class="col-lg-2 col-md-2 col-sm-2 col-form-label">Tenant</label>
 			                            <div class="col-lg-10 col-md-10 col-sm-10">
-			                            	<input type="text" class="form-control" name="property" value="{{ $lease->tenant->user->fullnamewm }}" readonly>
+			                            	<select class="select2" name="tenants[]" multiple="multiple" style="width: 100%">
+			                                    @foreach($lease->tenant_list as $tl)
+			                                        <option value="{{ $tl->id }}" selected>
+			                                            {{ $tl->tenant->user->fullnamewm }}
+			                                        </option>
+			                                    @endforeach
+			                                </select>
 			                            </div>
 			                    </div>
 			                </div>
 			            </div>
 		        	</div>
-		        	<div class="col-lg-6 col-md-6 col-sm-6">
+		        	<div class="col-lg-12 col-md-12 col-sm-12">
 			            <div class="card">
 			                <div class="card-header">
 			                    <h5>Current/Previous Agreement Details</h5>
 			                </div>
 			                <div class="card-block">
-			                	<h6>Leasing Agreement ID: {{ $lease->details->last()->agreement_no }}</h6>
-			                	<h6>Type/Status: {{ $lease->details->last()->description }}</h6>
-			                	<h6>Lease Price: {{ $lease->details->last()->agreed_lease_price_currency_sign }}</h6>
-					        	{{-- <h6>Property: {{ $lease->name }}</h6>
-					        	<h6>Unit: {{ $lease->unit->number }}</h6>
-					        	<h6>Tenant: {{ $lease->tenant->user->fullnamewm }}</h6> --}}
+			                	<div class="row">
+				                    <div class="col-2">
+				                        <h6>ID</h6>
+				                    </div>
+				    	        	<div class="col-10">
+				                        <h6>{{ $lease->details->last()->agreement_no }}</h6>
+				                    </div>
+				                </div>
+				                <div class="row">
+				                    <div class="col-2">
+				                        <h6>Type/Status</h6>
+				                    </div>
+				    	        	<div class="col-10">
+				                        <h6>{{ $lease->details->last()->description }}</h6>
+				                    </div>
+				                </div>
+				                <div class="row">
+				                    <div class="col-2">
+				                        <h6>Lease Price</h6>
+				                    </div>
+				    	        	<div class="col-10">
+				                        <h6>{{ currencysign($lease->details->last()->agreed_lease_price) }}</h6>
+				                    </div>
+				                </div>
+				                <div class="row">
+				                    <div class="col-2">
+				                        <h6>Date of Expiry</h6>
+				                    </div>
+				    	        	<div class="col-10">
+				                        <h6>{{ MdY($lease->details->last()->term_end) }}</h6>
+				                    </div>
+				                </div>
 			                </div>
 			            </div>
 			        </div>
@@ -161,7 +203,7 @@
                                   <select name="subscriptions[]" class="js-example-basic-single" style="width:100%;">
                                     <option disabled selected value>Select Service(s)</option>
                                       @foreach ($services->where('is_subscription', true) as $subscription)
-                                        <option value="{{ $subscription->id }}">{{ $subscription->name }} ({{ $subscription->monthly_price_length }})</option>
+                                        <option value="{{ $subscription->id }}">{{ $subscription->name }} ({{ currencysign($subscription->amount) }})</option>
                                       @endforeach
                                   </select>
                                 </td>
@@ -220,26 +262,6 @@
 	                    <h5>Billing</h5>
 	                </div>
 	                <div class="card-block">
-	                	{{-- INPUT Monthly Due/Collection --}}
-	                    <div class="form-group row">
-	                        <label class="col-lg-2 col-md-2 col-sm-2 col-form-label">Pay Period</label>
-	                            <div class="col-lg-4 col-md-4 col-sm-4">
-	                            	<div class="input-group">
-	                                    <span class="input-group-prepend">
-	                                        <label class="input-group-text">Every</label>
-	                                    </span>
-	                                    <input type="number" min=1 max=31 class="form-control" name="monthly_due">
-	                                    <span class="input-group-append">
-											<label class="input-group-text">of the month</label>
-										</span>
-	                                </div>
-	                                @error('monthly_due')
-                                        <span class="messages">
-                                            <p class="text-danger error">{{ $message }}</p>
-                                        </span>
-                                    @enderror
-	                            </div>
-	                    </div>
 	                    {{-- INPUT Move-in/First Day --}}
 	                    <div class="form-group row">
 	                        <label class="col-lg-2 col-md-2 col-sm-2 col-form-label">Date Start of Billing</label>
