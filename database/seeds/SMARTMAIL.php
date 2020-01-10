@@ -83,7 +83,7 @@ class SMARTMAIL extends Seeder
 				'property_id' => $A_property->id,
 	            'unit_type_id' => 1,
 	            'floor_no' => 1,
-	            'number' => 'A-'.
+	            'number' => 'A-',
 			}
 
         //PROPERTY B

@@ -49,12 +49,13 @@ class LeasingAgreementController extends Controller
         $property_access = PropertyAccess::all();
         $payments = Payment::all();
         $services = Service::all();
+        $service_types = ServiceType::all();
         $utilities = Utility::all();
         $billings = Billing::all();
 
         $now = Carbon::now();
 
-        return view('pages.lease.index', compact('property', 'leases', 'details', 'property_access', 'payments', 'services', 'utilities', 'billings', 'now'));
+        return view('pages.lease.index', compact('property', 'leases', 'details', 'property_access', 'payments', 'services', 'service_types', 'utilities', 'billings', 'now'));
     }
 
     /**
