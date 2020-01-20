@@ -8,7 +8,8 @@
                     @CSRF
                     <div class="text-center">
                         {{-- <i class="feather icon-home text-white" style="font-size: xx-large;" ></i> --}}
-                        <img src="{{ asset('admindek/files/assets/images/logo.png') }}" alt="logo.png" style="padding: 2rem 0;">
+                        <h1 class="text-white" style="padding: 2rem 0;letter-spacing: 17px;">PMS</h1>
+                        <!-- <img src="{{ asset('admindek/files/assets/images/logo.png') }}" alt="logo.png" style="padding: 2rem 0;"> -->
                     </div>
                     <div class="auth-box card">
                         <div class="card-block">
@@ -17,16 +18,16 @@
                                     <h3 class="text-center txt-primary">Sign In</h3>
                                 </div>
                             </div>
-                            <div class="row m-b-20">
+                            <!-- <div class="row m-b-20">
                                 <div class="col-md-12">
                                     @php
                                         print_r(Session::all());
                                     @endphp
                                  </div>
                              </div>
-
+ -->
                             <div class="form-group form-primary">
-                                <input type="text" name="email" id="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email') }}" required autocomplete="email" autofocus>
+                                <input type="text" name="email" id="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email') }}" required autocomplete="email">
                                 <span class="form-bar"></span>
                                 <label class="float-label">Email Address/Username</label>
                             </div>
@@ -87,7 +88,7 @@
 @include('sweet::alert')
 
 @section('js-plugin')
-    <script type="text/javascript">
+<!--     <script type="text/javascript">
       $(document).ready(function(){
 
         swal("Good job!", "You clicked the button!", "success", {
@@ -103,5 +104,5 @@
         });
 
       });
-    </script>
+    </script> -->
 @endsection

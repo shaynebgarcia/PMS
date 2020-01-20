@@ -17,7 +17,7 @@ class CreateInventoriesTable extends Migration
             $table->bigIncrements('id');
             $table->string('inventory_no')->nullable()->default(null)->unique();
             $table->integer('property_id')->nullable();
-            
+            $table->boolean('is_service')->default(0);
             $table->string('description');
             $table->integer('qty')->default(0);
             $table->double('price', 8, 2)->nullable();

@@ -172,11 +172,11 @@ Breadcrumbs::for('utility-bill', function ($trail, $property) {
 // SERVICES
 Breadcrumbs::for('service', function ($trail, $property) {
     $trail->parent('property-show', $property);
-    $trail->push('Utilities', route('services.index'));
+    $trail->push('Service Bill', route('services.index'));
 });
 Breadcrumbs::for('service-create', function ($trail, $property) {
     $trail->parent('service', $property);
-    $trail->push('Create Utility', route('services.create'));
+    $trail->push('Create Service Agreement', route('services.create'));
 });
 Breadcrumbs::for('service-show', function ($trail, $property, $service) {
     $trail->parent('service', $property);
@@ -184,15 +184,15 @@ Breadcrumbs::for('service-show', function ($trail, $property, $service) {
 });
 Breadcrumbs::for('service-edit', function ($trail, $property, $service) {
     $trail->parent('service-show', $property, $service);
-    $trail->push('Update Utility', route('services.edit', $service->id));
+    $trail->push('Update Service Bill', route('services.edit', $service->id));
 });
 Breadcrumbs::for('service-type-index', function ($trail) {
     $trail->parent('dashboard');
-    $trail->push('Services and Subscriptions', route('service-type.index'));
+    $trail->push('Service & Subscription Types', route('service-type.index'));
 });
 Breadcrumbs::for('service-type-create', function ($trail) {
     $trail->parent('service');
-    $trail->push('Create Utility', route('services.create'));
+    $trail->push('Create Service/Subscription Types', route('service-type.create'));
 });
 Breadcrumbs::for('service-type-show', function ($trail, $service) {
     $trail->parent('service');

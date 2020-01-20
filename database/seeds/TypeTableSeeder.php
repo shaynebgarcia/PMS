@@ -22,11 +22,22 @@ class TypeTableSeeder extends Seeder
 				'amount' => 300,
 			],
 			[
-				'name' => 'Work Order',
+				'name' => 'Other',
+				'amount' => 0,
+			],
+			[
+				'name' => 'Repair',
+				'for_workorder' => 1,
+				'amount' => 0,
+			],
+			[
+				'name' => 'Maintenance',
+				'for_workorder' => 1,
 				'amount' => 0,
 			],
 			[
 				'name' => 'Other',
+				'for_workorder' => 1,
 				'amount' => 0,
 			],
       	];

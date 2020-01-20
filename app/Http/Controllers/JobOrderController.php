@@ -10,6 +10,7 @@ use App\JobOrder;
 use App\JobOrderLine;
 use App\JobOrderProcessing;
 use App\OtherIncome;
+use App\OtherIncomeType;
 use App\Inventory;
 
 use Carbon\Carbon;
@@ -22,7 +23,7 @@ class JobOrderController extends Controller
 {
     public function __construct(Request $request)
     {
-        $this->property = $request->session()->get('property_id');
+        $this->property = session()->get('property_id');
     }
     /**
      * Display a listing of the resource.
@@ -45,6 +46,7 @@ class JobOrderController extends Controller
     {
         $property = Property::findorFail($this->property);
         $leases = LeasingAgreement::where('property_id', $property->id)->get();
+        $order_types = OtherIncomeType::where('for_workorder', 1)->get();
         // $leases = LeasingAgreementDetail::where('property_id', $property->id)->get();
         $inventories = Inventory::where('property_id', $property->id)->orwhere('property_id', null)->get();
 
@@ -55,7 +57,7 @@ class JobOrderController extends Controller
         $interval = DateInterval::createFromDateString('1 month');
         $period   = new DatePeriod($start, $interval, $end);
 
-        return view('pages.order.create', compact('property', 'leases', 'inventories', 'period'));
+        return view('pages.order.create', compact('property', 'leases', 'order_types', 'inventories', 'period'));
     }
 
     /**
@@ -69,6 +71,7 @@ class JobOrderController extends Controller
         $request->validate([
             'agreement' => 'required',
             'to_bill' => 'required',
+            'order_type' => 'required'
         ]);
 
         $property = Property::findorFail($this->property);
@@ -76,13 +79,17 @@ class JobOrderController extends Controller
         $details = [
             'property_id' => $property->id,
             'leasing_agreement_details_id' => $request->agreement,
+            'order_type_id' => $request->order_type,
             'to_bill' => $request->to_bill,
+            'description' => $request->description,
+            'notes' => $request->notes,
+            'status_id' => 9,
         ];
 
         $newOrderID = JobOrder::create($details)->id;
 
         $newOrder = JobOrder::findorFail($newOrderID);
-        $newOrder->update([ 'order_no' => config('pms.unique_prefix.leasing_agreement_details').$newOrderID ]);
+        $newOrder->update([ 'order_no' => config('pms.unique_prefix.order').$newOrderID ]);
 
         $processing = JobOrderProcessing::all();
         if (count($processing) > 0)

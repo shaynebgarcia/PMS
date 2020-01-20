@@ -23,7 +23,7 @@ class UtilityBillController extends Controller
 {
     public function __construct(Request $request)
     {
-        $this->property = $request->session()->get('property_id');
+        $this->property = session()->get('property_id');
     }
     /**
      * Display a listing of the resource.
@@ -91,7 +91,6 @@ class UtilityBillController extends Controller
             'end_date' => $request->end_date,
             'prev_reading' => $request->prev_reading,
             'pres_reading' => $request->pres_reading,
-            'end_date' => $request->end_date,
             'amount' => $request->amount,
         ]);
 
@@ -146,7 +145,36 @@ class UtilityBillController extends Controller
      */
     public function update(Request $request, UtilityBill $utilityBill)
     {
-        //
+        $request->validate([
+            'field_start_date' => 'nullable',
+            'field_end_date' => 'nullable',
+            'field_prev_reading' => 'nullable',
+            'field_pres_reading' => 'nullable',
+            'field_unit_used' => 'nullable',
+            'field_amount' => 'required',
+        ]);
+
+        $property = Property::findorFail($this->property);
+
+        $utilityBill->update([
+            'start_date' => $request->field_start_date,
+            'end_date' => $request->field_end_date,
+            'prev_reading' => $request->field_prev_reading,
+            'pres_reading' => $request->field_pres_reading,
+            'amount' => $request->field_amount,
+        ]);
+
+        if ($utilityBill->kw_used != null) {
+            $utilityBill->update([
+                'kw_used' => $request->field_unit_used,
+            ]);
+        } else {
+            $utilityBill->update([
+                'cubic_meter' => $request->field_unit_used,
+            ]);
+        }
+
+        return redirect()->route('utility-bill.index');
     }
 
     /**

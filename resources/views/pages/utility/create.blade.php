@@ -1,4 +1,4 @@
-@extends('layouts.admindek', ['pageSlug' => 'utility-create'])
+@extends('layouts.admindek', ['pageSlug' => 'utilities-create'])
 
 @section('css-plugin')
     @include('includes.plugins.select-css')

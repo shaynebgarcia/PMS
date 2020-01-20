@@ -17,6 +17,7 @@ class InventoryTableSeeder extends Seeder
     	DB::table('inventories')->insert([
 	            'property_id' => null,
 	            'inventory_no' => null,
+	            'is_service' => 1,
 	            'description' => 'Labor Fee',
 	            'qty' => 0,
 	            'price' => 0,

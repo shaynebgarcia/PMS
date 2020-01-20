@@ -33,7 +33,7 @@ class LeasingAgreementController extends Controller
 {
     public function __construct(Request $request)
     {
-        $this->property = $request->session()->get('property_id');
+        $this->property = session()->get('property_id');
     }
     /**
      * Display a listing of the resource.
@@ -149,7 +149,7 @@ class LeasingAgreementController extends Controller
                 'monthly_due' => date("d", strtotime($request->first_day)),
                 'last_billing_my' => null,
 
-                'status_id' => 6,
+                'status_id' => 6, //Default: Active
                 'expired' => null,
                 'renewed' => null,
             ]);
@@ -164,6 +164,15 @@ class LeasingAgreementController extends Controller
                 if ($request->subscriptions != null) {
                     if(count($request->subscriptions)>0) {
                         foreach($request->subscriptions as $item =>$v) {
+
+                            // Check last service no
+                            $last_service = Service::where('leasing_agreement_details_id', $agreement_details_stored->id)->latest()->first();
+                            if($last_service == null) {
+                                $current_service_no = config('pms.unique_prefix.service').'1';
+                            } else {
+                                $current_service_no = config('pms.unique_prefix.service').strval(intval(substr($last_service->service_no, -1))+1);
+                            }
+
                             // Check if service price was overriden
                             if ($request->amounts[$item] == null) {
                                 $service = ServiceType::where('id', $request->subscriptions[$item])->first();
@@ -189,6 +198,8 @@ class LeasingAgreementController extends Controller
 
                                 // Create each service bill
                                 $array = array (
+                                    'property_id' => $property->id,
+                                    'service_no' => $current_service_no,
                                     'leasing_agreement_details_id' => $agreement_details_stored->id,
                                     'service_type_id' => $request->subscriptions[$item],
                                     'to_bill' => $dt->format("MY"),
@@ -196,12 +207,12 @@ class LeasingAgreementController extends Controller
                                     'end_date' => Ymd($service_bill_to),
                                     'amount' => $service_price,
                                 );
-                                $new_sub_id = Service::create($array)->id;
+                                $new_sub = Service::create($array);
                                 $period_count++;
                             }
                             
                             //GET first service bill
-                            $service_bill_first = Service::where('leasing_agreement_details_id', $agreement_details_stored->id)->first();
+                            $service_bill_first = Service::where('leasing_agreement_details_id', $agreement_details_stored->id)->where('service_no', $current_service_no)->first();
                             $service_bill_last = Service::where('leasing_agreement_details_id', $agreement_details_stored->id)->orderBy('id', 'desc')->first();
 
                             //UPDATE service bill
@@ -244,8 +255,6 @@ class LeasingAgreementController extends Controller
                     }
                 }
 
-                
-
                 // Check and update if there is payments applied
                 if ($request->reservation != null) {
                     $payment = Payment::where('id', $request->reservation)->first();
@@ -276,19 +285,187 @@ class LeasingAgreementController extends Controller
         }
     }
 
-    public function renewform($link)
+    public function renewform($id)
     {
         $property = Property::findorFail($this->property);
 
-        $lease = LeasingAgreement::findorFail($link);
+        $lease = LeasingAgreement::findorFail($id);
         $payments = Payment::where('leasing_agreement_details_id', null)->where('billing_id', null)->get();
         $services = ServiceType::all();
         return view('pages.lease.renew', compact('property', 'lease', 'payments', 'services'));
-    }
-
-    public function renew(Request $request) {
 
     }
+
+    public function renew($id, Request $request)
+    {
+        $request->validate([
+            // 'unit' => 'required',
+            // 'tenants[]' => 'required',
+            // 'term_start' => 'required|date|after:term_end',
+            // 'term_end' => 'required|date|before:term_start',
+            // 'first_day' => Rule::requiredIf($request->full_payment, !null),
+            // 'date_of_contract' => 'date',
+            // 'move_in' => 'date',
+        ]);
+
+        $property = Property::findorFail($this->property);
+        $agreement = LeasingAgreement::findorFail($id);
+        $last_agreement_details = LeasingAgreementDetail::where('leasing_agreement_id', $agreement->id)->where('status_id', 6)->first();
+
+        // Check if lease price was overriden
+        if ($request->agreed_lease_price == null) {
+            $rental_price = $last_agreement_details->agreed_lease_price;
+        } else {
+            $rental_price = floatval($request->agreed_lease_price);
+        }
+
+        // Update previous agreement details
+        $last_agreement_details->update([
+            // 'status_id' => 7,
+            // 'expired' => null,
+            'renewed' => $request->execution_date,
+        ]);
+
+        // Creating agreement details
+        $agreement_details_renew = LeasingAgreementDetail::create([
+            'property_id' => $property->id,
+            'leasing_agreement_id' => $agreement->id,
+            'agreement_no' => null,
+            'description' => 'Renewed',
+
+            'agreed_lease_price' => $rental_price,
+            'agreed_lease_price_daily' => null,
+
+            'term_duration' => $request->term_duration,
+            'term_start' => $request->term_start,
+            'term_end' => $request->term_end,
+
+            'first_day' => $request->first_day,
+            'last_day' => null,
+            'monthly_due' => date("d", strtotime($request->first_day)),
+            'last_billing_my' => null,
+
+            'status_id' => 8, //Default: Inactive
+            'expired' => null,
+            'renewed' => null,
+        ]);
+
+        if($agreement_details_renew) {
+            //Update unique id
+            $agreement_details_renew->update([
+                'agreement_no' => config('pms.unique_prefix.leasing_agreement_details').$agreement_details_renew->id,
+                'last_billing_my' => date('MY', strtotime($request->term_end)),
+            ]);
+
+                // Check and creating services applied
+                if ($request->subscriptions != null) {
+                    if(count($request->subscriptions)>0) {
+                        foreach($request->subscriptions as $item =>$v) {
+
+                            // Check last service no
+                            $last_service = Service::where('leasing_agreement_details_id', $agreement_details_renew->id)->latest()->first();
+                            if($last_service == null) {
+                                $current_service_no = config('pms.unique_prefix.service').'1';
+                            } else {
+                                $current_service_no = config('pms.unique_prefix.service').strval(intval(substr($last_service->service_no, -1))+1);
+                            }
+
+                            // Check if service price was overriden
+                            if ($request->amounts[$item] == null) {
+                                $service = ServiceType::where('id', $request->subscriptions[$item])->first();
+                                $service_price = $service->amount;
+                            } else {
+                                $service_price = floatval($request->amounts[$item]);
+                            }
+
+                            if ($request->first_day == $request->start[$item]) {
+                                $start    = (new DateTime($request->start[$item]))->modify('next month');
+                            } else {
+                                $start    = (new DateTime($request->start[$item]));
+                            }
+                            $end      = (new DateTime($request->end[$item]));
+                            $interval = DateInterval::createFromDateString('1 month');
+                            $period   = new DatePeriod($start, $interval, $end);
+                            $period_count = 0;
+
+                            foreach ($period as $dt) {
+
+                                $service_bill_from = $agreement_details_renew->bill_from($dt->format("MY"));
+                                $service_bill_to = $agreement_details_renew->bill_to($service_bill_from);
+
+                                // Create each service bill
+                                $array = array (
+                                    'property_id' => $property->id,
+                                    'service_no' => $current_service_no,
+                                    'leasing_agreement_details_id' => $agreement_details_renew->id,
+                                    'service_type_id' => $request->subscriptions[$item],
+                                    'to_bill' => $dt->format("MY"),
+                                    'start_date' => Ymd($service_bill_from),
+                                    'end_date' => Ymd($service_bill_to),
+                                    'amount' => $service_price,
+                                );
+                                $new_sub = Service::create($array);
+                                $period_count++;
+                            }
+                            
+                            //GET first service bill
+                            $service_bill_first = Service::where('leasing_agreement_details_id', $agreement_details_stored->id)->where('service_no', $current_service_no)->first();
+                            $service_bill_last = Service::where('leasing_agreement_details_id', $agreement_details_renew->id)->orderBy('id', 'desc')->first();
+
+                            //UPDATE service bill
+                            $service_bill_first->update([
+                                'first_bill' => 1,
+                                'start_date' => $request->start[$item],
+                                'amount' => ($service_bill_first->amount / config('pms.billing.services.days_to_get_daily_rate')) * no_days($request->start[$item], $service_bill_first->end_date),
+                            ]);
+                            if ($request->first_day != $request->start[$item]) {
+                                $service_bill_last->update([
+                                    'end_date' => $request->end[$item],
+                                    'amount' => ($service_bill_last->amount / config('pms.billing.services.days_to_get_daily_rate')) * no_days($service_bill_last->start_date, $request->end[$item]),
+                                ]);
+                            }
+                            //UPDATE end_date if subscription is less than 1/month
+                            if (($period_count) == 1) {
+                                $service_bill_first->update([
+                                    'end_date' => $request->end[$item],
+                                    'amount' => ($service_bill_first->amount / config('pms.billing.services.days_to_get_daily_rate') ) * no_days($request->start[$item], $request->end[$item]),
+                                ]);
+                            }
+                             //Check if start of subscription is not the same with billing date
+                            // if ($request->first_day != $request->start[$item]) {
+                            // }
+                            //Check if end of subscription is the same with last start_date of the billing service
+                            // if ($service_bill_last->start_date == $request->end[$item]) {
+                            //     $service_bill_last->update([
+                            //         'end_date' => $request->end[$item],
+                            //         'amount' => ($service_bill_last->amount / 30) * no_days($service_bill_last->start_date, $request->end[$item]),
+                            //     ]);
+                            // }
+
+                            //DELETE service without amount
+                            $zero_amount = Service::where('amount', 0)->get();
+                            foreach ($zero_amount as $zero) {
+                                $zero->delete();
+                            }
+                        }
+                    
+                    }
+                }
+
+                // Check and update if there is payments applied
+                if ($request->utility_deposit != null) {
+                    $payment = Payment::where('id', $request->utility_deposit)->first();
+                    $payment->update(['leasing_agreement_details_id' => $agreement_stored->id]);
+                }
+
+            return redirect()->route('lease.index');
+        } else {
+            Alert::error('Encountered an error', 'Oops')->persistent('Close');
+            return redirect()->route('lease.create');
+        }
+
+    }
+
     /**
      * Display the specified resource.
      *
@@ -345,8 +522,8 @@ class LeasingAgreementController extends Controller
 
     public function getTerm(Request $request)
     {
-        $lease = LeasingAgreement::findorFail($request->id);
-        $lease_detail = LeasingAgreementDetail::where('leasing_agreement_id', $lease->id)->where('status', 'Active')->first();
+        // $lease = LeasingAgreement::findorFail($request->id);
+        $lease_detail = LeasingAgreementDetail::where('id', $request->id)->where('status_id', 6)->first();
 
         $start    = (new DateTime($lease_detail->term_start))->modify('first day of this month');
         $end      = (new DateTime($lease_detail->term_end))->modify('first day of next month');
@@ -371,4 +548,5 @@ class LeasingAgreementController extends Controller
 
         return $PDF->stream();
     }
+
 }

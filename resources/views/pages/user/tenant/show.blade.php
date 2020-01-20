@@ -17,15 +17,6 @@
     </div>
 @endif
 
-@if (count($leases) == 0)
-	<div class="alert alert-warning icons-alert">
-		<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-			<i class="icofont icofont-close-line-circled"></i>
-		</button>
-		<p><strong>Tenant has no existing agreements and is not assigned to a unit</strong></p>
-	</div>
-@endif
-
 <div class="row">
 	<div class="col-lg-4 col-xl-4">
 		{{-- <div class="row">
@@ -86,7 +77,7 @@
 
 						</div>
 					</div>
-					<div class="card version">
+					<!-- <div class="card version">
 						<div class="card-block">
 							<ul class="nav navigation">
 								<li class="waves-effect waves-light">
@@ -100,8 +91,7 @@
 								</li>
 							</ul>
 						</div>
-					</div>
-					
+					</div> -->
 				</div>
 			</div>
 		</div>

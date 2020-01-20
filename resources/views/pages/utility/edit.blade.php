@@ -1,4 +1,4 @@
-@extends('layouts.admindek', ['pageSlug' => 'utility-edit'])
+@extends('layouts.admindek', ['pageSlug' => 'utilities-edit'])
 
 @section('css-plugin')
     @include('includes.plugins.select-css')

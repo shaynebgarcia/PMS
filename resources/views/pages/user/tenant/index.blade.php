@@ -48,7 +48,7 @@
                                         {{ $tenant->tenant_no ?? '-' }}
                                     </td>
                                     <td class="{{ config('pms.table.td.font-size') }}">
-                                        <a class="f-12 f-w-700" href="{{ route('tenant.show', $tenant->user->slug) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="View Details">
+                                        <a class="f-12 f-w-700" href="{{ route('tenant.show', $tenant->user->id) }}" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="View Details">
                                             {{ $tenant->user->fullnamewm }}
                                         </a>
                                     </td>

@@ -12780,3 +12780,12 @@ table.dataTable.dtr-inline.collapsed>tbody>tr>th:first-child:before {
     overflow: hidden;
     width: 7rem;
 }
+
+.bg-highlight {
+    background-color: #f2f7fb!important;
+}
+
+.modal-btn {
+    border: 0;
+    background: none!important;
+}

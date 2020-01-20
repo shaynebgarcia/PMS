@@ -65,6 +65,35 @@ class PermissionRolesTableSeeder extends Seeder
             ['name' => 'Update Leasing Agreements'],
             ['name' => 'Delete Leasing Agreements'],
 
+            // Utility
+            ['name' => 'List Utility'],
+            ['name' => 'Create Utility'],
+            ['name' => 'Update Utility'],
+            ['name' => 'Delete Utility'],
+
+            // Utility
+            ['name' => 'List Utility Bill'],
+            ['name' => 'Create Utility Bill'],
+            ['name' => 'Update Utility Bill'],
+            ['name' => 'Delete Utility Bill'],
+
+            // Order
+            ['name' => 'List Orders'],
+            ['name' => 'Create Orders'],
+            ['name' => 'Update Orders'],
+            ['name' => 'Delete Orders'],
+
+            // Service
+            ['name' => 'List Service'],
+            ['name' => 'Create Service'],
+            ['name' => 'Update Service'],
+            ['name' => 'Delete Service'],
+
+            // Service
+            ['name' => 'List Service Type'],
+            ['name' => 'Create Service Type'],
+            ['name' => 'Update Service Type'],
+            ['name' => 'Delete Service Type'],
         ];
 
         foreach ($permissions as $key => $permission) {

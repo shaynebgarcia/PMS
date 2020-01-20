@@ -20,9 +20,11 @@ class CreateJobOrdersTable extends Migration
             // $table->integer('leasing_agreement_id');
             $table->integer('leasing_agreement_details_id');
 
+            $table->integer('order_type_id');
             $table->string('to_bill')->nullable();
             $table->double('total_amount', 8, 2)->default(0);
-
+            $table->string('description')->nullable();
+            $table->string('notes')->nullable();
             $table->integer('status_id');
             $table->timestamps();
         });

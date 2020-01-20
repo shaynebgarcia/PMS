@@ -64,4 +64,9 @@ class User extends Authenticatable
     {
         return "{$this->firstname} {$this->lastname}";
     }
+
+    public function getLNameFnameAttribute()
+    {
+        return "{$this->lastname} {$this->firstname}";
+    }
 }

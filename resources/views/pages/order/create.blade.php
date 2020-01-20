@@ -26,7 +26,7 @@
 	                    <h5>Leasing Agreement</h5>
 	                </div>
 	                <div class="card-block">
-	                    {{-- SELECT Agreement --}}
+	                    <!-- {{-- SELECT Agreement --}} -->
 	                    <div class="form-group row">
 	                        <label class="col-lg-2 col-md-2 col-sm-2 col-form-label">Leasing Agreement*</label>
 	                            <div class="col-lg-10 col-md-10 col-sm-10">
@@ -34,7 +34,13 @@
 	                                    <option value="#" disabled selected>Select an a Agreement</option>
 	                                    @foreach($leases as $lease)
                                             <option value="{{ $lease->details->last()->id }}">
-                                                {{ $lease->details->last()->agreement_no }} | {{ $lease->unit->number }} | {{ $lease->tenant->user->fullnamewm }} | {{ $lease->details->last()->term_start  }} ({{ $lease->details->last()->status }})
+                                                {{ $lease->details->last()->agreement_no }} | UNIT: {{ $lease->unit->number }} | TENANT(S): @foreach($lease->tenant_list as $tl)
+                                                	{{ $tl->tenant->user->lnamefname }},
+                                                	@if ($loop->last)
+                                                		{{ $tl->tenant->user->lnamefname }}
+                                                	@endif
+                                                @endforeach
+                                             	| {{ $lease->details->last()->term_start  }} ({{ $lease->details->last()->status->title }})
                                             </option>
                                         @endforeach
 	                                </select>
@@ -54,7 +60,47 @@
 	                </div>
 	                <div class="card-block">
 	                	<div class="form-group row">
-	                		<label class="col-lg-2 col-md-2 col-sm-2 col-form-label">Month to Bill</label>
+	                		<label class="col-lg-2 col-md-2 col-sm-2 col-form-label">Order Type</label>
+	                            <div class="col-lg-4 col-md-4 col-sm-4">
+	                            	<select class="select2" name="order_type" form="order-store" style="width: 100%" required>
+	                                    <option value="#" disabled selected>Select a type</option>
+	                                    @foreach($order_types as $type)
+	                                    	<option value="{{ $type->id }}">
+	                                    		{{ $type->name }}
+	                                    	</option>
+	                                    @endforeach
+	                                </select>
+	                                @error('order_type')
+	                                    <span class="messages">
+	                                        <p class="text-danger error">{{ $message }}</p>
+	                                    </span>
+	                                @enderror
+	                            </div>
+                		</div>
+                		<div class="form-group row">
+	                		<label class="col-lg-2 col-md-2 col-sm-2 col-form-label">Description</label>
+	                            <div class="col-lg-10 col-md-10 col-sm-10">
+	                            	<input type="text" class="form-control" name="description" value="" form="order-store">
+	                                @error('description')
+	                                    <span class="messages">
+	                                        <p class="text-danger error">{{ $message }}</p>
+	                                    </span>
+	                                @enderror
+	                            </div>
+                		</div>
+                		<div class="form-group row">
+	                		<label class="col-lg-2 col-md-2 col-sm-2 col-form-label">Notes</label>
+	                            <div class="col-lg-10 col-md-10 col-sm-10">
+	                            	<textarea class="form-control" name="notes" value="" form="order-store"></textarea>
+	                                @error('notes')
+	                                    <span class="messages">
+	                                        <p class="text-danger error">{{ $message }}</p>
+	                                    </span>
+	                                @enderror
+	                            </div>
+                		</div>
+	                	<div class="form-group row">
+	                		<label class="col-lg-2 col-md-2 col-sm-2 col-form-label">Month to Bill*</label>
 	                            <div class="col-lg-4 col-md-4 col-sm-4">
 	                            	<select class="select2" name="to_bill" id="to_bill" form="order-store" style="width: 100%" required>
 	                                    <option value="#" disabled selected>Select an agreement first</option>

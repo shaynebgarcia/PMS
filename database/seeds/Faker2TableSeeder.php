@@ -115,6 +115,7 @@ class Faker2TableSeeder extends Seeder
 
     	// Services
     	Service::create([
+            'property_id' => 5,
     		'leasing_agreement_details_id' => $lease_detail->id,
     		'service_type_id' => 1,
             'start_date' => '2019-10-20',
@@ -123,6 +124,7 @@ class Faker2TableSeeder extends Seeder
     		'created_at' => Carbon\Carbon::now(),
     	]);
     	Service::create([
+            'property_id' => 5,
     		'leasing_agreement_details_id' => $lease_detail->id,
     		'service_type_id' => 2,
             'start_date' => '2019-10-20',

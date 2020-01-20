@@ -108,6 +108,8 @@ Route::group(['middleware' => ['has_access']], function () {
 
 		    // Inventory Routes
 			Route::resource('/inventory', 'InventoryController');
+			Route::patch('/restock', 'InventoryController@restock')->name('inventory.restock');
+			Route::patch('/reduce', 'InventoryController@reduce')->name('inventory.reduce');
 
 			// Inventory Routes
 			Route::resource('/orders', 'JobOrderController');
@@ -218,10 +220,11 @@ Route::group(['middleware' => ['has_access']], function () {
 					// Utility Billing Routes
 					Route::get('/utility-bill', 'UtilityBillController@index')->name('utility-bill.index');
 					Route::post('/utility-bill', 'UtilityBillController@store')->name('utility-bill.store');
+					Route::patch('/utility-bill/{bill}', 'UtilityBillController@update')->name('utility-bill.update');
 					Route::get('/lease/{link}/{lease}/utility-bill', 'UtilityBillController@group')->name('utility-bill.group.lease');
 
 				// Services Routes
-				// Route::resource('/services', 'ServiceController');
+				Route::resource('/services', 'ServiceController');
 				Route::resource('/service-type', 'ServiceTypeController');
 				Route::get('/lease/{link}/{lease}/service-bill', 'ServiceController@group')->name('service.group.lease');
 

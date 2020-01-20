@@ -19,7 +19,7 @@ class UserController extends Controller
 
     public function __construct(Request $request)
     {
-        $this->property = $request->session()->get('property_id');
+        $this->property = session()->get('property_id');
     }
 
     public function rules()

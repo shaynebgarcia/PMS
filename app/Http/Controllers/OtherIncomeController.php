@@ -22,7 +22,7 @@ class OtherIncomeController extends Controller
 {
     public function __construct(Request $request)
     {
-        $this->property = $request->session()->get('property_id');
+        $this->property = session()->get('property_id');
     }
     /**
      * Display a listing of the resource.
@@ -103,9 +103,9 @@ class OtherIncomeController extends Controller
         $property = Property::findorFail($this->property);
         $lease = LeasingAgreement::findorFail($link);
         $lease_detail = LeasingAgreementDetail::findorFail($id);
-        $otherincome_types = OtherIncomeType::all();
+        $otherincome_types = OtherIncomeType::where('for_workorder', 0)->get();
         $otherincome = OtherIncome::all();
-        $orders = JobOrder::where('leasing_agreement_id', $link)->get();
+        $orders = JobOrder::where('leasing_agreement_details_id', $lease_detail->id)->get();
         $now = Carbon::now();
 
         $start    = (new DateTime($now))->modify('first day of this month');

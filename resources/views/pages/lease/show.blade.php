@@ -84,7 +84,7 @@
                                         <i class="icon feather icon-file f-w-600 f-18 m-r-15 text-c-blue"></i>
                                     </a>
                                 </td>
-                                <td class="{{ config('pms.table.td.font-size') }}">
+                                <td class="{{ config('pms.table.td.font-size') }} text-uppercase">
                                     {{ $ld->description }}
                                 </td>
                                 <td class="{{ config('pms.table.td.font-size') }}">

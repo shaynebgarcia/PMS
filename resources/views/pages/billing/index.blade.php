@@ -76,8 +76,9 @@
 	                        <thead>
 	                            <tr>
 	                            	<th class="{{ config('pms.table.th.font-size') }}"></th>
-	                            	<th class="{{ config('pms.table.th.font-size') }}">Tenant</th>
-	                            	<th class="{{ config('pms.table.th.font-size') }}">Unit</th>
+	                            	<th class="{{ config('pms.table.th.font-size') }} bg-highlight">Agreement</th>
+	                            	<th class="{{ config('pms.table.th.font-size') }} bg-highlight">Unit</th>
+	                            	<th class="{{ config('pms.table.th.font-size') }} bg-highlight">Tenant</th>
 	                            	<th class="{{ config('pms.table.th.font-size') }}">Invoice NO</th>
 	                            	<th class="{{ config('pms.table.th.font-size') }}">Month</th>
 	                                <th class="{{ config('pms.table.th.font-size') }}">Billing Date</th>
@@ -110,12 +111,16 @@
 	                                        <i class="icon feather icon-eye f-w-600 f-18 m-r-15 text-c-blue"></i>
 	                                    </a>
 	                                </td>
-	                                <td class="{{ config('pms.table.td.font-size') }}">
-	                                	{{ $bill->leasing_agreement_details->agreement->tenant->user->fullnamewm }}
+	                                <td class="{{ config('pms.table.td.font-size') }} bg-highlight f-w-700">
+	                                	{{ $bill->leasing_agreement_details->agreement_no }}
 	                                </td>
-	                                <td class="{{ config('pms.table.td.font-size') }}">
+	                                <td class="{{ config('pms.table.td.font-size') }} bg-highlight">
 	                                	{{ $bill->leasing_agreement_details->agreement->unit->number }}
-
+	                                </td>
+	                                <td class="{{ config('pms.table.td.font-size') }} bg-highlight">
+                                        @foreach($bill->leasing_agreement_details->agreement->tenant_list as $tl)
+                                            {{ $tl->tenant->user->lnamefname }}<br>
+                                        @endforeach
 	                                </td>
 	                                <td class="{{ config('pms.table.td.font-size') }}">
 	                                	{{ $bill->invoice_no }}

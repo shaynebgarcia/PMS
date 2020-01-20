@@ -118,9 +118,10 @@
                     <table id="order-table" class="table table-bordered table-responsive wrap">
                         <thead>
                             <tr>
+                                <th class="{{ config('pms.table.th.font-size') }} bg-highlight">Agreement</th>
+                                <th class="{{ config('pms.table.th.font-size') }} bg-highlight">Unit</th>
+                                <th class="{{ config('pms.table.th.font-size') }} bg-highlight">Tenant</th>
                                 <th class="{{ config('pms.table.th.font-size') }}">NO</th>
-                                <th class="{{ config('pms.table.th.font-size') }}">Agreement</th>
-                                <th class="{{ config('pms.table.th.font-size') }}">Tenant</th>
                                 <th class="{{ config('pms.table.th.font-size') }}">REF NO</th>
                                 <th class="{{ config('pms.table.th.font-size') }}">Payment Type</th>
                                 <th class="{{ config('pms.table.th.font-size') }}">Invoice</th>
@@ -168,20 +169,26 @@
                                     @endif
                                 @endif
                                 <tr @if($payment->leasing_agreement_details_id == null) style="background-color: #f9e596" @endif>
-                                    <td class="{{ config('pms.table.td.font-size') }}">
-                                      <a class="f-12 f-w-700" href="#" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="View Details">
-                                        {{ $payment->payment_no }}
-                                      </a>
-                                    </td>
-                                    <td class="{{ config('pms.table.td.font-size') }}" @if($payment->leasing_agreement_details_id != null) data-toggle="tooltip" data-placement="right" data-trigger="hover" title="" data-original-title="Unit: {{ $payment->agreement_detail->agreement->unit->number }}" @endif>
+
+                                    <td class="{{ config('pms.table.td.font-size') }} bg-highlight" @if($payment->leasing_agreement_details_id != null) data-toggle="tooltip" data-placement="right" data-trigger="hover" title="" data-original-title="Unit: {{ $payment->agreement_detail->agreement->unit->number }}" @endif>
                                         @if($payment->leasing_agreement_details_id == null)
                                             <span class="text-danger f-w-700 f-10">PAYMENT <br>NOT ATTACHED</span>
                                         @else
                                         {{ $payment->agreement_detail->agreement_no }}
                                         @endif
                                     </td>
+                                    <td class="{{ config('pms.table.td.font-size') }} bg-highlight">
+                                      {{ $payment->agreement_detail->agreement->unit->number }}
+                                    </td>
+                                    <td class="{{ config('pms.table.td.font-size') }} bg-highlight">
+                                        @foreach($payment->agreement_detail->agreement->tenant_list as $tl)
+                                            {{ $tl->tenant->user->lnamefname }}<br>
+                                        @endforeach
+                                    </td>
                                     <td class="{{ config('pms.table.td.font-size') }}">
-                                      {{ $payment->tenant->user->fullnamewm }}
+                                      <a class="f-12 f-w-700" href="#" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="View Details">
+                                        {{ $payment->payment_no }}
+                                      </a>
                                     </td>
                                     <td class="{{ config('pms.table.td.font-size') }}">
                                       {{ $payment->reference_no }}

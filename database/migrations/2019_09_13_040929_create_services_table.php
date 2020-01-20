@@ -15,7 +15,9 @@ class CreateServicesTable extends Migration
     {
         Schema::create('services', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->integer('property_id');
             $table->integer('leasing_agreement_details_id');
+            $table->string('service_no')->nullable()->default(null);
             $table->integer('service_type_id');
             $table->string('to_bill')->nullable();
             $table->boolean('first_bill')->default(0);

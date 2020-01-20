@@ -37,6 +37,10 @@ function label_status($str)
         $color = 'label-warning';
     } elseif ($str == 'Terminated') {
         $color = 'label-danger';
+    } elseif ($str == 'Expired') {
+        $color = 'label-danger';
+    } elseif ($str == 'Inactive') {
+        $color = 'label-default';
     }
     return $color;
 }

@@ -88,7 +88,7 @@
     		</div>
     	</div>
     	</form>
-        <div class="card">
+        <!-- <div class="card">
             <div class="card-header">
                 <h5>Attach Job Order</h5>
             </div>
@@ -136,10 +136,10 @@
                     </div>
                 </form>
             </div>
-        </div>
+        </div> -->
     	<div class="card">
     		<div class="card-header">
-                <h5>Job Orders & Other Income</h5>
+                <h5>Other Income</h5>
             </div>
             <div class="card-block">
 	            @if(count($otherincome->where('leasing_agreement_details_id', $lease_detail->id)) > 0)
@@ -147,34 +147,34 @@
 	                    <table id="order-table" class="table table-bordered table-responsive">
 	                        <thead>
 	                            <tr>
-	                                <th class="f-12">Type</th>
-	                                <th class="f-12">To Bill</th>
-	                                <th class="f-12">Amount</th>
-	                                <th class="f-12">Note</th>
-	                                <th class="f-12">Action</th>
+	                                <th class="{{ config('pms.table.th.font-size') }}">Type</th>
+	                                <th class="{{ config('pms.table.th.font-size') }}">To Bill</th>
+	                                <th class="{{ config('pms.table.th.font-size') }}">Amount</th>
+	                                <th class="{{ config('pms.table.th.font-size') }}">Note</th>
+	                                <th class="{{ config('pms.table.th.font-size') }}">Action</th>
 	                            </tr>
 	                        </thead>
 	                        <tbody>
 	                        @foreach($otherincome->where('leasing_agreement_details_id', $lease_detail->id) as $oi)
 	                            <tr>
-	                                <td class="f-12">
+	                                <td class="{{ config('pms.table.td.font-size') }}">
 	                                	{{ $oi->income_type->name }}
 	                                </td>
-	                                <td class="f-12">
+	                                <td class="{{ config('pms.table.td.font-size') }}">
 	                                	{{ date('F Y', strtotime($oi->to_bill)) }}
 	                                </td>
-	                                <td class="f-12">
+	                                <td class="{{ config('pms.table.td.font-size') }}">
 	                                	{{ $oi->total_amount }}
 	                                </td>
-	                                <td class="f-12">
+	                                <td class="{{ config('pms.table.td.font-size') }}">
 	                                	{{ $oi->note }}
 	                                </td>
-	                                <td class="f-12">
-                                        <a href="#" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Edit">
-                                            <i class="icon feather icon-edit f-w-600 f-16 m-r-15 text-c-green"></i>
+	                                <td class="{{ config('pms.table.td.font-size') }}">
+                                        <a href="#" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="{{ config('pms.action.edit.tool-tip-text') }}">
+                                            <i class="{{ config('pms.action.edit.icon') }} {{ config('pms.action.weight') }} {{config('pms.action.size') }} {{ config('pms.action.margin') }} {{ config('pms.action.edit.color') }}"></i>
                                         </a>
-                                        <a href="#" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="Delete">
-                                            <i class="feather icon-trash-2 f-w-600 f-16 text-c-red"></i>
+                                        <a href="#" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="" data-original-title="{{ config('pms.action.delete.tool-tip-text') }}">
+                                            <i class="{{ config('pms.action.delete.icon') }} {{ config('pms.action.weight') }} {{config('pms.action.size') }} {{ config('pms.action.margin') }} {{ config('pms.action.delete.color') }}"></i>
                                         </a>
 	                                </td>
 	                            </tr>
@@ -188,6 +188,10 @@
 	            @endif
             </div>
     	</div>
+
+        <!-- Display orders -->
+        @include('pages.order.group')
+        
 	</div>
 </div>
 @endsection

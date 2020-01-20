@@ -24,6 +24,7 @@ return [
         'payment' => 'PYM-',
         'inventory' => 'INV-',
         'order' => 'ORD-',
+        'service' => 'SRV-',
     ],
 
     'table' => [
@@ -188,18 +189,18 @@ return [
             ],
         ],
         'service' => [
-            'icon' => 'icon-zap',
+            'icon' => 'icon-briefcase',
             'service-index' => [
                 'title' => 'Services & Subscriptions',
-                'subtitle' => 'List of all services and/or subscriptions',
+                'subtitle' => 'List of all service and/or subscription billing',
             ],
             'service-create' => [
-                'title' => 'Create A New Service',
-                'subtitle' => 'Form to create a new service',
+                'title' => 'Create A New Service Agreement',
+                'subtitle' => 'Form to create a new service agreement to bill',
             ],
             'service-edit' => [
                 'title' => 'Update Service Details - ',
-                'subtitle' => "Form to update an existing service details",
+                'subtitle' => "Form to update an existing service bill details",
             ],
             'service-bill-group' => [
                 'title' => 'Services & Subscription Billing',

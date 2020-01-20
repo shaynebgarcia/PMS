@@ -16,7 +16,7 @@
 @endsection
 
 @section('content')
-    <div class="row">
+    <!-- <div class="row">
     	<div class="col-lg-12 col-md-12 col-sm-12">
 	    	<div class="alert alert-warning icons-alert">
 				<button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -25,10 +25,10 @@
 				<p><strong>Renewing will mark the current/previous agreement as EXPIRED.</strong></p>
 			</div>
 		</div>
-	</div>
+	</div> -->
 	<div class="row">
         <div class="col-lg-12 col-md-12 col-sm-12">
-        	<form id="lease-renew" method="POST" action="{{ route('lease.renew', [$property->code, $lease->id]) }}">
+        	<form id="lease-renew" method="POST" action="{{ route('lease.renew', $lease->id) }}">
 	        @CSRF
 		        <div class="row">
 		        	<div class="col-lg-12 col-md-12 col-sm-12">
@@ -55,6 +55,11 @@
 			                                        </option>
 			                                    @endforeach
 			                                </select>
+			                                @error('tenants[]')
+			                                    <span class="messages">
+			                                        <p class="text-danger error">{{ $message }}</p>
+			                                    </span>
+			                                @enderror
 			                            </div>
 			                    </div>
 			                </div>
@@ -128,7 +133,7 @@
 	                                    <span class="input-group-prepend">
 	                                        <label class="input-group-text">{{ config('pms.currency.sign') }}</label>
 	                                    </span>
-	                                    <input type="number" min="1" step="any" class="form-control {{-- autonumber fill --}}" name="agreed_lease_price" value="" placeholder="Override lease price here. Leave blank to keep default leasing price">
+	                                    <input type="number" min="1" step="any" class="form-control {{-- autonumber fill --}}" name="agreed_lease_price" value="" placeholder="Override lease price here. Leave blank to keep current/previous leasing price">
 	                                    @error('agreed_lease_price')
 	                                        <span class="messages">
 	                                            <p class="text-danger error">{{ $message }}</p>
@@ -178,55 +183,8 @@
 	            </div>
 
 	            {{-- SELECT TABLE Subscription Services --}}
-	            <div class="card">
-	            	<div class="card-header">
-	                    <h5>Service Subscriptions</h5>
-	                </div>
-	                <div class="card-block">
-	                	<table class="table table-sm" id="itemtable">
-                             <thead>
-                                 <tr>
-                                    <th width="40%">Subscriptions</th>
-                                    <th width="20%">Amount</th>
-                                    <th width="10%">
-                                    	<a href="#" id="addrow">
-                                    		<button class="btn waves-effect waves-light btn-success btn-icon" style="height: 40px;width: 40px; padding: 0;line-height: 0;padding-left: 6px;">
-	                                        <i class="fa fa-plus"></i>
-	                                    	</button>
-                                    	</a>
-                                    </th>
-                                 </tr>
-                             </thead>
-                             <tbody>
-                               <tr>
-                                <td>
-                                  <select name="subscriptions[]" class="js-example-basic-single" style="width:100%;">
-                                    <option disabled selected value>Select Service(s)</option>
-                                      @foreach ($services->where('is_subscription', true) as $subscription)
-                                        <option value="{{ $subscription->id }}">{{ $subscription->name }} ({{ currencysign($subscription->amount) }})</option>
-                                      @endforeach
-                                  </select>
-                                </td>
-                                <td>
-                                	<div class="input-group">
-	                                    <span class="input-group-prepend">
-	                                        <label class="input-group-text">{{ config('pms.currency.sign') }}</label>
-	                                    </span>
-	                                    <input type="number" min="1" step="any" name="amounts[]" class="form-control {{-- autonumber fill --}}" data-a-sign="{{ config('pms.currency.sign') }}">
-	                                </div>
-                                </td>
-                                <td>
-                                	<a href="#" id="btnDel">
-                                		<button class="btn waves-effect waves-light btn-danger btn-icon" style="height: 40px;width: 40px; padding: 0;line-height: 0;padding-left: 6px;">
-	                                        <i class="fa fa-minus"></i>
-	                                    </button>
-                                    </a>
-                                </td>
-                               </tr>
-                             </tbody>
-                          </table>
-	                </div>
-	            </div>
+	            @include('pages.service.service-subscriptions.subscription-multibox')
+
 
 	            <div class="card">
 	            	<div class="card-header">
@@ -237,7 +195,7 @@
 	                    <div class="form-group row">
 	                        <label class="col-lg-2 col-md-2 col-sm-2 col-form-label">Deposit</label>
 	                            <div class="col-lg-9 col-md-9 col-sm-9">
-	                                <select class="select2" name="reservation" style="width: 100%">
+	                                <select class="select2" name="utility_deposit" style="width: 100%">
 	                                    <option value="#" disabled selected>Select Payment</option>
 	                                    @foreach($payments->where('payment_type_id', 1) as $payment)
                                             <option value="{{ $payment->id }}">

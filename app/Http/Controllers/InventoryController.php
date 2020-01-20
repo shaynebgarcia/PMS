@@ -10,7 +10,7 @@ class InventoryController extends Controller
 {
     public function __construct(Request $request)
     {
-        $this->property = $request->session()->get('property_id');
+        $this->property = session()->get('property_id');
     }
     /**
      * Display a listing of the resource.
@@ -76,7 +76,12 @@ class InventoryController extends Controller
      */
     public function update(Request $request, Inventory $inventory)
     {
-        //
+        $inventory->update([
+            'description' => $request->field_description,
+            'price' => $request->field_price,
+        ]);
+
+        return redirect()->route('inventory.index');
     }
 
     /**
@@ -88,6 +93,24 @@ class InventoryController extends Controller
     public function destroy(Inventory $inventory)
     {
         //
+    }
+
+    public function restock(Request $request, Inventory $inventory)
+    {
+        $inventory->update([
+            'qty' => $request->field_qty,
+        ]);
+
+        return redirect()->route('inventory.index');
+    }
+
+    public function reduce(Request $request, Inventory $inventory)
+    {
+        $inventory->update([
+            'qty' => $request->field_qty,
+        ]);
+
+        return redirect()->route('inventory.index');
     }
 
     public function getInventory()

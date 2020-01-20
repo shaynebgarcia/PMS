@@ -55,6 +55,10 @@ class StatusTableSeeder extends Seeder
 	        	'model' => 'Leasing Agreement Details',
 	        	'title' => 'Expired' //7
 	        ],
+	        [	
+	        	'model' => 'Leasing Agreement Details',
+	        	'title' => 'Inactive' //8
+	        ],
       	];
       	foreach ($leasing_details_status as $status) {
             \App\Status::create($status);
@@ -64,15 +68,15 @@ class StatusTableSeeder extends Seeder
 		$order_status = [
 	        [	
 	        	'model' => 'Job Order',
-	        	'title' => 'Pending' //8
+	        	'title' => 'Pending' //9
 	        ],
 	        [	
 	        	'model' => 'Job Order',
-	        	'title' => 'Processing' //9
+	        	'title' => 'Processing' //10
 	        ],
 	        [	
 	        	'model' => 'Job Order',
-	        	'title' => 'Completed' //10
+	        	'title' => 'Completed' //11
 	        ],
       	];
       	foreach ($order_status as $status) {

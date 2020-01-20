@@ -102,7 +102,21 @@
                             <span class="pcoded-mtext">Payments</span>
                         </a>
                     </li>
-                    <li class="pcoded-hasmenu @if ($pageSlug == 'billing-index' || $pageSlug == 'utility-bill-index' || $pageSlug == 'service-index' || $pageSlug == 'service-create' || $pageSlug == 'otherincome-index' || $pageSlug == 'otherincome-type-index') active pcoded-trigger @endif">
+                    <li class="pcoded-hasmenu
+                    @if (
+                        $pageSlug == 'billing-index' ||
+                        $pageSlug == 'utility-bill-index' ||
+                        $pageSlug == 'utilities-index' ||
+                        $pageSlug == 'service-index' ||
+                        $pageSlug == 'service-create' ||
+                        $pageSlug == 'service-type-index' ||
+                        $pageSlug == 'otherincome-index' ||
+                        $pageSlug == 'otherincome-type-index' ||
+                        $pageSlug == 'order-index' ||
+                        $pageSlug == 'order-create' ||
+                        $pageSlug == 'order-type-index'
+                    ) active pcoded-trigger
+                    @endif">
                         <a href="javascript:void(0)" class="waves-effect waves-dark">
                             <span class="pcoded-micon"><i class="feather icon-tag"></i></span>
                             <span class="pcoded-mtext">Billing</span>
@@ -113,35 +127,48 @@
                                     <span class="pcoded-mtext">Published Billing Invoice</span>
                                     </a>
                                 </li>
-                                <li class="pcoded-hasmenu @if ($pageSlug == 'utility-bill-index') active pcoded-trigger @endif">
+                                <!-- UTILITY -->
+                                <li class="pcoded-hasmenu @if ($pageSlug == 'utility-bill-index' || $pageSlug == 'utilities-index') active pcoded-trigger @endif">
                                     <a href="javascript:void(0)" class="waves-effect waves-dark">
                                         <span class="pcoded-mtext">Utility</span>
                                     </a>
                                     <ul class="pcoded-submenu">
                                         <li @if ($pageSlug == 'utility-bill-index') class="active" @endif>
                                             <a href="{{ route('utility-bill.index') }}" class="waves-effect waves-dark">
-                                            <span class="pcoded-mtext">Published Utility Billing Invoice</span>
+                                            <span class="pcoded-mtext">Published Utility Billing</span>
                                             </a>
+                                        </li>
+                                        <li @if ($pageSlug == 'utilities-index') class="active" @endif>
+                                            <a href="{{ route('utilities.index') }}" class="waves-effect waves-dark">
+                                            <span class="pcoded-mtext">Utility Meters</span>
+                                             </a>
                                         </li>
                                     </ul>
                                 </li>
-                                <li class="pcoded-hasmenu @if ($pageSlug == 'service-index' || $pageSlug == 'service-create') active pcoded-trigger @endif">
+                                <!-- SERVICE -->
+                                <li class="pcoded-hasmenu @if ($pageSlug == 'service-index' || $pageSlug == 'service-create' || $pageSlug == 'service-type-index') active pcoded-trigger @endif">
                                     <a href="javascript:void(0)" class="waves-effect waves-dark">
-                                        <span class="pcoded-mtext">Service</span>
+                                        <span class="pcoded-mtext">Services</span>
                                     </a>
                                     <ul class="pcoded-submenu">
                                         <li @if ($pageSlug == 'service-index') class="active" @endif>
-                                            <a href="#" class="waves-effect waves-dark">
-                                            <span class="pcoded-mtext">List Services</span>
+                                            <a href="{{ route('services.index') }}" class="waves-effect waves-dark">
+                                            <span class="pcoded-mtext">Published Service Billing</span>
                                             </a>
                                         </li>
                                         <li @if ($pageSlug == 'service-create') class="active" @endif>
-                                            <a href="#" class="waves-effect waves-dark">
-                                            <span class="pcoded-mtext">Add Service</span>
+                                            <a href="{{ route('services.create') }}" class="waves-effect waves-dark">
+                                            <span class="pcoded-mtext">Create New Service Agreement</span>
+                                            </a>
+                                        </li>
+                                        <li @if ($pageSlug == 'service-type-index') class="active" @endif>
+                                            <a href="{{ route('service-type.index') }}" class="waves-effect waves-dark">
+                                            <span class="pcoded-mtext">Service Types</span>
                                             </a>
                                         </li>
                                     </ul>
                                 </li>
+                                <!-- OTHER INCOME -->
                                 <li class="pcoded-hasmenu @if ($pageSlug == 'otherincome-index' || $pageSlug == 'otherincome-type-index') active pcoded-trigger @endif"">
                                     <a href="javascript:void(0)" class="waves-effect waves-dark">
                                     <span class="pcoded-mtext">Other Income</span>
@@ -149,7 +176,12 @@
                                     <ul class="pcoded-submenu">
                                         <li @if ($pageSlug == 'otherincome-index') class="active" @endif>
                                             <a href="#" class="waves-effect waves-dark">
-                                            <span class="pcoded-mtext">List Other Income</span>
+                                            <span class="pcoded-mtext">Published Other Income Billing</span>
+                                            </a>
+                                        </li>
+                                        <li @if ($pageSlug == 'otherincome-create') class="active" @endif>
+                                            <a href="#" class="waves-effect waves-dark">
+                                            <span class="pcoded-mtext">Create New Other Income</span>
                                             </a>
                                         </li>
                                         <li @if ($pageSlug == 'otherincome-type-index') class="active" @endif>
@@ -159,70 +191,30 @@
                                         </li>
                                     </ul>
                                 </li>
-                            </ul>
-                    </li>
-                </ul>
-
-            {{-- UTILITIES --}}
-            <div class="pcoded-navigation-label">Utilitites & Services</div>
-                <ul class="pcoded-item pcoded-left-item">
-                    <li class="pcoded-hasmenu @if ($pageSlug == 'utilities-index' || $pageSlug == 'utilities-create') active pcoded-trigger @endif">
-                        <a href="javascript:void(0)" class="waves-effect waves-dark">
-                            <span class="pcoded-micon"><i class="feather icon-users"></i></span>
-                            <span class="pcoded-mtext">Utilities</span>
-                        </a>
-                        <ul class="pcoded-submenu">
-                            <li @if ($pageSlug == 'utilities-index') class="active" @endif>
-                                <a href="{{ route('utilities.index') }}" class="waves-effect waves-dark">
-                                <span class="pcoded-mtext">List All Utilities</span>
-                                 </a>
-                            </li>
-                            <li @if ($pageSlug == 'utilities-create') class="active" @endif>
-                                <a href="{{ route('utilities.create') }}" class="waves-effect waves-dark">
-                                <span class="pcoded-mtext">Add new utility/meter</span>
-                                 </a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="pcoded-hasmenu @if ($pageSlug == 'service-type-index' || $pageSlug == 'service-type-index') active pcoded-trigger @endif">
-                        <a href="javascript:void(0)" class="waves-effect waves-dark">
-                            <span class="pcoded-micon"><i class="feather icon-file-text"></i></span>
-                            <span class="pcoded-mtext">Services & Subscriptions</span>
-                        </a>
-                        <ul class="pcoded-submenu">
-                            <li @if ($pageSlug == 'service-type-index') class="active" @endif>
-                                <a href="{{ route('service-type.index') }}" class="waves-effect waves-dark">
-                                <span class="pcoded-mtext">Service Types</span>
-                                </a>
-                            </li>
-                            <li @if ($pageSlug == 'service-type-index') class="active" @endif>
-                                <a href="#" class="waves-effect waves-dark">
-                                <span class="pcoded-mtext">Active Services</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="pcoded-hasmenu @if ($pageSlug == 'order-index' || $pageSlug == 'order-create') active pcoded-trigger @endif">
-                        <a href="javascript:void(0)" class="waves-effect waves-dark">
-                            <span class="pcoded-micon"><i class="feather icon-shopping-cart"></i></span>
-                            <span class="pcoded-mtext">Job Order</span>
-                        </a>
-                            <ul class="pcoded-submenu">
-                                <li @if ($pageSlug == 'order-index') class="active" @endif>
-                                    <a href="{{ route('orders.index') }}" class="waves-effect waves-dark">
-                                    <span class="pcoded-mtext">Published Orders</span>
+                                <!-- ORDERS -->
+                                <li class="pcoded-hasmenu @if ($pageSlug == 'order-index' || $pageSlug == 'order-create' || $pageSlug == 'order-type-index') active pcoded-trigger @endif">
+                                    <a href="javascript:void(0)" class="waves-effect waves-dark">
+                                        <span class="pcoded-micon"><i class="feather icon-shopping-cart"></i></span>
+                                        <span class="pcoded-mtext">Job Order</span>
                                     </a>
+                                    <ul class="pcoded-submenu">
+                                        <li @if ($pageSlug == 'order-index') class="active" @endif>
+                                            <a href="{{ route('orders.index') }}" class="waves-effect waves-dark">
+                                            <span class="pcoded-mtext">Published Orders</span>
+                                            </a>
+                                        </li>
+                                        <li @if ($pageSlug == 'order-create') class="active" @endif>
+                                            <a href="{{ route('orders.create') }}" class="waves-effect waves-dark">
+                                            <span class="pcoded-mtext">Create A New Order</span>
+                                            </a>
+                                        </li>
+                                        <li @if ($pageSlug == 'order-type-index') class="active" @endif>
+                                            <a href="#" class="waves-effect waves-dark">
+                                            <span class="pcoded-mtext">Order Types</span>
+                                            </a>
+                                        </li>
+                                    </ul>
                                 </li>
-                                <li @if ($pageSlug == 'order-create') class="active" @endif>
-                                    <a href="{{ route('orders.create') }}" class="waves-effect waves-dark">
-                                    <span class="pcoded-mtext">Create A New Order</span>
-                                    </a>
-                                </li>
-                                {{-- <li class="">
-                                    <a href="menu-bottom.html" class="waves-effect waves-dark">
-                                    <span class="pcoded-mtext">Contracts</span>
-                                    </a>
-                                </li> --}}
                             </ul>
                     </li>
                 </ul>
@@ -236,6 +228,32 @@
                             <i class="feather icon-package"></i>
                             </span>
                             <span class="pcoded-mtext">Inventory</span>
+                        </a>
+                    </li>
+                </ul>
+
+            {{-- FORMS --}}
+            <div class="pcoded-navigation-label">Documents</div>
+                <ul class="pcoded-item pcoded-left-item">
+                    <li @if ($pageSlug == 'forms-index') class="active" @endif>
+                        <a href="#" class="waves-effect waves-dark">
+                            <span class="pcoded-micon">
+                            <i class="feather icon-package"></i>
+                            </span>
+                            <span class="pcoded-mtext">Forms</span>
+                        </a>
+                    </li>
+                </ul>
+
+            {{-- REPORTS --}}
+            <div class="pcoded-navigation-label">Reports</div>
+                <ul class="pcoded-item pcoded-left-item">
+                    <li @if ($pageSlug == 'reports-index') class="active" @endif>
+                        <a href="#" class="waves-effect waves-dark">
+                            <span class="pcoded-micon">
+                            <i class="feather icon-package"></i>
+                            </span>
+                            <span class="pcoded-mtext">Reports</span>
                         </a>
                     </li>
                 </ul>
