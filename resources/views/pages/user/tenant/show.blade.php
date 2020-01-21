@@ -19,15 +19,6 @@
 
 <div class="row">
 	<div class="col-lg-4 col-xl-4">
-		{{-- <div class="row">
-			<div class="col-lg-12 text-center p-b-25">
-				<div class="btn-group" role="group">
-					<button type="button" class="btn btn-primary btn-sm waves-effect waves-light" data-toggle="tooltip" data-placement="top" title="" data-original-title="View" style="padding: 0.5rem 1.2rem;">Units</button>
-					<button type="button" class="btn btn-primary btn-sm waves-effect waves-light" data-toggle="tooltip" data-placement="top" title="" data-original-title="View"style="padding: 0.5rem 1.2rem;">Payment History</button>
-					<button type="button" class="btn btn-primary btn-sm waves-effect waves-light" data-toggle="tooltip" data-placement="top" title="" data-original-title="View"style="padding: 0.5rem 1.2rem;">Billing History</button>
-				</div>
-			</div>
-		</div> --}}
 		<div id="navigation">
 			<div class="row">
 				<div class="col-lg-12">
@@ -36,7 +27,7 @@
 							<h5>{{ $tenant->user->fullnamewm }}</h5>
 						</div>
 						<div class="card-block">
-							<img src="@if($tenant->user->image_file_id == null) https://api.adorable.io/avatars/285/<?php echo rand(5, 15); ?>@adorable.png @else {{ asset(Storage::url($avatar->path)) }} @endif"  class="img-radius img-100" alt="user.png" style="margin:0 30% 0 30%;">
+							<img src="@if($tenant->user->image_file_id == null) https://api.adorable.io/avatars/285/<?php echo rand(5, 15); ?>@adorable.png @else {{asset(Storage::url($avatar->path))}} @endif"  class="img-radius img-100" alt="user.png" style="margin:0 30% 0 30%;">
 							@if ($tenant->user->lastname == !null)
 								<div class="row mt-4">
 				                	<p class="col-4 f-12 p-r-0">Last Name</p>

@@ -44,7 +44,7 @@
                                 <th class="{{ config('pms.table.th.font-size') }}">Rent</th>
                                 <th class="{{ config('pms.table.th.font-size') }}">Payments</th>
                                 <th class="{{ config('pms.table.th.font-size') }}">Deposits</th>
-                                <th class="{{ config('pms.table.th.font-size') }}">Subscriptions</th>
+                                <!-- <th class="{{ config('pms.table.th.font-size') }}">Subscriptions</th> -->
                                 <th class="{{ config('pms.table.th.font-size') }}">Utility Meter</th>
                                 <th class="{{ config('pms.table.th.font-size') }}">Status</th>
                                 <th class="{{ config('pms.table.th.font-size') }}">Action</th>
@@ -130,7 +130,7 @@
                                         NONE
                                     @endif
                                 </td>
-                                <td class="{{ config('pms.table.td.font-size') }}">
+                                <<!-- td class="{{ config('pms.table.td.font-size') }}">
                                     @if(count($services->where('leasing_agreement_details_id', $detail->last()->id)) >= 1 )
                                         @foreach($services->where('leasing_agreement_details_id', $detail->last()->id) as $service)
                                             {{ $service->service_type->name }} ({{ currencysign($service->amount) }}) <br>
@@ -138,7 +138,7 @@
                                     @else
                                         NONE
                                     @endif
-                                </td>
+                                </td> -->
                                 <td class="{{ config('pms.table.td.font-size') }}">
                                     @foreach($utilities->where('unit_id', $lease->unit->id) as $utility)
                                         {{ $utility->type }} Meter #{{ $utility->no }} <br>

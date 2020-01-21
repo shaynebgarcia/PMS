@@ -30,14 +30,12 @@
         <div class="card-block">
             @if(count($tenants) > 0)
                 <div>
-                    <table id="order-table" class="table table-bordered table-responsive">
+                    <table id="order-table" class="table table-bordered">
                         <thead>
                             <tr>
                                 <th class="{{ config('pms.table.th.font-size') }}">NO</th>
                                 <th class="{{ config('pms.table.th.font-size') }}">Full Name</th>
-                                <th class="{{ config('pms.table.th.font-size') }}">Role</th>
                                 <th class="{{ config('pms.table.th.font-size') }}">Contact</th>
-                                <th class="{{ config('pms.table.th.font-size') }}">Status</th>
                                 <th class="{{ config('pms.table.th.font-size') }}">Action</th>
                             </tr>
                         </thead>
@@ -53,15 +51,7 @@
                                         </a>
                                     </td>
                                     <td class="{{ config('pms.table.td.font-size') }}">
-                                        @foreach($tenant->user->getRoleNames() as $role)
-                                            {{ $role }} <br>
-                                        @endforeach
-                                    </td>
-                                    <td class="{{ config('pms.table.td.font-size') }}">
                                         {{ $tenant->contact }}
-                                    </td>
-                                    <td class="{{ config('pms.table.td.font-size') }}">
-                                        {{-- {{ $tenant->user->role->title }} --}}
                                     </td>
                                     <td class="{{ config('pms.table.td.font-size') }}">
                                         @can('Update Tenant')

@@ -68,7 +68,7 @@
 	                                <th class="{{ config('pms.table.th.font-size') }}">Rent</th>
 	                                <th class="{{ config('pms.table.th.font-size') }}">Payments</th>
 	                                <th class="{{ config('pms.table.th.font-size') }}">Deposits</th>
-	                                <th class="{{ config('pms.table.th.font-size') }}">Subscriptions</th>
+	                                <!-- <th class="{{ config('pms.table.th.font-size') }}">Subscriptions</th> -->
                                     <th class="{{ config('pms.table.th.font-size') }}">Invoice Billing Total</th>
 	                                <th class="{{ config('pms.table.th.font-size') }}">Status</th>
 	                                <th class="{{ config('pms.table.th.font-size') }}">Date Expired</th>
@@ -122,7 +122,7 @@
                                         NONE
                                     @endif
                                 </td>
-                                <td class="{{ config('pms.table.td.font-size') }}">
+                                <!-- <td class="{{ config('pms.table.td.font-size') }}">
                                     @if(count($services->where('leasing_agreement_details_id', $ld->id)) >= 1 )
                                         @foreach($services->where('leasing_agreement_details_id', $ld->id) as $service)
                                             {{ $service->service_type->name }} ({{ currencysign($service->agreed_amount) }}) <br>
@@ -130,7 +130,7 @@
                                     @else
                                         NONE
                                     @endif
-                                </td>
+                                </td> -->
                                 <td class="{{ config('pms.table.td.font-size') }}">
                                     @if(count($payments->where('leasing_agreement_details_id', $ld->id)->whereIn('payment_type_id', [1])) > 0)
                                         @foreach($payments->where('leasing_agreement_details_id', $ld->id)->whereIn('payment_type_id', [1]) as $payment)

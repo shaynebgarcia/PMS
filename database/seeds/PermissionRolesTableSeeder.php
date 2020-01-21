@@ -105,7 +105,7 @@ class PermissionRolesTableSeeder extends Seeder
         Permission::insert($permissions);
 
         $roles_array = [
-            'Super Admin', 'Admin LV1', 'Admin LV2', 'Care Taker', 'Pre-tenant', 'Tenant',
+            'Super Admin', 'Admin LV1', 'Admin LV2', 'Care Taker',
         ];
 
             foreach($roles_array as $role) {
@@ -138,11 +138,6 @@ class PermissionRolesTableSeeder extends Seeder
         $caretaker = User::whereIn('username', ['caretaker_1', 'caretaker_2', 'caretaker_3', 'caretaker_4', 'caretaker_5'])->get();
         foreach ($caretaker as $ct) {
             $ct->assignRole('Care Taker');
-        }
-
-        $tenants = User::whereNotIn('username', ['admin', 'caretaker_1', 'caretaker_2', 'caretaker_3', 'caretaker_4', 'caretaker_5'])->get();
-        foreach ($tenants as $tenant) {
-            $tenant->assignRole('Pre-tenant');
         }
     }
 }

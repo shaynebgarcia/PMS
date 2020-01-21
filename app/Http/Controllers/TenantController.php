@@ -142,7 +142,7 @@ class TenantController extends Controller
                 return redirect()->route('tenant.create');
             } else {
                 $tenant_store = Tenant::create([
-                    // 'property_id' => $this->property,
+                    'property_id' => $this->property,
                     'user_id' => $user_store->id,
                     'contact' => $request->contact,
                     'address' => $request->address,
@@ -243,7 +243,7 @@ class TenantController extends Controller
                 }
 
                 Alert::success('Tenant '.$user_store->lastname.", ".$user_store->firstname." ".$user_store->middlename." created",'Success')->autoclose(2800);
-                return redirect()->back();
+                return redirect()->route('tenant.index');
             }
     }
 
